@@ -9,12 +9,12 @@ use Arris\Database\DBWrapper;
 use Arris\DelightAuth\Auth\Auth;
 use Arris\Path;
 use Arris\Template\Template;
-use Arris\Template\TemplateInterface;
 use Kuria\Error\ErrorHandler;
 use Arris\Helpers\Server;
 
 class App extends \Arris\App
 {
+    public static $map_id = 'spring.confederation';
     /**
      * @var DBWrapper
      */

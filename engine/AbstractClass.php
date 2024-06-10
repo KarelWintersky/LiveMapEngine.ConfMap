@@ -20,7 +20,9 @@ class AbstractClass
 
     public array $options = [];
 
-    public $tables;
+    public DBConfigTables $tables;
+
+    public string $map_alias = '';
 
     /**
      * @var \Monolog\Logger
@@ -33,6 +35,7 @@ class AbstractClass
     {
         $this->app = \Confmap\App::factory();
         $this->logger = AppLogger::scope('main');
+        $this->pdo = App::$pdo;
 
         $this->options = $options;
 
@@ -40,6 +43,8 @@ class AbstractClass
         $this->template = App::$template;
 
         $this->is_internal_request = array_key_exists('mode', $_GET) && $_GET['mode'] == 'internal';
+
+        $this->map_alias = App::$map_id;
     }
 
 }

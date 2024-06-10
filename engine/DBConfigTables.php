@@ -33,7 +33,7 @@ final class DBConfigTables
         /**
          * Livemap Engine tables
          */
-        $this->map_data_regions = 'regions';
+        $this->map_data_regions = 'map_data_regions';
 
     }
 

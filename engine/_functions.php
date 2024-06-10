@@ -14,12 +14,12 @@ function config(array|string $key = '', $value = null): mixed
 {
     $app = App::factory();
 
-    if (!is_null($value) && !empty($key)) {
+    if (!\is_null($value) && !empty($key)) {
         $app->setConfig($key, $value);
         return true;
     }
 
-    if (is_array($key)) {
+    if (\is_array($key)) {
         foreach ($key as $k => $v) {
             $app->setConfig($k, $v);
         }
@@ -69,9 +69,9 @@ function property_exists_recursive($object, string $path, string $separator = '-
 function logSiteUsage(LoggerInterface $logger, $is_print = false)
 {
     $metrics = [
-        'time.total'        =>  number_format(microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'], 6, '.', ''),
-        'memory.usage'      =>  memory_get_usage(true),
-        'memory.peak'       =>  memory_get_peak_usage(true),
+        'time.total'        =>  \number_format(microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'], 6, '.', ''),
+        'memory.usage'      =>  \memory_get_usage(true),
+        'memory.peak'       =>  \memory_get_peak_usage(true),
         'site.url'          =>  $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
         'isMobile'          =>  config('features.is_mobile'),
     ];
@@ -81,7 +81,7 @@ function logSiteUsage(LoggerInterface $logger, $is_print = false)
      */
     $pdo = (App::factory())->getService('pdo');
 
-    if (!is_null($pdo)) {
+    if (!\is_null($pdo)) {
         $stats = $pdo->getStats();
         $metrics['mysql.queries'] = $stats['total_queries'];
         $metrics['mysql.time'] = $stats['total_time'];
@@ -91,3 +91,16 @@ function logSiteUsage(LoggerInterface $logger, $is_print = false)
 
     $logger->notice('', $metrics);
 }
+
+function filter_array_for_allowed($input_array, $required_key, $allowed_values, $default_value)
+{
+    return
+        \array_key_exists($required_key, $input_array)
+            ?
+            (
+                \in_array($input_array[ $required_key ], $allowed_values)
+                    ? $input_array[ $required_key ]
+                    : $default_value
+            ) : $default_value;
+}
+
