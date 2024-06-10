@@ -59,10 +59,11 @@ try {
     AppRouter::dispatch();
 
 
-    // App::$template->assign("flash_messages", json_encode( App::$flash->getMessages() ));
+    App::$template->assign("flash_messages", json_encode( App::$flash->getMessages() ));
 
-    // App::$template->assign("_auth", \config('auth'));
-    // App::$template->assign("_request", $_REQUEST);
+    App::$template->assign("_auth", \config('auth'));
+    App::$template->assign("_request", $_REQUEST);
+    App::$template->assign("_config", config());
 
 } catch (\Confmap\Exceptions\AccessDeniedException $e) {
 
