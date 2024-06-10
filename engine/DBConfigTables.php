@@ -1,6 +1,6 @@
 <?php
 
-namespace Livemap;
+namespace Confmap;
 
 #[AllowDynamicProperties]
 final class DBConfigTables

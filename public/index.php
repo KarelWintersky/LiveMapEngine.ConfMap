@@ -4,6 +4,7 @@ use Arris\AppLogger;
 use Arris\AppRouter;
 use Arris\Exceptions\AppRouterNotFoundException;
 use Confmap\App;
+use Confmap\Controllers\AuthController;
 use Dotenv\Dotenv;
 use Kuria\Error\ErrorHandler;
 
@@ -34,14 +35,14 @@ try {
     AppRouter::init(AppLogger::addScope('router'));
     AppRouter::setDefaultNamespace('\Confmap\Controllers');
 
-    AppRouter::get('/',[\Confmap\Controllers\PagesController::class,'view_frontpage'],        'view.frontpage');
-    AppRouter::get('/confmap.js',       [\Confmap\Controllers\PagesController::class, 'view_js_map_definition',  'view.map.js']);
+    AppRouter::get('/',             [\Confmap\Controllers\MapsController::class, 'view_map_fullscreen'],'view.frontpage');
+    AppRouter::get('/js/confmap.js',[\Confmap\Controllers\JSController::class, 'view_js_map_definition', 'view.map.js']);
 
-    AppRouter::get('/region/get', [\Confmap\Controllers\RegionsController::class, 'view_region_info']);
+    AppRouter::get('/region/get',   [\Confmap\Controllers\RegionsController::class, 'view_region_info'], 'ajax.get.region_info');
 
-    AppRouter::get('/auth/login', 'AuthController@view_form_login', 'view.form.login');
-    AppRouter::post('/auth/login', 'AuthController@callback_login', 'callback.form.login');
-    AppRouter::get('/auth/logout', 'AuthController@callback_logout', 'view.form.logout');
+    AppRouter::get('/auth/login', [\Confmap\Controllers\AuthController::class, 'view_form_login'], 'view.form.login');
+    AppRouter::post('/auth/login', [\Confmap\Controllers\AuthController::class, 'callback_login'], 'callback.form.login');
+    AppRouter::get('/auth/logout', [\Confmap\Controllers\AuthController::class, 'callback_logout'], 'view.form.logout');
 
     AppRouter::group(
         [
@@ -56,25 +57,26 @@ try {
 
     AppRouter::dispatch();
 
-    /*App::$template->assign("title", App::$template->makeTitle(" &mdash;"));
 
-    App::$template->assign("flash_messages", json_encode( App::$flash->getMessages() ));
+    // App::$template->assign("flash_messages", json_encode( App::$flash->getMessages() ));
 
-    App::$template->assign("_auth", \config('auth'));
-    App::$template->assign("_request", $_REQUEST);*/
+    // App::$template->assign("_auth", \config('auth'));
+    // App::$template->assign("_request", $_REQUEST);
 
 } catch (\Confmap\Exceptions\AccessDeniedException $e) {
 
     AppLogger::scope('access.denied')->notice($e->getMessage(), [ $_SERVER['REQUEST_URI'], config('auth.ipv4') ] );
-    App::$template->assign('message', $e->getMessage());
-    App::$template->setTemplate("_errors/403.tpl");
+
+    // App::$template->assign('message', $e->getMessage());
+    // App::$template->setTemplate("_errors/403.tpl");
 
 } catch (AppRouterNotFoundException $e) {
 
     AppLogger::scope('main')->notice("AppRouter::NotFound", [ $e->getMessage(), $e->getInfo() ] );
     http_response_code(404);
-    App::$template->setTemplate("_errors/404.tpl");
-    App::$template->assign("message", $e->getMessage());
+
+    // App::$template->setTemplate("_errors/404.tpl");
+    // App::$template->assign("message", $e->getMessage());
 
 }/* catch (\RuntimeException|\Exception $e) {
 // Пока не внедрим кастомную страницу для Kuria + логгирование там же

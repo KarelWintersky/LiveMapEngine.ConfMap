@@ -5,7 +5,6 @@ namespace Confmap;
 use Arris\App;
 use Arris\AppLogger;
 use Arris\Database\DBWrapper;
-// use Livemap\DBConfigTables;
 use Arris\Template\Template;
 use Psr\Log\LoggerInterface;
 use Smarty;

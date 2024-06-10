@@ -9,6 +9,7 @@ use Arris\Database\DBWrapper;
 use Arris\DelightAuth\Auth\Auth;
 use Arris\Path;
 use Arris\Template\Template;
+use Arris\Template\TemplateInterface;
 use Kuria\Error\ErrorHandler;
 use Arris\Helpers\Server;
 
@@ -55,8 +56,10 @@ class App extends \Arris\App
         ]);
 
         config('smarty', [
-            'path_template'     =>  $_path_install->join('templates')->toString(true),
-            'path_cache'        =>  config('path.cache'),
+            'path'  =>  [
+                'template'  =>  $_path_install->join('templates')->toString(true),
+                'cache'     =>  config('path.cache')
+            ],
             'force_compile'     =>  _env('DEBUG.SMARTY_FORCE_COMPILE', false, 'bool')
         ]);
 
@@ -161,9 +164,35 @@ class App extends \Arris\App
         ], [ ], App::$pdo, AppLogger::scope('redis'));
     }
 
+    /**
+     * @throws \SmartyException
+     */
     public static function initTemplate()
     {
+        App::$template = new Template([], [], AppLogger::scope('template'));
 
+        App::$template
+            ->setTemplateDir( config('smarty.path.template'))
+            ->setCompileDir( config('smarty.path.cache'))
+            ->setForceCompile( config('smarty.force_compile'))
+            ->registerPlugin( Template::PLUGIN_MODIFIER, 'dd', 'dd', false)
+            ->registerPlugin(Template::PLUGIN_FUNCTION, "_env", static function($params)
+            {
+                $default = (empty($params['default'])) ? '' : $params['default'];
+                if (empty($params['key'])) return $default;
+                $k = getenv($params['key']);
+                return ($k === false) ? $default : $k;
+            }, false )
+            ->registerPlugin(Template::PLUGIN_FUNCTION, "config", static function($params)
+            {
+                return empty($params['key']) ? config() : config($params['key']);
+            }, false)
+            ->registerPlugin(Template::PLUGIN_MODIFIER, 'getenv', 'getenv', false)
+            ->registerClass("Arris\AppRouter", "Arris\AppRouter");
+
+        App::$template->setTemplate("_map.tpl");
+
+        App::$flash = new FlashMessages();
     }
 
 
