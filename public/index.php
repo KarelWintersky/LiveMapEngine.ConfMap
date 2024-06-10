@@ -36,6 +36,7 @@ try {
     AppRouter::setDefaultNamespace('\Confmap\Controllers');
 
     AppRouter::get('/',             [\Confmap\Controllers\MapsController::class, 'view_map_fullscreen'],'view.frontpage');
+
     AppRouter::get('/js/confmap.js',[\Confmap\Controllers\JSController::class, 'view_js_map_definition', 'view.map.js']);
 
     AppRouter::get('/region/get',   [\Confmap\Controllers\RegionsController::class, 'view_region_info'], 'ajax.get.region_info');
