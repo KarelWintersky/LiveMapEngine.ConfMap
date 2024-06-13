@@ -152,50 +152,52 @@ class Map extends AbstractClass
         });
     }
 
-    public function getRegionsWithInfo($ids = [])
+    public function getRegionsWithInfo($ids_list = [])
     {
-        $in_subquery = !empty($ids_list) ? " AND id_region IN ({$ids_list}) " : "";
+        $table_map_data_regions = $this->dbTables->map_data_regions;
+
+        if (!empty($ids_list)) {
+            $paths_at_layers_ids = \implode(", ", \array_map( static function($item){
+                return "'{$item}'";
+            }, \array_keys($ids_list)));
+            $in_subquery = " AND id_region IN ({$paths_at_layers_ids}) ";
+        } else {
+            $in_subquery = "";
+        }
+
+        // на самом деле на данном этапе нам не нужна сортировка по last date, мы же извлекаем регионы с информацией ВООБЩЕ
+
         $query = "
-SELECT id FROM {$this->dbTables->map_data_regions} AS mdr1
- WHERE alias_map = :alias_map
-   AND id = ( SELECT MAX(id) FROM {$this->dbTables->map_data_regions} AS mdr2 WHERE mdr1.id_region = mdr2.id_region )
-  {$in_subquery}
- ORDER BY id_region";
+        SELECT
+            mdr.id_region, mdr.title, mdr.edit_date,
+            mdr.is_publicity, mdr.is_excludelists,
+
+            mdr.region_stroke AS stroke,
+            mdr.region_border_color AS borderColor,
+            mdr.region_border_width AS borderWidth,
+            mdr.region_border_opacity AS borderOpacity,
+            
+            mdr.region_fill AS fill,
+            mdr.region_fill_color AS fillColor,
+            mdr.region_fill_opacity AS fillOpacity
+        FROM
+           ( SELECT id_region, max(edit_date) as max_edit_date
+             FROM {$table_map_data_regions} 
+             WHERE alias_map = :alias_map
+             {$in_subquery}
+             GROUP BY id_region
+            ) subQuery
+        INNER JOIN {$table_map_data_regions} mdr
+        ON 
+            mdr.id_region = subQuery.id_region AND 
+            mdr.edit_date = subQuery.max_edit_date
+        ";
 
         $sth = $this->pdo->prepare($query);
         $sth->bindValue('alias_map', $this->map_alias, PDO::PARAM_STR);
         $sth->execute();
-        $all_ids = $sth->fetchAll(\PDO::FETCH_COLUMN);
-
-        if (empty($all_ids)) {
-            return [];
-        }
-
-        $all_ids_string = implode(', ', $all_ids);
-
-        $query_data = "
-SELECT
-    `id_region`, `title`, `edit_date`,
-    `is_publicity`, `is_excludelists`,
-
-    `region_stroke` AS `stroke`,
-    `region_border_color` AS `borderColor`,
-    `region_border_width` AS `borderWidth`,
-    `region_border_opacity` AS `borderOpacity`,
-
-    `region_fill` AS `fill`,
-    `region_fill_color` AS `fillColor`,
-    `region_fill_opacity` AS `fillOpacity`
-    FROM {$this->dbTables->map_data_regions}
-    WHERE `id` IN ({$all_ids_string})
-        ";
 
         $all_regions = [];
-
-        $sth = $this->pdo->prepare($query_data);
-        $sth->execute([
-            // 'alias_map' =>  $map_alias
-        ]);
 
         //@todo: HINT (преобразование PDO->fetchAll() в асс.массив, где индекс - значение определенного столбца каждой строки)
         \array_map( static function($row) use (&$all_regions) {
@@ -216,6 +218,7 @@ SELECT
             $all_regions[ $row['id_region'] ] = $row;
 
         }, $sth->fetchAll());*/
+
 
         return $all_regions;
     }
@@ -327,15 +330,15 @@ SELECT
   table_data.id_region AS id_region,
   table_data.edit_date AS edit_date,
   table_users.username AS edit_name,
-  INET_NTOA(`edit_ipv4`) AS ipv4,
+  INET_NTOA(edit_ipv4) AS ipv4,
   table_data.title AS title,
   table_data.edit_comment AS edit_comment
 FROM
   {$this->dbTables->map_data_regions} AS table_data,
-  phpauth_users AS table_users
+  {$this->dbTables->users} AS table_users
 WHERE
     alias_map = :alias_map
-AND id_region = :id_region
+AND table_data.id_region = :id_region
 AND table_data.edit_whois = table_users.id
 ORDER BY edit_date {$query_limit};
         ";
@@ -344,7 +347,7 @@ ORDER BY edit_date {$query_limit};
             $sth = $this->pdo->prepare($query);
 
             $sth->execute([
-                'alias_map' =>  $map_alias,
+                'alias_map' =>  $this->map_alias,
                 'id_region' =>  $region_id
             ]);
 

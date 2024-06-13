@@ -33,13 +33,13 @@ class AbstractClass
 
     public function __construct($options = [], LoggerInterface $logger = null)
     {
+        $this->options = $options;
+        $this->tables = new DBConfigTables();
+
         $this->app = \Confmap\App::factory();
         $this->logger = AppLogger::scope('main');
+
         $this->pdo = App::$pdo;
-
-        $this->options = $options;
-
-        $this->tables = new DBConfigTables();
         $this->template = App::$template;
 
         $this->is_internal_request = array_key_exists('mode', $_GET) && $_GET['mode'] == 'internal';

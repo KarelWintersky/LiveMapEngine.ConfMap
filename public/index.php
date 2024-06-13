@@ -105,6 +105,7 @@ try {
 
 $render = App::$template->render();
 if ($render) {
+    $render = \preg_replace('/^\h*\v+/m', '', $render); // удаляем лишние переводы строк
     echo $render;
 }
 
