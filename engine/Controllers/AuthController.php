@@ -22,7 +22,6 @@ class AuthController extends \Confmap\AbstractClass
     public function __construct($options = [], LoggerInterface $logger = null)
     {
         parent::__construct($options, $logger);
-        $this->template->setTemplate("_auth.tpl");
     }
 
     /**
@@ -32,7 +31,7 @@ class AuthController extends \Confmap\AbstractClass
      */
     public function view_form_login()
     {
-        $this->template->assign("inner_template", 'auth/login.tpl');
+        $this->template->setTemplate("auth/login.tpl");
     }
 
     /**
