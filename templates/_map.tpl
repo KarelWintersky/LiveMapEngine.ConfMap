@@ -40,7 +40,7 @@
     <script data-comment="init">
         window.theMap = { };
         window.REGION_URLS = {
-            "view": "{Arris\AppRouter::getRouter('view.region.info')}",
+            "view": "{Arris\AppRouter::getRouter('ajax.get.region_info')}",
             "edit": "{Arris\AppRouter::getRouter('edit.region.info')}"
         };
 

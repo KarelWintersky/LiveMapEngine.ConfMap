@@ -2,9 +2,12 @@
 
 namespace Confmap\Units;
 
+use Arris\Core\Dot;
+use Arris\Database\DBWrapper;
 use Arris\Entity\Result;
 use Arris\Exceptions\AppRouterNotFoundException;
 use Arris\Path;
+use ColinODell\Json5\SyntaxError;
 use Confmap\AbstractClass;
 use Confmap\ACL;
 use Confmap\DBConfigTables;
@@ -12,7 +15,7 @@ use Confmap\Exceptions\AccessDeniedException;
 use PDO;
 use Psr\Log\LoggerInterface;
 
-class Map extends AbstractClass
+class Map
 {
     const allowed_cursors = [
         'auto', 'default', 'none', 'context-menu', 'help', 'pointer', 'progress', 'wait', 'cell', 'crosshair',
@@ -64,30 +67,68 @@ class Map extends AbstractClass
     public string $json_config_filename = '';
 
     /**
-     * @var DBConfigTables
+     * @var \stdClass
      */
-    private DBConfigTables $dbTables;
+    private \stdClass $dbTables;
 
-    public function __construct($map_alias = '', $options = [], LoggerInterface $logger = null)
+    /**
+     * @var PDO|DBWrapper
+     */
+    private mixed $pdo;
+
+    /**
+     * @param null $PDO
+     * @param string $map_alias
+     * @param array $options
+     * @param LoggerInterface|null $logger
+     */
+    public function __construct($PDO = null, string $map_alias = '', array $options = [], LoggerInterface $logger = null)
     {
-        parent::__construct($options, $logger);
         $this->map_alias = $map_alias;
-        $this->dbTables = new DBConfigTables();
+        $this->pdo = $PDO;
+
+        $this->dbTables = new \stdClass();
+
+        $this->dbTables->map_data_regions
+            = array_key_exists('map_data_regions', $options)
+            ? $options['map_data_regions']
+            : 'map_data_regions';
+
+        $this->dbTables->users
+            = array_key_exists('users', $options)
+            ? $options['users']
+            : 'users';
     }
 
-    public function loadConfig()
+    /**
+     * Загружает JSON5-конфиг в поле
+     * $this->mapConfig
+     *
+     * @param string|Path $path
+     * @param array $config_files, по умолчанию: ['index.json5', 'index.json'], первым рекомендуется json5
+     * @return void
+     * @throws SyntaxError
+     */
+    public function loadConfig($path, array $config_files = ['index.json5', 'index.json']): void
     {
-        $fn_path = Path::create( config('path.storage') )->join($this->map_alias);
+        if (empty($config_files)) {
+            throw new \RuntimeException("[JS Builder] No config files for map {$this->map_alias} declared");
+        }
 
-        $fn = $fn_path->joinName('index.json')->toString();
-        $fn5 = $fn_path->joinName('index.json5')->toString();
+        if (is_string($path)) {
+            $path = Path::create($path);
+        }
 
-        if (is_readable($fn5)) {
-            $this->json_config_filename = $fn5;
-        } elseif (is_readable($fn)) {
-            $this->json_config_filename = $fn;
-        } else {
-            throw new AppRouterNotFoundException("Карта не найдена", 404, null, [
+        foreach ($config_files as $cf) {
+            $fn = $path->join($cf)->toString();
+            if (is_file($fn)) {
+                $this->json_config_filename = $fn;
+                break;
+            }
+        }
+        // какой-из следующих трех throw лишний
+        if (empty($this->json_config_filename)) {
+            throw new AppRouterNotFoundException("[JS Builder] Файл конфигурации карты не задан", 404, null, [
                 'method'    =>  'GET',
                 'map'       =>  $this->map_alias
             ]);
@@ -101,10 +142,12 @@ class Map extends AbstractClass
             throw new \RuntimeException("[JS Builder]  {$this->json_config_filename} not readable", 3);
         }
 
-        $json_config_content = file_get_contents( $this->json_config_filename );
+        // файл точно существует
+
+        $json_config_content = \file_get_contents( $this->json_config_filename );
 
         if (false === $json_config_content) {
-            throw new \RuntimeException( "[JS Builer] Can't get content of {$this->json_config_filename} file." );
+            throw new \RuntimeException( "[JS Builder] Can't get content of {$this->json_config_filename} file." );
         }
 
         $json = json5_decode($json_config_content);
@@ -167,6 +210,7 @@ class Map extends AbstractClass
 
         // на самом деле на данном этапе нам не нужна сортировка по last date, мы же извлекаем регионы с информацией ВООБЩЕ
 
+        // по идее это минимальная информация о регионах, исключая контент
         $query = "
         SELECT
             mdr.id_region, mdr.title, mdr.edit_date,
@@ -223,13 +267,23 @@ class Map extends AbstractClass
         return $all_regions;
     }
 
-    public function getMapRegionData($id_region):array
+    /**
+     * @param $id_region
+     * @param $requested_content_fields
+     * @return array
+     *
+     * @throws SyntaxError
+     */
+    public function getMapRegionData($id_region, $requested_content_fields = ['title', 'content']):array
     {
         $role_can_edit = ACL::simpleCheckCanEdit($this->map_alias);
-        $info = [];
+
+        $common_fields = ['id_region', 'alias_map', 'content_restricted', 'edit_date', 'is_publicity', 'is_excludelists'];
+
+        $sql_select_fields = implode(', ',  \array_unique(\array_merge($common_fields, $requested_content_fields) ));
 
         $query = "
-            SELECT `title`, `content`, `content_restricted`, `edit_date`, `is_publicity`, `is_excludelists`
+            SELECT {$sql_select_fields}
             FROM {$this->dbTables->map_data_regions}
             WHERE
                 id_region     = :id_region
@@ -246,30 +300,26 @@ class Map extends AbstractClass
         $row = $sth->fetch();
 
         if ($row) {
-            $info = [
+            $info = array_merge($row, [
                 'is_present'        =>  1,
-                'title'             =>  $row['title'],
-                'edit_date'         =>  $row['edit_date'],
                 'can_edit'          =>  $role_can_edit,
-                'is_exludelists'    =>  $row['is_excludelists'],
-                'is_publicity'      =>  $row['is_publicity'],
-                'content'           =>  $row['content'],
-                'content_restricted'=>  $row['content_restricted']
-            ];
+            ]);
 
-            /*if (ACL::isValidRole( $role, $row['is_publicity'])) {
-                $info['content'] = $row['content'];
-            } else {
-                $info['content'] = $row['content_restricted'] ?? "Доступ ограничен"; // "Доступ ограничен" - брать из конфига карты/слоя
-            }*/
+            if (!ACL::isRoleGreater('ANYONE', $row['is_publicity'])) {
+                foreach ($requested_content_fields as $field) {
+                    $info[ $field ] = $row['content_restricted'] ?? "Доступ ограничен";  // "Доступ ограничен" - на самом деле должно быть записано в JSON-конфиге карты/слоя
+                }
+            }
 
         } else {
             $info = [
                 'is_present'    =>  0,
                 'title'         =>  $id_region,
-                'content'       =>  '',
                 'can_edit'      =>  $role_can_edit
             ];
+            foreach ($requested_content_fields as $field) {
+                $info[ $field ] = '';
+            }
         }
 
         return $info;

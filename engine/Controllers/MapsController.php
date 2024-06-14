@@ -2,6 +2,7 @@
 
 namespace Confmap\Controllers;
 
+use Arris\Path;
 use Confmap\AbstractClass;
 use Confmap\Units\Map;
 use Psr\Log\LoggerInterface;
@@ -17,8 +18,10 @@ class MapsController extends AbstractClass
 
     public function view_map_fullscreen()
     {
-        $this->map = new Map($this->map_alias);
-        $this->map->loadConfig();
+        $this->map = new Map($this->pdo, $this->map_alias);
+        $this->map->loadConfig(
+            Path::create( config('path.storage') )->join($this->map_alias)
+        );
         $this->map->loadMap();
 
         $this->template->setTemplate("_map.tpl");

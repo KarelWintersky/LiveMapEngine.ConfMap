@@ -4,6 +4,7 @@ namespace Confmap\Controllers;
 
 use Arris\Path;
 use Arris\Template\Template;
+use ColinODell\Json5\SyntaxError;
 use Confmap\AbstractClass;
 use Confmap\App;
 use Confmap\Units\Map;
@@ -30,13 +31,16 @@ class JSController extends AbstractClass
 
     /**
      * @return void
+     * @throws SyntaxError
      */
     public function view_js_map_definition()
     {
         $map_alias = App::$map_id;
 
-        $this->map = new Map($map_alias);
-        $this->map->loadConfig();
+        $this->map = new Map($this->pdo, $map_alias);
+        $this->map->loadConfig(
+            Path::create( config('path.storage') )->join($map_alias)
+        );
 
         $json = $this->map->mapConfig;
 

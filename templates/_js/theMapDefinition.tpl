@@ -87,7 +87,6 @@ window.theMap = {
         },
 
     {/foreach}
-Хотя в прошлый раз
     },
 
     "regions": {
