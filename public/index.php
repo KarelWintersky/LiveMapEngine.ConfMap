@@ -48,7 +48,7 @@ try {
 
     AppRouter::group(
         [
-            'before'    =>  '\Livemap\Middlewares\AuthMiddleware@check_is_logged_in'
+            'before'    =>  '\Confmap\Middlewares\AuthMiddleware@check_is_logged_in'
         ], static function() {
             // редактировать регион: форма и коллбэк
             AppRouter::get('/region/edit', [\Confmap\Controllers\RegionsController::class, 'view_region_edit_form'], 'edit.region.info');

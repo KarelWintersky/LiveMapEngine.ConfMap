@@ -29,13 +29,7 @@
 
     <script src="/frontend/leaflet/L.Icon.FontAwesome.js"></script>
     <link href="/frontend/leaflet/L.Icon.FontAwesome.css" rel="stylesheet">
-
     <script src="/frontend/leaflet/SmoothWheelZoom.js"></script>
-
-    {if $sections_present.colorbox}
-        <script type="text/javascript" src="/frontend/colorbox/jquery.colorbox-min.js"></script>
-        <link rel="stylesheet" href="/frontend/colorbox/colorbox.css">
-    {/if}
 
     <script data-comment="init">
         window.theMap = { };
@@ -45,9 +39,6 @@
         };
 
         const map_alias = '{$map_alias}';
-
-        const template_orientation = -1; // инфо слева: -1, инфо справа: +1
-        const map_centring_panning_step = Number("{$panning_step|default:0}");  // на сколько пикселей при позиционировании региона "по центру" он будет сдвинут
     </script>
 
     <script src="/js/confmap.js" data-comment="the-map-data"></script>

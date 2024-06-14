@@ -74,4 +74,14 @@ class RegionsController extends AbstractClass
         $this->template->assignRAW($content);
     }
 
+    public function view_region_edit_form()
+    {
+        $this->template->setTemplate("_edit.region.tpl");
+    }
+
+    public function callback_update_region()
+    {
+
+    }
+
 }

@@ -63,12 +63,13 @@
 <fieldset>
     <legend>Auth</legend>
     {if $_config.auth.is_logged_in}
-    Вы уже залогинены <br><br> <strong>{$_config.auth.username} ({$_config.auth.email})<strong> <br><br>
+    <strong>{$_config.auth.username} ({$_config.auth.email})<strong> <br>
             <a href="{Arris\AppRouter::getRouter('view.form.logout')}">Logout</a>
             {else}
             <a href="{Arris\AppRouter::getRouter('view.form.login')}">Вход</a>
             {/if}
 </fieldset>
+
 
 <h2>Карта Конфедерации Человечества</h2>
 <h4>второй сезон</h4>

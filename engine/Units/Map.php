@@ -2,18 +2,16 @@
 
 namespace Confmap\Units;
 
-use Arris\Core\Dot;
 use Arris\Database\DBWrapper;
 use Arris\Entity\Result;
 use Arris\Exceptions\AppRouterNotFoundException;
 use Arris\Path;
 use ColinODell\Json5\SyntaxError;
-use Confmap\AbstractClass;
 use Confmap\ACL;
-use Confmap\DBConfigTables;
 use Confmap\Exceptions\AccessDeniedException;
 use PDO;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 class Map
 {
@@ -33,37 +31,45 @@ class Map
     ];
 
     /**
-     * @var array
+     * imploded-строка айдишников регионов с информацией
+     *
+     * @var string
      */
-    public $mapRegionsWithInfo_IDS;
+    public string $mapRegionsWithInfo_IDS;
 
     /**
      * @var array
      */
-    public $mapRegionWithInfoOrderByTitle;
+    public array $mapRegionWithInfoOrderByTitle;
 
     /**
      * @var array
      */
-    public $mapRegionWithInfoOrderByDate;
+    public array $mapRegionWithInfoOrderByDate;
 
     /**
      * @var array
      */
-    public $mapRegionsWithInfo;
+    public array $mapRegionsWithInfo;
 
     /**
      * @var string
      */
-    public $mapViewMode;
+    public string $mapViewMode;
 
     /**
      * @var \stdClass
      */
-    public $mapConfig;
+    public \stdClass $mapConfig;
 
+    /**
+     * @var string
+     */
     public string $map_alias = '';
 
+    /**
+     * @var string
+     */
     public string $json_config_filename = '';
 
     /**
@@ -72,9 +78,18 @@ class Map
     private \stdClass $dbTables;
 
     /**
+     * DB Connector
+     *
      * @var PDO|DBWrapper
      */
     private mixed $pdo;
+
+    /**
+     * Logger
+     *
+     * @var LoggerInterface|NullLogger
+     */
+    private LoggerInterface|NullLogger $logger;
 
     /**
      * @param null $PDO
@@ -82,10 +97,12 @@ class Map
      * @param array $options
      * @param LoggerInterface|null $logger
      */
-    public function __construct($PDO = null, string $map_alias = '', array $options = [], LoggerInterface $logger = null)
+    public function __construct($PDO = null, string $map_alias = '', array $options = [], ?LoggerInterface $logger = null)
     {
         $this->map_alias = $map_alias;
         $this->pdo = $PDO;
+
+        $this->logger = is_null($logger) ? new NullLogger() : $logger;
 
         $this->dbTables = new \stdClass();
 
@@ -269,12 +286,12 @@ class Map
 
     /**
      * @param $id_region
-     * @param $requested_content_fields
+     * @param array $requested_content_fields
      * @return array
      *
      * @throws SyntaxError
      */
-    public function getMapRegionData($id_region, $requested_content_fields = ['title', 'content']):array
+    public function getMapRegionData($id_region, array $requested_content_fields = ['title', 'content']):array
     {
         $role_can_edit = ACL::simpleCheckCanEdit($this->map_alias);
 
@@ -325,6 +342,8 @@ class Map
         return $info;
     }
 
+    //@todo: !!!
+    // надо учесть, что есть дефолтные обязательные поля и есть кастомные поля контента
     public function storeMapRegionData(string $region_id, array $request):Result
     {
         $result = new Result();
