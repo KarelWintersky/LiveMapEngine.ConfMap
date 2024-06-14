@@ -76,6 +76,8 @@ class RegionsController extends AbstractClass
 
     public function view_region_edit_form()
     {
+        $this->template->assign("html_callback", AppRouter::getRouter('view.frontpage'));
+        $this->template->assign("form_actor", AppRouter::getRouter('update.region.info'));
         $this->template->setTemplate("_edit.region.tpl");
     }
 
