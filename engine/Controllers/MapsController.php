@@ -47,21 +47,15 @@ class MapsController extends AbstractClass
             'colorbox'  =>  false,
         ]);
 
-        $this->template->assign("section_backward_content", []);
+        $this->template->assign("section_backward_content", [
+            [ 'link' => '/about', 'text' => 'Что это?' ]
+        ]);
 
-        if ($this->map->mapViewMode === 'wide:infobox>regionbox' || $this->map->mapViewMode === 'infobox>regionbox') {
-            $this->template->assign('section', [
-                'infobox_control_position'      =>  'topleft',
-                'regionbox_control_position'    =>  'topright',
-                'regionbox_textalign'           =>  'right'
-            ]);
-        } else {
-            $this->template->assign('section', [
-                'infobox_control_position'      =>  'topright',
-                'regionbox_control_position'    =>  'topleft',
-                'regionbox_textalign'           =>  'left'
-            ]);
-        }
+        $this->template->assign('section', [
+            'infobox_control_position'      =>  'topright',
+            'regionbox_control_position'    =>  'topleft',
+            'regionbox_textalign'           =>  'left'
+        ]);
     }
 
 }

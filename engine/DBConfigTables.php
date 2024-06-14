@@ -2,7 +2,7 @@
 
 namespace Confmap;
 
-#[AllowDynamicProperties]
+#[\AllowDynamicProperties]
 final class DBConfigTables
 {
     public $folders;
