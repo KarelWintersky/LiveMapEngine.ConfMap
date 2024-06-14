@@ -9,7 +9,7 @@ use Dotenv\Dotenv;
 use Kuria\Error\ErrorHandler;
 
 define('__PATH_ROOT__', dirname(__DIR__));
-define('__PATH_CONFIG__', '/etc/arris/confmap/');
+define('__PATH_CONFIG__', '/etc/arris/livemap.confmap/');
 
 if (!session_id()) @session_start();
 
@@ -36,6 +36,7 @@ try {
     AppRouter::setDefaultNamespace('\Confmap\Controllers');
 
     AppRouter::get('/',             [\Confmap\Controllers\MapsController::class, 'view_map_fullscreen'],'view.frontpage');
+    AppRouter::get('/about',               [\Confmap\Controllers\PagesController::class, 'view_about'], 'view.about');
 
     AppRouter::get('/js/confmap.js',[\Confmap\Controllers\JSController::class, 'view_js_map_definition', 'view.map.js']);
 
@@ -54,10 +55,9 @@ try {
             AppRouter::post('/region/edit', [\Confmap\Controllers\RegionsController::class, 'callback_update_region'], 'update.region.info');
         }
     );
-    // App::$template->assign("routing", AppRouter::getRoutersNames());
+
 
     AppRouter::dispatch();
-
 
     App::$template->assign("flash_messages", json_encode( App::$flash->getMessages() ));
 
@@ -77,8 +77,8 @@ try {
     AppLogger::scope('main')->notice("AppRouter::NotFound", [ $e->getMessage(), $e->getInfo() ] );
     http_response_code(404);
 
-    // App::$template->setTemplate("_errors/404.tpl");
-    // App::$template->assign("message", $e->getMessage());
+    App::$template->setTemplate("_errors/404.tpl");
+    App::$template->assign("message", $e->getMessage());
 
 }/* catch (\RuntimeException|\Exception $e) {
 // Пока не внедрим кастомную страницу для Kuria + логгирование там же
