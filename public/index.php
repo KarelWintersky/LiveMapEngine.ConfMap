@@ -69,8 +69,8 @@ try {
 
     AppLogger::scope('access.denied')->notice($e->getMessage(), [ $_SERVER['REQUEST_URI'], config('auth.ipv4') ] );
 
-    // App::$template->assign('message', $e->getMessage());
-    // App::$template->setTemplate("_errors/403.tpl");
+    App::$template->assign('message', $e->getMessage());
+    App::$template->setTemplate("_errors/403.tpl");
 
 } catch (AppRouterNotFoundException $e) {
 
