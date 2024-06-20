@@ -161,7 +161,7 @@
                 <fieldset class="fields_area">
                     <div class="field">
                         <label for="title">Название региона:</label> <br>
-                        <input type="text" name="edit:region:title" id="title" size="90" value="{$region_title}" tabindex="1" required />
+                        <input type="text" name="edit:region:title" id="title" size="90" value="{$content.title}" tabindex="1" required />
                         <span class="mark-required">*</span>
                     </div>
                 </fieldset>
@@ -193,12 +193,12 @@
 
 
     <label for="edit-textarea" class="label_textarea label_fullwidth">
-        <textarea name="edit:region:content" id="edit-textarea" cols="10" tabindex="4">{$region_text}</textarea>
+        <textarea name="edit:region:content" id="edit-textarea" cols="10" tabindex="4">{$content.content}</textarea>
     </label>
     <fieldset class="fields_area">
         <div class="field">
             <label for="edit-restricted">Сообщение при недоступности региона:
-                <input type="text" name="edit:region:content_restricted" size="120" value="{$region_restricted}" id="edit-restricted" tabindex="5" autocomplete="off"/>
+                <input type="text" name="edit:region:content_restricted" size="120" value="{$content.content_restricted}" id="edit-restricted" tabindex="5" autocomplete="off"/>
             </label>
         </div>
         <hr />

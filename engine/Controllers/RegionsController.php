@@ -38,7 +38,11 @@ class RegionsController extends AbstractClass
             Path::create( config('path.storage') )->join($map_alias)
         );
 
-        $region_data = $this->map->getMapRegionData($id_region, [ 'title', 'content']);
+        if ($this->map->loadConfig()->is_error) {
+            throw new \RuntimeException($this->map->state->getMessage());
+        }
+
+        $region_data = $this->map->getMapRegionData($id_region, [ 'title', 'content', 'content_restricted']);
 
         $t = new Template();
         $t
@@ -79,6 +83,23 @@ class RegionsController extends AbstractClass
         $this->template->assign("html_callback", AppRouter::getRouter('view.frontpage'));
         $this->template->assign("form_actor", AppRouter::getRouter('update.region.info'));
         $this->template->setTemplate("_edit.region.tpl");
+
+        $map_alias = App::$map_id;
+        $id_region = $_GET['id']    ?? null;
+        $this->map = new Map($this->pdo, $map_alias);
+        $this->map->loadConfig(
+            Path::create( config('path.storage') )->join($map_alias)
+        );
+
+        $content_fields = [ 'title', 'content', 'content_restricted'];
+
+        $region_data = $this->map->getMapRegionData($id_region, $content_fields);
+
+        $content = [];
+        foreach ($content_fields as $field) {
+            $content[ $field ] = $region_data[ $field ];
+        }
+        $this->template->assign("content", $content);
     }
 
     public function callback_update_region()

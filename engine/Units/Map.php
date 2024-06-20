@@ -4,7 +4,6 @@ namespace Confmap\Units;
 
 use Arris\Database\DBWrapper;
 use Arris\Entity\Result;
-use Arris\Exceptions\AppRouterNotFoundException;
 use Arris\Path;
 use ColinODell\Json5\SyntaxError;
 use Confmap\ACL;
@@ -13,7 +12,7 @@ use PDO;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-class Map
+class Map implements MapInterface
 {
     const allowed_cursors = [
         'auto', 'default', 'none', 'context-menu', 'help', 'pointer', 'progress', 'wait', 'cell', 'crosshair',
@@ -65,7 +64,7 @@ class Map
     /**
      * @var string
      */
-    public string $map_alias = '';
+    public string $id_map = '';
 
     /**
      * @var string
@@ -85,6 +84,13 @@ class Map
     private mixed $pdo;
 
     /**
+     * Состояние обработки
+     *
+     * @var Result
+     */
+    public Result $state;
+
+    /**
      * Logger
      *
      * @var LoggerInterface|NullLogger
@@ -92,19 +98,35 @@ class Map
     private LoggerInterface|NullLogger $logger;
 
     /**
+     * Путь к конфигам карты
+     *
+     * @var string|Path
+     */
+    private mixed $config_path;
+
+    /**
+     * Файлы конфига
+     *
+     * @var string[]
+     */
+    private array $config_files;
+
+    /**
      * @param null $PDO
-     * @param string $map_alias
+     * @param string $id_map
      * @param array $options
      * @param LoggerInterface|null $logger
      */
-    public function __construct($PDO = null, string $map_alias = '', array $options = [], ?LoggerInterface $logger = null)
+    public function __construct($PDO = null, string $id_map = '', array $options = [], ?LoggerInterface $logger = null)
     {
-        $this->map_alias = $map_alias;
+        $this->id_map = $id_map;
         $this->pdo = $PDO;
 
         $this->logger = is_null($logger) ? new NullLogger() : $logger;
 
         $this->dbTables = new \stdClass();
+
+        $this->state = new Result();
 
         $this->dbTables->map_data_regions
             = array_key_exists('map_data_regions', $options)
@@ -115,67 +137,90 @@ class Map
             = array_key_exists('users', $options)
             ? $options['users']
             : 'users';
+
+        $this->config_path
+            = array_key_exists('config_path', $options)
+            ? $options['config_path']
+            : '';
+
+        $this->config_files
+            = array_key_exists('config_files', $options)
+            ? $options['config_files']
+            : ['index.json5', 'index.json'];
     }
 
     /**
-     * Загружает JSON5-конфиг в поле
-     * $this->mapConfig
+     * Загружает JSON5-конфиг в поле $this->mapConfig
      *
-     * @param string|Path $path
-     * @param array $config_files, по умолчанию: ['index.json5', 'index.json'], первым рекомендуется json5
-     * @return void
+     * @param null $path
+     * @return Result
      * @throws SyntaxError
      */
-    public function loadConfig($path, array $config_files = ['index.json5', 'index.json']): void
+    public function loadConfig($path = null): Result
     {
-        if (empty($config_files)) {
-            throw new \RuntimeException("[JS Builder] No config files for map {$this->map_alias} declared");
+        if (empty($this->config_path) && empty($path)) {
+            $this->state->error("Config path not defined");
+            return $this->state;
+        }
+
+        $path = $path ?: $this->config_path;
+
+        if (empty($this->config_files)) {
+            $this->state->error("[JS Builder] No config files for map {$this->id_map} declared");
+            return $this->state;
         }
 
         if (is_string($path)) {
             $path = Path::create($path);
         }
 
-        foreach ($config_files as $cf) {
+        foreach ($this->config_files as $cf) {
             $fn = $path->join($cf)->toString();
-            if (is_file($fn)) {
+            if (is_file($fn) && is_readable($fn)) {
                 $this->json_config_filename = $fn;
                 break;
             }
         }
         // какой-из следующих трех throw лишний
         if (empty($this->json_config_filename)) {
-            throw new AppRouterNotFoundException("[JS Builder] Файл конфигурации карты не задан", 404, null, [
-                'method'    =>  'GET',
-                'map'       =>  $this->map_alias
-            ]);
+            $this->state->error("Файл конфигурации не задан для карты {$this->id_map}");
+            return $this->state;
         }
-
-        if (!is_file($this->json_config_filename)) {
-            throw new \RuntimeException( "[JS Builder] {$this->json_config_filename} not found", 2 );
-        }
-
-        if (!is_readable($this->json_config_filename)) {
-            throw new \RuntimeException("[JS Builder]  {$this->json_config_filename} not readable", 3);
-        }
-
-        // файл точно существует
 
         $json_config_content = \file_get_contents( $this->json_config_filename );
 
         if (false === $json_config_content) {
-            throw new \RuntimeException( "[JS Builder] Can't get content of {$this->json_config_filename} file." );
+            $this->state->error("Ошибка чтения файла {$this->json_config_filename} для карты {$this->id_map}");
+            return $this->state;
         }
 
         $json = json5_decode($json_config_content);
 
         if (null === $json) {
-            throw new \RuntimeException( "[JS Builder] {$this->json_config_filename} json file is invalid", 3 );
+            $this->state->error("{$this->json_config_filename} json file is invalid");
+            return $this->state;
         }
 
         $this->mapConfig = $json;
+
+        return $this->state;
     }
 
+    /**
+     * Возвращает конфиг карты
+     *
+     * @return \stdClass
+     */
+    public function getConfig(): \stdClass
+    {
+        return $this->mapConfig;
+    }
+
+    /**
+     * Загружает из БД базовую информацию о регионах на карте для JS-билдера и списков
+     *
+     * @return void
+     */
     public function loadMap()
     {
         $viewmode = 'folio';
@@ -212,7 +257,7 @@ class Map
         });
     }
 
-    public function getRegionsWithInfo($ids_list = [])
+    public function getRegionsWithInfo($ids_list = []): array
     {
         $table_map_data_regions = $this->dbTables->map_data_regions;
 
@@ -226,6 +271,7 @@ class Map
         }
 
         // на самом деле на данном этапе нам не нужна сортировка по last date, мы же извлекаем регионы с информацией ВООБЩЕ
+        // нет, это не так. Нужна, потому что у регионов могут различаться title , а нам нужно актуальное значение!!!
 
         // по идее это минимальная информация о регионах, исключая контент
         $query = "
@@ -244,7 +290,7 @@ class Map
         FROM
            ( SELECT id_region, max(edit_date) as max_edit_date
              FROM {$table_map_data_regions} 
-             WHERE alias_map = :alias_map
+             WHERE id_map = :id_map
              {$in_subquery}
              GROUP BY id_region
             ) subQuery
@@ -255,7 +301,7 @@ class Map
         ";
 
         $sth = $this->pdo->prepare($query);
-        $sth->bindValue('alias_map', $this->map_alias, PDO::PARAM_STR);
+        $sth->bindValue('id_map', $this->id_map, PDO::PARAM_STR);
         $sth->execute();
 
         $all_regions = [];
@@ -291,11 +337,11 @@ class Map
      *
      * @throws SyntaxError
      */
-    public function getMapRegionData($id_region, array $requested_content_fields = ['title', 'content']):array
+    public function getMapRegionData($id_region, array $requested_content_fields = ['title', 'content', 'content_restricted']):array
     {
-        $role_can_edit = ACL::simpleCheckCanEdit($this->map_alias);
+        $role_can_edit = ACL::simpleCheckCanEdit($this->id_map);
 
-        $common_fields = ['id_region', 'alias_map', 'content_restricted', 'edit_date', 'is_publicity', 'is_excludelists'];
+        $common_fields = ['id_region', 'alias_map', 'edit_date', 'is_publicity', 'is_excludelists'];
 
         $sql_select_fields = implode(', ',  \array_unique(\array_merge($common_fields, $requested_content_fields) ));
 
@@ -312,7 +358,7 @@ class Map
         $sth = $this->pdo->prepare($query);
         $sth->execute([
             'id_region' =>  $id_region,
-            'alias_map' =>  $this->map_alias
+            'alias_map' =>  $this->id_map
         ]);
         $row = $sth->fetch();
 
@@ -348,7 +394,7 @@ class Map
     {
         $result = new Result();
 
-        $role_can_edit = ACL::simpleCheckCanEdit($this->map_alias);
+        $role_can_edit = ACL::simpleCheckCanEdit($this->id_map);
 
         if (false == $role_can_edit) {
             throw new AccessDeniedException("Обновление региона недоступно, недостаточный уровень допуска");
@@ -416,7 +462,7 @@ ORDER BY edit_date {$query_limit};
             $sth = $this->pdo->prepare($query);
 
             $sth->execute([
-                'alias_map' =>  $this->map_alias,
+                'alias_map' =>  $this->id_map,
                 'id_region' =>  $region_id
             ]);
 

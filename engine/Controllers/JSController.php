@@ -35,12 +35,15 @@ class JSController extends AbstractClass
      */
     public function view_js_map_definition()
     {
-        $map_alias = App::$map_id;
+        $map_id = App::$map_id;
 
-        $this->map = new Map($this->pdo, $map_alias);
-        $this->map->loadConfig(
-            Path::create( config('path.storage') )->join($map_alias)
-        );
+        $this->map = new Map($this->pdo, $map_id, [
+            'config_path'   =>  Path::create( config('path.storage') )->join($map_id)
+        ]);
+
+        if ($this->map->loadConfig()->is_error) {
+            throw new \RuntimeException($this->map->loadConfig()->getMessage());
+        }
 
         $json = $this->map->mapConfig;
 
@@ -76,7 +79,12 @@ class JSController extends AbstractClass
                 throw new RuntimeException( "[JS Builder] Layout file not defined." );
             }
 
-            $svg_filename = Path::create( getenv('PATH.STORAGE'))->join($map_alias)->joinName($json->layout->file)->toString();
+            // генерируем имя файла разметки
+            $svg_filename
+                = Path::create(getenv('PATH.STORAGE'))
+                ->join($map_id)
+                ->joinName($json->layout->file)
+                ->toString();
 
             if (!is_file($svg_filename)) {
                 throw new RuntimeException( "[JS Builder] Layout file {$svg_filename} not found." );
@@ -86,7 +94,9 @@ class JSController extends AbstractClass
             if ($svg_content === '') {
                 throw new RuntimeException( "[JS Builder] Layout file is empty" );
             }
+
             /* =============== Layout ============ */
+
             // информация о слоях
             if (empty($json->layout)) {
                 throw new RuntimeException( "[JS Builder] Layout data not found." );
@@ -260,7 +270,7 @@ class JSController extends AbstractClass
         $this->template->assign("map", [
             'title'         =>  $json->title,
             'type'          =>  $json->type,
-            'alias'         =>  $map_alias,
+            'alias'         =>  $map_id,
             'imagefile'     =>  $json->image->file,
             'width'         =>  $image_info['width'],
             'height'        =>  $image_info['height'],

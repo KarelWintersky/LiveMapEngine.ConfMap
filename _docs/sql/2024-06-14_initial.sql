@@ -1,30 +1,33 @@
 -- массив регионов
 CREATE TABLE `map_data_regions` (
     `id` int NOT NULL AUTO_INCREMENT,
-    `id_map` int DEFAULT NULL,
-    `alias_map` varchar(80) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+    `id_map` varchar(80) CHARACTER SET latin1 DEFAULT NULL COMMENT 'ID карты, строка латиницей',
+    `id_region` varchar(64) DEFAULT NULL COMMENT 'ID региона, path id из SVG-файла. Рекомендуется латиница.',
     `edit_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `edit_whois` int DEFAULT NULL,
     `edit_ipv4` int unsigned DEFAULT NULL,
-    `id_region` varchar(64) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-    `title` varchar(80) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-    `content` longtext COLLATE utf8mb3_unicode_ci COMMENT 'текстовый контент',
+    -- поля данных контента
+    `title` varchar(80)  DEFAULT NULL,
+    `content` longtext COMMENT 'текстовый контент',
     -- и другие поля данных
-    `content_restricted` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT '' COMMENT 'показывается если доступ к информации ограничен',
-    `edit_comment` varchar(120) COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT 'комментарий редактора',
-    `region_stroke` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Draw region border?',
-    `region_border_color` char(7) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL COMMENT 'Region border color',
-    `region_border_width` tinyint DEFAULT NULL COMMENT 'Region border width',
-    `region_border_opacity` decimal(2,1) DEFAULT NULL COMMENT 'Region border opacity',
-    `region_fill` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Draw region fill?',
-    `region_fill_color` char(7) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL COMMENT 'Region fill color',
+    `content_restricted` varchar(250) DEFAULT '' COMMENT 'показывается если доступ к информации ограничен',
+    `edit_comment` varchar(120) DEFAULT NULL COMMENT 'комментарий редактора',
+    `region_stroke` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Draw region border ?',
+    `region_border_color` char(7) CHARACTER SET latin1 DEFAULT '#000000' COMMENT 'Region border color: #000000',
+    `region_border_width` tinyint DEFAULT '0' COMMENT 'Region border width',
+    `region_border_opacity` decimal(2,1) DEFAULT  NULL COMMENT 'Region border opacity',
+    `region_fill` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Draw region fill ?',
+    `region_fill_color` char(7) CHARACTER SET latin1 DEFAULT '#000000' COMMENT 'Region fill color',
     `region_fill_opacity` decimal(2,1) DEFAULT NULL COMMENT 'Region fill opacity',
-    `is_excludelists` enum('A','F','N') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'N' COMMENT 'exclude from lists',
-    `is_publicity` enum('ANYONE','VISITOR','EDITOR','OWNER','ROOT') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'ANYONE' COMMENT 'visibility of region',
+    `is_excludelists` enum('A','F','N') CHARACTER SET latin1 NOT NULL DEFAULT 'N' COMMENT 'exclude from lists',
+    `is_publicity` enum('ANYONE','VISITOR','EDITOR','OWNER','ROOT') CHARACTER SET latin1 NOT NULL DEFAULT 'ANYONE' COMMENT 'visibility of region',
+    -- экстра-контент
+    `json_content` longtext COMMENT 'JSON-структура с прочим контентом',
+
     PRIMARY KEY (`id`,`edit_date`),
     KEY `id_region` (`id_region`),
-    KEY `alias_map` (`alias_map`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+    KEY `id_map` (`id_map`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- DelightAuth: users
 
