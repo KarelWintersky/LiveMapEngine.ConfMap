@@ -44,7 +44,7 @@ class AbstractClass
 
         $this->is_internal_request = array_key_exists('mode', $_GET) && $_GET['mode'] == 'internal';
 
-        $this->map_alias = App::$map_id;
+        $this->map_alias = App::$id_map;
     }
 
 }

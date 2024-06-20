@@ -39,13 +39,17 @@ class MapsController extends AbstractClass
         $this->template->assign('map_regions_count', count($this->map->mapRegionsWithInfo));
 
         // может быть перекрыто настройкой из конфига.
+        //@todo: обновить в livemap с учетом нового модуля Map
         $this->template->assign("sections_present", [
             'infobox'   =>  true,
-            'regions'   =>  true && ( $this->mapConfig->display->sections->regions ?? true ),
-            'backward'  =>  true && ( $this->mapConfig->display->sections->backward ?? true ),
+            'regions'   =>  true && ( $this->map->mapConfig->display->sections->regions ?? true ),
+            'backward'  =>  true && ( $this->map->mapConfig->display->sections->backward ?? true ),
             'title'     =>  false,
             'colorbox'  =>  false,
         ]);
+
+        // @todo: перенести в livemap
+        $this->template->assign("sections_custom_regions_title", $this->map->getConfig("display_defaults->sections->regions->title") ?: 'Интересные места на карте');
 
         $this->template->assign("section_backward_content", [
             [ 'link' => '/about', 'text' => 'Что это?' ]

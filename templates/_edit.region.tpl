@@ -63,22 +63,6 @@
                 "filemanager": "/frontend/filemanager/plugin.js"
             },
             paste_as_text: true,
-
-            templates: [
-                {foreach $edit_templates as $template}
-                {
-                    "title": "{$template.title}",
-                    "description": "{$template.desc}",
-                    "url": "{$template.url}"
-                },
-                {/foreach}
-            ],
-
-            {if $edit_templates_options}
-            template_popup_width: {$edit_templates_options.template_popup_width},
-            template_popup_height: {$edit_templates_options.template_popup_height},
-            content_css: "{$edit_templates_options.content_css}"
-            {/if}
         };
 
         // add markdown and simple configs
@@ -101,13 +85,16 @@
             }, 300);
 
             $("#actor-back").on('click', function(){
-                let href = $(this).data('href');
-                document.location.href = href;
+                document.location.href = $(this).data('href');
             });
+
             // Аякс-обработчик сохранения, спиннер, вывод результата. Не забываем на время обработки дизейблить кнопки, а при ошибке - энэйблить.
             $("#form-edit-region").on('submit', function(){
                 let url = $(this).attr('action');
-                if (saving_in_progress) return false;
+
+                if (saving_in_progress) {
+                    return false;
+                }
 
                 $.ajax({
                     async       : false,
@@ -124,7 +111,9 @@
                         $("#actor-submit").prop('disabled', true);
                         $("#actor-back").prop('disabled', true);
                     },
-                    success     : function(answer){
+                    success     : function(answer) {
+                        console.log(answer);
+
                         if (answer['is_success']) {
                             $("#ajax-result").show();
                             setTimeout(function(){
@@ -151,7 +140,6 @@
 <form action="{Arris\AppRouter::getRouter('update.region.info')}" method="post" id="form-edit-region">
     <input type="hidden" name="edit:id:map"     value="{$id_map}">
     <input type="hidden" name="edit:id:region"  value="{$id_region}">
-    <input type="hidden" name="edit:alias:map"  value="{$alias_map}">
     <input type="hidden" name="edit:html_callback" value="{$html_callback}" />
     <input type="hidden" name="edit:layout:type" value="svg">
 

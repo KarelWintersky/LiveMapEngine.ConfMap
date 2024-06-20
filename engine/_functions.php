@@ -63,8 +63,41 @@ function property_exists_recursive($object, string $path, string $separator = '-
         return true;
     }
 
-    return \property_exists_recursive($object, \implode('->', $properties));
+    return property_exists_recursive($object, \implode('->', $properties));
 }
+
+/**
+ * @todo: перенести в livemap
+ *
+ * @param $object
+ * @param string $path
+ * @param string $separator
+ * @param $default
+ * @return mixed|null
+ */
+function property_get_recursive($object, string $path, string $separator = '->', $default = null)
+{
+    $properties = \explode($separator, $path);
+
+    /*$o = clone $object;
+    foreach ($properties as $p) {
+        if (!property_exists($o, $p)) {
+            return $default;
+        } else {
+            $o = $o->{$p};
+        }
+    }
+    return $o;*/
+    foreach ($properties as $p) {
+        if (!\property_exists($object, $p)) {
+            return $default;
+        } else {
+            $object = $object->{$p};
+        }
+    }
+    return $object;
+}
+
 
 function logSiteUsage(LoggerInterface $logger, $is_print = false)
 {

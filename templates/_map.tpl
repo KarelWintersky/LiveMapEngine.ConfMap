@@ -74,7 +74,8 @@
     <section id="section-regions" class="section-regions-viewbox invisible" data-leaflet-control-position="{$section.regionbox_control_position}">
         <div style="text-align: {*section.regionbox_textalign*}">
             <button id="actor-regions-toggle" class="action-toggle-div-visibility" data-content="section-regions-content" data-content-is-visible="false">Показать</button>
-            <h3>Интересные места на карте {if $map_regions_count}<span style="font-weight: normal">(<em >Всего: {$map_regions_count}</em>)</span>{/if}</h3>
+            {* @todo: перенести в livemap *}
+            <h3>{$sections_custom_regions_title} {if $map_regions_count}<span style="font-weight: normal">(<em >Всего: {$map_regions_count}</em>)</span>{/if}</h3>
             <select id="sort-select" class="invisible">
                 <option value="total" data-ul="data-ordered-alphabet">... все</option>
                 <option value="latest" data-ul="data-ordered-latest">... новые</option>

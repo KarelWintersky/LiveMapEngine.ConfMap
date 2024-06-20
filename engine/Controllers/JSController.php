@@ -35,7 +35,7 @@ class JSController extends AbstractClass
      */
     public function view_js_map_definition()
     {
-        $map_id = App::$map_id;
+        $map_id = App::$id_map;
 
         $this->map = new Map($this->pdo, $map_id, [
             'config_path'   =>  Path::create( config('path.storage') )->join($map_id)

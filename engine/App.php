@@ -14,7 +14,7 @@ use Arris\Helpers\Server;
 
 class App extends \Arris\App
 {
-    public static $map_id = 'spring.confederation';
+    public static $id_map = 'spring.confederation';
     /**
      * @var DBWrapper
      */

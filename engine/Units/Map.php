@@ -29,6 +29,8 @@ class Map implements MapInterface
         'infobox>regionbox', 'regionbox>infobox'
     ];
 
+    const regions_common_fields = ['id_map', 'id_region', 'edit_date', 'is_publicity', 'is_excludelists'];
+
     /**
      * imploded-строка айдишников регионов с информацией
      *
@@ -209,19 +211,32 @@ class Map implements MapInterface
     /**
      * Возвращает конфиг карты
      *
-     * @return \stdClass
+     * ИЛИ один из ключей конфига!
+     *
+     * @param string $path
+     * @param string $default
+     * @param string $separator
+     * @return \stdClass|mixed
      */
-    public function getConfig(): \stdClass
+    public function getConfig($path = '', $default = '', $separator = '->'): mixed
     {
+        if (!empty($path)) {
+            if (property_exists_recursive($this->mapConfig, $path, $separator)) {
+                return property_get_recursive($this->mapConfig, $path, $separator, $default);
+            } else {
+                return $default;
+            }
+        }
         return $this->mapConfig;
     }
 
     /**
-     * Загружает из БД базовую информацию о регионах на карте для JS-билдера и списков
+     * Загружает из БД базовую информацию о регионах на карте для JS-билдера и списков.
+     * Сохраняет её в полях экземпляра класса.
      *
-     * @return void
+     * @return Result
      */
-    public function loadMap()
+    public function loadMap():Result
     {
         $viewmode = 'folio';
 
@@ -255,9 +270,18 @@ class Map implements MapInterface
         \usort($this->mapRegionWithInfoOrderByDate, static function($value1, $value2){
             return ($value1['edit_date'] <=> $value2['edit_date']);
         });
+
+        return $this->state;
     }
 
-    public function getRegionsWithInfo($ids_list = []): array
+    /**
+     * Загружает из БД основную информацию по регионам для текущей карты.
+     * Передается список ID регионов (на слое) или пусто для всех регионов со всех слоёв.
+     *
+     * @param array $ids_list
+     * @return array
+     */
+    public function getRegionsWithInfo(array $ids_list = []): array
     {
         $table_map_data_regions = $this->dbTables->map_data_regions;
 
@@ -331,26 +355,45 @@ class Map implements MapInterface
     }
 
     /**
+     * Элементарная проверка на допустимость редактирования карты. Вычисляется из админских емейлов и списка емейлов,
+     * указанных в конфиге карты как "имеющие права".
+     *
+     * Легаси вариант, в будущем должен быть заменён на полноценный механизм ACL (через DI)
+     *
+     * @return bool
+     */
+    public function simpleCheckCanEdit():bool
+    {
+        $admin_emails = getenv('AUTH.ADMIN_EMAILS') ? explode(' ', getenv('AUTH.ADMIN_EMAILS')) : [];
+
+        $allowed_editors = array_merge($this->mapConfig->can_edit ?? [], $admin_emails);
+
+        return !is_null(config('auth.email')) && in_array(config('auth.email'), $allowed_editors);
+    }
+
+    /**
+     * Извлекает из БД информацию по региону. Кроме общих полей загружает и поля контента, переданные вторым параметром.
+     *
+     * Важно: ТОЛЬКО извлекает данные.
+     *
      * @param $id_region
      * @param array $requested_content_fields
      * @return array
-     *
-     * @throws SyntaxError
      */
     public function getMapRegionData($id_region, array $requested_content_fields = ['title', 'content', 'content_restricted']):array
     {
-        $role_can_edit = ACL::simpleCheckCanEdit($this->id_map);
+        $role_can_edit = $this->simpleCheckCanEdit();
 
-        $common_fields = ['id_region', 'alias_map', 'edit_date', 'is_publicity', 'is_excludelists'];
+        $common_fields = self::regions_common_fields;
 
-        $sql_select_fields = implode(', ',  \array_unique(\array_merge($common_fields, $requested_content_fields) ));
+        $sql_select_fields = \implode(', ',  \array_unique(\array_merge($common_fields, $requested_content_fields) ));
 
         $query = "
             SELECT {$sql_select_fields}
             FROM {$this->dbTables->map_data_regions}
             WHERE
                 id_region     = :id_region
-            AND alias_map     = :alias_map
+            AND id_map        = :id_map
             ORDER BY edit_date DESC
             LIMIT 1
             ";
@@ -358,19 +401,23 @@ class Map implements MapInterface
         $sth = $this->pdo->prepare($query);
         $sth->execute([
             'id_region' =>  $id_region,
-            'alias_map' =>  $this->id_map
+            'id_map'    =>  $this->id_map
         ]);
         $row = $sth->fetch();
 
         if ($row) {
-            $info = array_merge($row, [
+            $info = \array_merge($row, [
                 'is_present'        =>  1,
                 'can_edit'          =>  $role_can_edit,
             ]);
 
+            // Делает "доступ ограничен" для всех, кому не хватает права доступа на просмотр контента
             if (!ACL::isRoleGreater('ANYONE', $row['is_publicity'])) {
                 foreach ($requested_content_fields as $field) {
-                    $info[ $field ] = $row['content_restricted'] ?? "Доступ ограничен";  // "Доступ ограничен" - на самом деле должно быть записано в JSON-конфиге карты/слоя
+                    /*
+                     * Проблема: а как узнать, к какому слою относится регион? Если бы мы хранили регионы в БД - то можно было бы...
+                     */
+                    $info[ $field ] = $row['content_restricted'] ?: "Доступ ограничен";  // "Доступ ограничен" - на самом деле должно быть записано в JSON-конфиге карты/слоя
                 }
             }
 
@@ -388,54 +435,67 @@ class Map implements MapInterface
         return $info;
     }
 
-    //@todo: !!!
-    // надо учесть, что есть дефолтные обязательные поля и есть кастомные поля контента
-    public function storeMapRegionData(string $region_id, array $request):Result
+    /**
+     * ТОЛЬКО сохраняет переданные данные.
+     * Обязательные поля: 'id_region', 'id_map', 'edit_date', 'is_publicity', 'is_excludelists'
+     * Дополнительные поля: 'title', 'content', 'content_restricted'
+     *
+     * Проверяется только наличие полей id_map и id_region
+     *
+     * Проверка права редактирования должна делаться вне
+     *
+     * @param array $data
+     * @return Result
+     */
+    public function storeMapRegionData(array $data):Result
     {
-        $result = new Result();
-
-        $role_can_edit = ACL::simpleCheckCanEdit($this->id_map);
-
-        if (false == $role_can_edit) {
-            throw new AccessDeniedException("Обновление региона недоступно, недостаточный уровень допуска");
+        if (!\array_key_exists("id_map", $data)) {
+            $this->state->error(__METHOD__ . " Field ID_MAP not found in given dataset");
+            return $this->state;
         }
 
-        $query = "
-        INSERT INTO {$this->dbTables->map_data_regions}
-         (
-         id_map, alias_map, edit_whois, edit_ipv4,
-         id_region, title, content, content_restricted,
-         edit_comment, is_excludelists, is_publicity
-         )
-         VALUES
-         (
-         :id_map, :alias_map, :edit_whois, :edit_ipv4,
-         :id_region, :title, :content, :content_restricted,
-         :edit_comment, :is_excludelists, :is_publicity
-         )
-        ";
-        $data = [
-            'id_map'        =>  $request['edit:id:map'],
-            'alias_map'     =>  $request['edit:alias:map'],
-            'edit_whois'    =>  0,
-            'edit_ipv4'     =>  ip2long(\Arris\Helpers\Server::getIP()),
-            'id_region'     =>  $request['edit:id:region'],
-            'title'         =>  $request['edit:region:title'],
-            'content'       =>  $request['edit:region:content'],
-            'content_restricted'    =>  $request['edit:region:content_restricted'],
-            'edit_comment'  =>  $request['edit:region:comment'],
-            'is_excludelists'   =>  $request['edit:is:excludelists'],
-            'is_publicity'  =>  $request['edit:is:publicity']
+        if (!\array_key_exists("id_region", $data)) {
+            $this->state->error(__METHOD__ . " Field ID_REGION not found in given dataset");
+            return $this->state;
+        }
+
+        $fields = [];
+        $fields_p = [];
+        foreach ($data as $i => $value) {
+            $fields[] = $i;
+            $fields_p[] = ':' . $i;
+        }
+
+        $query_set = [
+            "INSERT INTO {$this->dbTables->map_data_regions}",
+            "(",
+            \implode(", ", $fields),
+            ")",
+            "VALUES",
+            "(",
+            \implode(", ", $fields_p),
+            ")"
         ];
 
+        $query = implode(" ", $query_set);
+
         $sth = $this->pdo->prepare($query);
-        $sth->execute($data);
+        $result = $sth->execute($data);
 
-        $result->success();
-
-        return $result;
+        return (
+            new Result($result))
+            /*->set("sql_query", $query)
+            ->set("sql_data", $data)*/
+            ;
     }
 
+    /**
+     * @todo
+     *
+     * @param $region_id
+     * @param int $revisions_depth
+     * @return array|false
+     */
     public function getRegionRevisions($region_id, int $revisions_depth = 0)
     {
         $query_limit = ($revisions_depth !== 0) ? " LIMIT {$revisions_depth} " : "";
@@ -487,7 +547,7 @@ ORDER BY edit_date {$query_limit};
      * @param $regions_list
      * @return array
      */
-    public static function removeExcludedFromRegionsList($regions_list)
+    public static function removeExcludedFromRegionsList($regions_list): array
     {
         return \array_filter($regions_list, function($row) {
             return ($row[ 'is_excludelists' ] === 'N');
@@ -495,11 +555,12 @@ ORDER BY edit_date {$query_limit};
     }
 
     /**
+     * Конвертирует массив ID-шников в строку с запятыми
      *
      * @param $regions_array
      * @return string
      */
-    public static function convertRegionsWithInfo_to_IDs_String($regions_array)
+    public static function convertRegionsWithInfo_to_IDs_String($regions_array): string
     {
         return \implode(", ", \array_map( function($item) {
             return "'{$item['id_region']}'";
@@ -508,15 +569,14 @@ ORDER BY edit_date {$query_limit};
 
 
     /**
-     * Проходит по массиву регионов и видимость региона для текущего пользователя на основе прав доступа к контенту
+     * Проходит по массиву регионов и фильтрует регионы на основе видимости для текущего пользователя на основе прав доступа к контенту
      *
      * Не реализовано
      *
-     * @param $regions_list
-     * @param $map_alias
+     * @param array $regions_list
      * @return mixed
      */
-    public static function checkRegionsVisibleByCurrentUser($regions_list, $map_alias)
+    public static function checkRegionsVisibleByCurrentUser(array $regions_list):array
     {
         /*$user_id = Auth::getCurrentUser();
         $user_id
