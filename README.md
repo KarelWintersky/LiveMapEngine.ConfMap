@@ -3,7 +3,7 @@
 
 # О чем рассказывать для планеты?
 
-- Краткая сводка
+- Краткая сводка (это можно в `content`)
 - Системная лоция
 - Life Support Index
   - Климат заселенных регионов
@@ -37,33 +37,9 @@
   - Легаси описание
 
 
+P.S.
+
 этнопсихология: аналог, как "пунктуальные зануды" для немцев,  "водка и балалайки" для русских, "пиво и сосиски" для баварцев, "катаны, аниме и якудза" для японцев.
-
-# TODO
-
-## Кастомизация шаблонов
-
-"Интересные места на карте" - нужно перенести в json-конфиг карты, в "display_defaults"
-
-Наверное, в отдельный блок "sections" 
-
-display_defaults->sections->regions->title
-
-
-## PHP 8+ и файлменеджер
-
-https://github.com/trippo/ResponsiveFilemanager/issues/734
-https://github.com/trippo/ResponsiveFilemanager/issues/709
-https://github.com/trippo/ResponsiveFilemanager/issues/708
-https://github.com/trippo/ResponsiveFilemanager/issues/700
-https://github.com/trippo/ResponsiveFilemanager/issues/694
-https://github.com/trippo/ResponsiveFilemanager/issues/683
-https://github.com/trippo/ResponsiveFilemanager/issues/703
-
-
-GET http://confmap.local/frontend/favicons/apple-touch-icon.png 404
-GET http://confmap.local/frontend/favicons/favicon-16x16.png 404 
-
 
 
 
