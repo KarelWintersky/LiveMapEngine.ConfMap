@@ -150,3 +150,9 @@ button {
     content: '¤\0000a0';
 }
 
+code {
+    background-color: #efffde;
+    border: 1px solid #56a219;
+    border-radius: 5px;
+    padding: 0 5px 0 5px;
+}

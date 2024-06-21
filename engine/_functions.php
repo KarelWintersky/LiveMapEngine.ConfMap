@@ -79,15 +79,6 @@ function property_get_recursive($object, string $path, string $separator = '->',
 {
     $properties = \explode($separator, $path);
 
-    /*$o = clone $object;
-    foreach ($properties as $p) {
-        if (!property_exists($o, $p)) {
-            return $default;
-        } else {
-            $o = $o->{$p};
-        }
-    }
-    return $o;*/
     foreach ($properties as $p) {
         if (!\property_exists($object, $p)) {
             return $default;

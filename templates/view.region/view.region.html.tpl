@@ -18,5 +18,5 @@
                 data-map-alias="{$map_alias}"
                 data-url="{$edit_button_url}?map={$map_alias}&id={$region_id}">Добавить</button>
     {/if}
-    <br/>По региону <strong>{$region_id}</strong> нет информации.
+    <br/>По объекту <code><strong>{$region_id}</strong></code> нет информации.
 {/if}
