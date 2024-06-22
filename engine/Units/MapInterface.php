@@ -70,6 +70,14 @@ interface MapInterface
      */
     public function simpleCheckCanEdit(): bool;
 
+    /**
+     *
+     * @param string $role
+     * @param string $is_publicity
+     * @return bool
+     */
+    public static function isRoleGreater(string $role = 'ANYONE', string $is_publicity = 'ANYONE'): bool;
+
 
     /**
      * Временная функция, фильтрующая массив регионов с данными.

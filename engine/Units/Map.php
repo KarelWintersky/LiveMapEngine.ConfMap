@@ -6,8 +6,6 @@ use Arris\Database\DBWrapper;
 use Arris\Entity\Result;
 use Arris\Path;
 use ColinODell\Json5\SyntaxError;
-use Confmap\ACL;
-use Confmap\Exceptions\AccessDeniedException;
 use PDO;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -354,22 +352,7 @@ class Map implements MapInterface
         return $all_regions;
     }
 
-    /**
-     * Элементарная проверка на допустимость редактирования карты. Вычисляется из админских емейлов и списка емейлов,
-     * указанных в конфиге карты как "имеющие права".
-     *
-     * Легаси вариант, в будущем должен быть заменён на полноценный механизм ACL (через DI)
-     *
-     * @return bool
-     */
-    public function simpleCheckCanEdit():bool
-    {
-        $admin_emails = getenv('AUTH.ADMIN_EMAILS') ? explode(' ', getenv('AUTH.ADMIN_EMAILS')) : [];
 
-        $allowed_editors = array_merge($this->mapConfig->can_edit ?? [], $admin_emails);
-
-        return !is_null(config('auth.email')) && in_array(config('auth.email'), $allowed_editors);
-    }
 
     /**
      * Извлекает из БД информацию по региону. Кроме общих полей загружает и поля контента, переданные вторым параметром.
@@ -412,7 +395,7 @@ class Map implements MapInterface
             ]);
 
             // Делает "доступ ограничен" для всех, кому не хватает права доступа на просмотр контента
-            if (!ACL::isRoleGreater('ANYONE', $row['is_publicity'])) {
+            if (!self::isRoleGreater('ANYONE', $row['is_publicity'])) {
                 foreach ($requested_content_fields as $field) {
                     /*
                      * Проблема: а как узнать, к какому слою относится регион? Если бы мы хранили регионы в БД - то можно было бы...
@@ -590,6 +573,50 @@ ORDER BY edit_date {$query_limit};
             return (bool)ACL::isValidRole( $current_role, $row[ 'is_publicity' ] );
         });*/
         return $regions_list;
+    }
+
+    /**
+     *
+     * @param string $role
+     * @param string $is_publicity
+     * @return bool
+     */
+    public static function isRoleGreater(string $role = 'ANYONE', string $is_publicity = 'ANYONE'): bool
+    {
+        $MAP_ROLE_TO_INT = [
+            'ANYONE'    =>  0,
+            'VISITOR'   =>  16,
+            'EDITOR'    =>  256,
+            'OWNER'     =>  1024,
+            'ROOT'      =>  16384
+        ];
+
+        $MAP_INT_TO_ROLE = [
+            0       =>  'ANYONE',
+            16      =>  'VISITOR',
+            256     =>  'EDITOR',
+            1024    =>  'OWNER',
+            16384   =>  'ROOT'
+        ];
+
+        return $MAP_ROLE_TO_INT[ $role ] >= $MAP_ROLE_TO_INT[ $is_publicity ];
+    }
+
+    /**
+     * Элементарная проверка на допустимость редактирования карты. Вычисляется из админских емейлов и списка емейлов,
+     * указанных в конфиге карты как "имеющие права".
+     *
+     * Легаси вариант, в будущем должен быть заменён на полноценный механизм ACL (через DI)
+     *
+     * @return bool
+     */
+    public function simpleCheckCanEdit():bool
+    {
+        $admin_emails = getenv('AUTH.ADMIN_EMAILS') ? explode(' ', getenv('AUTH.ADMIN_EMAILS')) : [];
+
+        $allowed_editors = array_merge($this->mapConfig->can_edit ?? [], $admin_emails);
+
+        return !is_null(config('auth.email')) && in_array(config('auth.email'), $allowed_editors);
     }
 
 
