@@ -1,4 +1,4 @@
-const VERSION = '2024-06-14';
+const VERSION = '2024-06-22';
 const focus_animate_duration = window.theMap['display']['focus_animate_duration'] || 0.7;
 const focus_highlight_color = window.theMap['display']['focus_highlight_color'] || '#ff0000';
 const focus_timeout = window.theMap['display']['focus_timeout'] || 1500;
@@ -6,11 +6,12 @@ const IS_DEBUG = false;
 const DEBUG_SET_STYLE_WHILE_HOVER = true;
 
 let base_map_bounds;
+let map;
 
 $(function() {
     let _mapManager = window._mapManager;
 
-    _mapManager.createMap('map');
+    map = _mapManager.createMap('map'); // also _mapManager.map;
     _mapManager.setBackgroundColor(".leaflet-container");
 
     base_map_bounds = _mapManager.getBounds();

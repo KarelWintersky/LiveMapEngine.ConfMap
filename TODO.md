@@ -1,3 +1,26 @@
+## FileManager changes
+
+https://github.com/trippo/ResponsiveFilemanager
+
+```php
+// $lme_map = $_COOKIE['kw_livemap_filemanager_storagepath'] ?? '';
+$lme_map = 'spring.confederation';
+
+// path from base_url to base of upload folder (with start and final /)
+$upload_dir = "/storage/{$lme_map}/images/";
+
+// relative path from filemanager folder to upload folder (with final /)
+$current_path = "../../storage/{$lme_map}/images/";
+
+//thumbs folder can't put inside upload folder
+// relative path from filemanager folder to thumbs folder (with final /)
+$thumbs_base_path = "../../storage/{$lme_map}/thumbs/";
+
+
+```
+
+
+
 ## Хранить разметку карты в БД?
 
 То есть сначала её надо импортировать

@@ -2,7 +2,7 @@
  * Попытка запихнуть все методы работы с картой в класс
  */
 class MapManager {
-    static VERSION = '2024-06-14';
+    static VERSION = '2024-06-22';
 
     /**
      * Инстанс инфобокса, null - когда не создан
@@ -93,7 +93,7 @@ class MapManager {
      * Создает карту и зум на ней, в зависимости от параметров
      *
      * @param target
-     * @returns {null}
+     * @returns map
      */
     createMap(target) {
         let map = null;
@@ -626,7 +626,8 @@ class MapManager {
 
             this.regionsDataset[ id_region ].setStyle({ fillColor: focus_highlight_color }); // подсвечиваем (перенести в функцию/метод объекта)
 
-            map.panTo( bounds.getCenter(), { animate: true, duration: 1, noMoveStart: true});
+            // map.panTo( bounds.getCenter(), { animate: true, duration: 1, noMoveStart: true});
+            map.setView( bounds.getCenter(), map._zoom, { animate: true, duration: 1, noMoveStart: true} );
         } else {
             map.setZoom( this.theMap['layers'][id_layer]['zoom']+1, {
                 animate: true
