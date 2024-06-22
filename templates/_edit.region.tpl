@@ -203,7 +203,7 @@
             <button type="submit" id="actor-submit" tabindex="7">Сохранить</button>
             <span id="ajax-process" style="display: none">
                 Сохраняю... &nbsp;
-                <img src="/frontend/images.spinners/21.svg" height="18" alt="ready"/>
+                <img src="/frontend/images/spinner_saving.svg" height="18" alt="ready"/>
             </span>
             <span id="ajax-result" style="display: none;">Сохранение успешно! Через несколько секунд возвращаемся на карту.</span>
             <button type="button" id="actor-back" style="float:right" tabindex="8" data-href="{Arris\AppRouter::getRouter('view.frontpage')}">Назад на карту</button>
