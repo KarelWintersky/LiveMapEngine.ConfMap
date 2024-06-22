@@ -13,7 +13,8 @@
             "engine/_functions.php"
         ],
         "psr-4": {
-            "Confmap\\" : "engine/"
+            "Confmap\\" : "engine/",
+            "LiveMapEngine\\": "framework/"
         }
     },
     "require": {

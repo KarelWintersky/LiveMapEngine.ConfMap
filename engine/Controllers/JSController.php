@@ -8,6 +8,9 @@ use ColinODell\Json5\SyntaxError;
 use Confmap\AbstractClass;
 use Confmap\App;
 use Confmap\Units\Map;
+use LiveMapEngine\Helpers;
+use LiveMapEngine\IMapMaker;
+use LiveMapEngine\MapMaker;
 use LiveMapEngine\SVGParser;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -15,7 +18,7 @@ use RuntimeException;
 #[\AllowDynamicProperties]
 class JSController extends AbstractClass
 {
-    public Map $map;
+    public IMapMaker $map;
     /**
      * @var true
      */
@@ -37,8 +40,9 @@ class JSController extends AbstractClass
     {
         $map_id = App::$id_map;
 
-        $this->map = new Map($this->pdo, $map_id, [
-            'config_path'   =>  Path::create( config('path.storage') )->join($map_id)
+        $this->map = new MapMaker($this->pdo, $map_id, [
+            'config_path'   =>  Path::create( config('path.storage') )->join($map_id),
+            'json_parser'   =>  [Map::class, 'parseJSONFile']
         ]);
 
         if ($this->map->loadConfig()->is_error) {
@@ -163,7 +167,7 @@ class JSController extends AbstractClass
                 $paths_at_layer_filled = $this->map->getRegionsWithInfo($paths_at_layer);
 
                 // фильтруем по доступности пользователю (is_publicity)
-                $paths_at_layer_filled = Map::checkRegionsVisibleByCurrentUser($paths_at_layer_filled, $this->map_alias);
+                $paths_at_layer_filled = Helpers::checkRegionsVisibleByCurrentUser($paths_at_layer_filled, $this->map_alias);
 
                 foreach ($paths_at_layer_filled as $path_present) {
                     $id_region = $path_present['id_region'];

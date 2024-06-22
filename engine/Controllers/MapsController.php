@@ -4,12 +4,14 @@ namespace Confmap\Controllers;
 
 use Arris\Path;
 use Confmap\AbstractClass;
+use Confmap\App;
 use Confmap\Units\Map;
+use LiveMapEngine\MapMaker;
 use Psr\Log\LoggerInterface;
 
 class MapsController extends AbstractClass
 {
-    public Map $map;
+    public MapMaker $map;
 
     public function __construct($options = [], LoggerInterface $logger = null)
     {
@@ -18,10 +20,17 @@ class MapsController extends AbstractClass
 
     public function view_map_fullscreen()
     {
-        $this->map = new Map($this->pdo, $this->map_alias);
-        $this->map->loadConfig(
-            Path::create( config('path.storage') )->join($this->map_alias)
-        );
+        $map_id = App::$id_map;
+
+        $this->map = new MapMaker($this->pdo, $map_id, [
+            'config_path'   =>  Path::create( config('path.storage') )->join($map_id),
+            'json_parser'   =>  [Map::class, 'parseJSONFile']
+        ]);
+
+        if ($this->map->loadConfig()->is_error) {
+            throw new \RuntimeException($this->map->loadConfig()->getMessage());
+        }
+
         $this->map->loadMap();
 
         $this->template->setTemplate("_map.tpl");

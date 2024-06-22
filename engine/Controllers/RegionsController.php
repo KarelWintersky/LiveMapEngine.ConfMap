@@ -10,11 +10,12 @@ use Confmap\AbstractClass;
 use Confmap\App;
 use Confmap\Exceptions\AccessDeniedException;
 use Confmap\Units\Map;
+use LiveMapEngine\MapMaker;
 use Psr\Log\LoggerInterface;
 
 class RegionsController extends AbstractClass
 {
-    private Map $map;
+    private MapMaker $map;
 
     public function __construct($options = [], LoggerInterface $logger = null)
     {
@@ -23,8 +24,9 @@ class RegionsController extends AbstractClass
         $id_map = App::$id_map;
 
         // Выносим в конструктор, но только по одной причине: ID карты для проекта livemap.confmap ИЗВЕСТЕН
-        $this->map = new Map($this->pdo, $id_map, [
-            'config_path'   =>  Path::create( config('path.storage') )->join($id_map)
+        $this->map = new MapMaker($this->pdo, $id_map, [
+            'config_path'   =>  Path::create( config('path.storage') )->join($id_map),
+            'json_parser'   =>  [Map::class, 'parseJSONFile']
         ]);
     }
 
@@ -39,7 +41,6 @@ class RegionsController extends AbstractClass
     public function view_region_info()
     {
         $id_region = $_GET['id']    ?? null;
-        $template  = $_GET['resultType'] ?? 'html';
 
         if ($this->map->loadConfig()->is_error) {
             throw new \RuntimeException($this->map->state->getMessage());
@@ -61,21 +62,8 @@ class RegionsController extends AbstractClass
         $t->assign('region_text', $region_data['content']);
         $t->assign('is_can_edit', $region_data['can_edit']);
         $t->assign('edit_button_url', AppRouter::getRouter('update.region.info'));
+        $t->setTemplate('view.region/view.region.html.tpl');
 
-        switch ($template) {
-            case 'iframe': {
-                $t->setTemplate('view.region/view.region.iframe.tpl');;
-                break;
-            }
-            case 'fieldset': {
-                $t->setTemplate('view.region/view.region.fieldset.tpl');
-                break;
-            }
-            default: {
-                $t->setTemplate('view.region/view.region.html.tpl');
-                break;
-            }
-        }
         $content = $t->render(false);
 
         $this->template->assignRAW($content);
