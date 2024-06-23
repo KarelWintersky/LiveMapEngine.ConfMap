@@ -16,6 +16,11 @@ setlocale(LC_CTYPE, 'en_US'); //correct transliteration
 |--------------------------------------------------------------------------
 | Optional security
 |--------------------------------------------------------------------------
+| @todo: с новым filemanager'ом минимальная ширина попапа 950 пикселей - ну, чтобы все элементы управления были в одной строке
+ Сейчас выставляется 860 или 858 и хз как изменить...
+
+И tinyMCE в проекте 4.2.4, возможно, нужно обновить...
+
 |
 | if set to true only those will access RF whose url contains the access key(akey) like:
 | <input type="button" href="../filemanager/dialog.php?field_id=imgField&lang=en_EN&akey=myPrivateKey" value="Files">
@@ -245,26 +250,33 @@ $config = [
 
     //Show or not total size in filemanager (is possible to greatly increase the calculations)
     'show_total_size'						=> false,
+
     //Show or not show folder size in list view feature in filemanager (is possible, if there is a large folder, to greatly increase the calculations)
     'show_folder_size'						=> false,
+
     //Show or not show sorting feature in filemanager
     'show_sorting_bar'						=> true,
+
     //Show or not show filters button in filemanager
     'show_filter_buttons'                   => true,
+
     //Show or not language selection feature in filemanager
-    'show_language_selection'				=> true,
+    'show_language_selection'				=> false,
+
     //active or deactive the transliteration (mean convert all strange characters in A..Za..z0..9 characters)
     'transliteration'						=> false,
+
     //convert all spaces on files name and folders name with $replace_with variable
     'convert_spaces'						=> false,
+
     //convert all spaces on files name and folders name this value
     'replace_with'							=> "_",
+
     //convert to lowercase the files and folders name
     'lower_case'							=> false,
 
     //Add ?484899493349 (time value) to returned images to prevent cache
     'add_time_to_img'                       => false,
-
 
     //*******************************************
     //Images limit and resizing configuration
@@ -413,7 +425,7 @@ $config = [
     * TUI Image Editor config
     *******************/
     // Add or modify the options below as needed - they will be json encoded when added to the configuration so arrays can be utilized as needed
-    'tui_active'                           => true,
+    'tui_active'                           => false,
     'tui_position'                         => 'bottom',
     // 'common.bi.image'                      => "../assets/images/logo.png",
     // 'common.bisize.width'                  => '70px',

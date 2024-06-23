@@ -2,6 +2,7 @@
 
 namespace Confmap\Controllers;
 
+use Arris\Entity\Result;
 use Arris\Path;
 use Arris\Template\Template;
 use ColinODell\Json5\SyntaxError;
@@ -19,17 +20,14 @@ use RuntimeException;
 class JSController extends AbstractClass
 {
     public IMapMaker $map;
-    /**
-     * @var true
-     */
-    private bool $error;
-    private string $error_message;
+
+    private Result $state;
 
     public function __construct($options = [], LoggerInterface $logger = null)
     {
         parent::__construct($options, $logger);
-        $this->error = false;
-        $this->error_message = '';
+
+        $this->state = new Result();
     }
 
     /**
@@ -263,12 +261,11 @@ class JSController extends AbstractClass
             }
 
         } catch (\RuntimeException $e) {
-            $this->error = true;
-            $this->error_message = $e->getMessage();
+            $this->state->error($e->getMessage());
         }
 
-        if ($this->error) {
-            $this->template->assign('/JSBuilderError', $this->error_message);
+        if ($this->state->is_error) {
+            $this->template->assign('/JSBuilderError', $this->state->getMessage());
         }
 
         $this->template->assign("map", [
@@ -340,6 +337,8 @@ class JSController extends AbstractClass
 
         $display_defaults_poi = [];
         $display_defaults_poi['any'] = [
+            // 'iconClass'     =>  Helpers::property_get_recursive($json, "display_defaults->poi->any->iconClass", '->', 'fa-fort-awesome'),
+
             'iconClass'     =>  $json->display_defaults->poi->{'any'}->{'iconClass'}          ?? 'fa-fort-awesome',
             'markerColor'     =>  $json->display_defaults->poi->{'any'}->{'markerColor'}      ?? 'black',
             'iconColor'     =>  $json->display_defaults->poi->{'any'}->{'iconColor'}          ?? 'white',

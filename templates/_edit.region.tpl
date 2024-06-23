@@ -16,6 +16,7 @@
             success_edit_timeout: 1000
         };
         const tiny_config = {
+            // cache_suffix: '?v=2024-06-23-1',
             theme: "modern",
             skin: "lightgray",
             language: 'ru',
@@ -58,10 +59,12 @@
             relative_urls: false,
             document_base_url: "/",
             external_filemanager_path: "/frontend/filemanager/",
+
             filemanager_title: "Responsive Filemanager",
-            external_plugins: {
-                "filemanager": "/frontend/filemanager/plugin.js"
-            },
+            filemanager_width: 980,
+            filemanager_height: window.innerHeight - 200,
+
+            // external_plugins: { "filemanager": "/frontend/filemanager/plugin.js" },
             paste_as_text: true,
         };
 
