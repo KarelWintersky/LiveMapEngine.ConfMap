@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     'Select' => 'Выбрать',
     'Deselect_All' => 'Deselect All',
     'Select_All' => 'Select All',

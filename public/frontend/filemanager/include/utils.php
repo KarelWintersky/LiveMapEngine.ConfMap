@@ -32,6 +32,8 @@ if (!function_exists('trans')) {
      *
      * @return string translated variable
      */
+    global $config;
+
     function trans($var)
     {
         global $lang_vars;

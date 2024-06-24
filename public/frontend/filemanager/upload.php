@@ -52,7 +52,7 @@ try {
         if (file_exists($path . "config.php")) {
             $configMain = $config;
             $configTemp = include $path . 'config.php';
-            if(is_array($configTemp) && count($configTemp) > 0){
+            if (is_array($configTemp) && count($configTemp) > 0) {
                 $config = array_merge($configMain, $configTemp);
                 $config['ext'] = array_merge(
                     $config['ext_img'],
@@ -61,8 +61,7 @@ try {
                     $config['ext_video'],
                     $config['ext_music']
                 );
-            }
-            else{
+            } else {
                 $config = $configMain;
             }
             //TODO switch to array
@@ -71,7 +70,8 @@ try {
         $path = fix_dirname($path) . '/';
     }
 
-    require('UploadHandler.php');
+    require(__DIR__ . '/UploadHandler.php');
+
     $messages = null;
     if (trans("Upload_error_messages") !== "Upload_error_messages") {
         $messages = trans("Upload_error_messages");
@@ -132,7 +132,7 @@ try {
     }
     $_FILES['files']['name'][0] = fix_filename($filename, $config);
 
-    if(!$_FILES['files']['type'][0]){
+    if (!$_FILES['files']['type'][0]) {
         $_FILES['files']['type'][0] = $mime_type;
 
     }
@@ -141,7 +141,7 @@ try {
         $_FILES['files']['name'][0] = fix_strtolower($_FILES['files']['name'][0]);
     }
     if (!checkresultingsize($_FILES['files']['size'][0])) {
-    	if ( !isset($upload_handler->response['files'][0]) ) {
+        if (!isset($upload_handler->response['files'][0])) {
             // Avoid " Warning: Creating default object from empty value ... "
             $upload_handler->response['files'][0] = new stdClass();
         }

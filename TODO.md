@@ -2,6 +2,15 @@
 
 https://github.com/trippo/ResponsiveFilemanager
 
+Какую версию скачивать? 
+Скачивать последнюю версию релиза (из неё брать JS и CSS, потому что их не скомпилировать, проблема пакетами ноды, что-то устарело и сломалось)
+А PHP-файлы скачивать гита напрямую.
+
+На данный момент скачана и подправлена версия "9.14.0", какие-то другие её доделки не требуются
+
+Вопрос, не переложить ли её в ПАКЕТ, который ставить композером... но возникнет вопрос - как ставить конкретно этот пакет в другой каталог, не в vendor ?
+
+
 ```php
 // $lme_map = $_COOKIE['kw_livemap_filemanager_storagepath'] ?? '';
 $lme_map = 'spring.confederation';
@@ -15,10 +24,7 @@ $current_path = "../../storage/{$lme_map}/images/";
 //thumbs folder can't put inside upload folder
 // relative path from filemanager folder to thumbs folder (with final /)
 $thumbs_base_path = "../../storage/{$lme_map}/thumbs/";
-
-
 ```
-
 
 
 ## Хранить разметку карты в БД?
@@ -59,19 +65,7 @@ display_defaults->sections->regions->title
 
 Эту папку надо переименовать и переложить шаблоны в `templates.edit`
 
-
-
-
 ## PHP 8+ и файлменеджер
-
-https://github.com/trippo/ResponsiveFilemanager/issues/734
-https://github.com/trippo/ResponsiveFilemanager/issues/709
-https://github.com/trippo/ResponsiveFilemanager/issues/708
-https://github.com/trippo/ResponsiveFilemanager/issues/700
-https://github.com/trippo/ResponsiveFilemanager/issues/694
-https://github.com/trippo/ResponsiveFilemanager/issues/683
-https://github.com/trippo/ResponsiveFilemanager/issues/703
-
 
 GET http://confmap.local/frontend/favicons/apple-touch-icon.png 404
 GET http://confmap.local/frontend/favicons/favicon-16x16.png 404 
