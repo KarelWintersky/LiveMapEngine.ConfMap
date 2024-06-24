@@ -1,5 +1,7 @@
 <?php
-$config = include 'config/config.php';
+if (!isset($config)) {
+    $config = include 'config/config.php';
+}
 
 include 'include/utils.php';
 

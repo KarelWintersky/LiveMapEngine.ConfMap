@@ -60,11 +60,16 @@
             document_base_url: "/",
             external_filemanager_path: "/frontend/filemanager/",
 
+            // Кастомные настройки для размера и заголовка окна плагина responsive filemanager
             filemanager_title: "Responsive Filemanager",
             filemanager_width: 980,
             filemanager_height: window.innerHeight - 200,
 
-            // external_plugins: { "filemanager": "/frontend/filemanager/plugin.js" },
+            /*external_plugins: {
+                // не требуется, потому что грузится и так, но требует файла plugin.min.js по тому же пути. Следует это помнить!
+                "filemanager": "/frontend/tinymce/plugins/responsivefilemanager/plugin.js"
+            },*/
+
             paste_as_text: true,
         };
 

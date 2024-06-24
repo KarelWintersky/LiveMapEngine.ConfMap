@@ -2,7 +2,9 @@
 
 $time = time();
 
-$config = include 'config/config.php';
+if (!isset($config)) {
+    $config = include 'config/config.php';
+}
 
 global $version;
 
@@ -23,7 +25,7 @@ $_SESSION['RF']["verify"] = "RESPONSIVEfilemanager";
 if (!empty($_FILES)) {
     $directorio = $config['current_path'];
     if (!file_exists($directorio)) {
-        mkdir($directorio);
+        mkdir($directorio, 0777, true);
     }
 
     $sExtension = pathinfo($_FILES['upload']['name'], PATHINFO_EXTENSION);

@@ -1,6 +1,8 @@
 <?php
 
-$config = include 'config/config.php';
+if (!isset($config)) {
+    $config = include 'config/config.php';
+}
 
 require_once 'include/utils.php';
 
