@@ -138,6 +138,8 @@
             start_tinymce_instance(tiny_config, 'editor_history', {
                 toolbar: "bold italic underline strikethrough | fontsizeselect | responsivefilemanager | image charmap | link unlink anchor | | pastetext removeformat | preview"
             });
+            start_tinymce_instance(tiny_config, 'editor_trade_export');
+            start_tinymce_instance(tiny_config, 'editor_trade_import');
 
             setTimeout(function(){
                 $('input#title').focus()
@@ -308,7 +310,23 @@
                     <input type="text" name="json:economy-shares-social" size="10" value="{$json.economy.shares.social|default:''}">
                 </td>
             </tr>
-
+        </table>
+    </fieldset>
+    <fieldset>
+        <legend>Торговля (статьи экспорта и импорта)</legend>
+        <table>
+            <tr>
+                <td>Статьи экспорта:</td>
+                <td>Статьи импорта:</td>
+            </tr>
+            <tr>
+                <td>
+                    <textarea name="json:trade-export" id="editor_trade_export" data-height="100" data-menubar="">{$json.trade.export|default:''}</textarea>
+                </td>
+                <td>
+                    <textarea name="json:trade-import" id="editor_trade_import" data-height="100" data-menubar="">{$json.trade.import|default:''}</textarea>
+                </td>
+            </tr>
         </table>
     </fieldset>
 

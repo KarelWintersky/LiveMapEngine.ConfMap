@@ -179,7 +179,11 @@ class RegionsController extends AbstractClass
                     'industrial'=>  self::json('economy-shares-industrial'),
                     'social'    =>  self::json('economy-shares-social')
                 ]
-            ]
+            ],
+            'trade' =>  [
+                'export'    =>  self::json('trade-export'),
+                'import'    =>  self::json('trade-import'),
+            ],
         ];
 
         // пакуем контент в JSON
