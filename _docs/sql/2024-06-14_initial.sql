@@ -45,7 +45,7 @@ CREATE TABLE `users` (
     `force_logout` mediumint unsigned NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     UNIQUE KEY `email` (`email`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `users_confirmations` (
     `id` int unsigned NOT NULL AUTO_INCREMENT,
@@ -58,7 +58,7 @@ CREATE TABLE `users_confirmations` (
     UNIQUE KEY `selector` (`selector`),
     KEY `email_expires` (`email`,`expires`),
     KEY `user_id` (`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `users_remembered` (
     `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -69,7 +69,7 @@ CREATE TABLE `users_remembered` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `selector` (`selector`),
     KEY `user` (`user`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `users_resets` (
     `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -80,7 +80,7 @@ CREATE TABLE `users_resets` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `selector` (`selector`),
     KEY `user_expires` (`user`,`expires`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `users_throttling` (
     `bucket` varchar(44) CHARACTER SET latin1 COLLATE latin1_general_cs NOT NULL,
@@ -89,5 +89,5 @@ CREATE TABLE `users_throttling` (
     `expires_at` int unsigned NOT NULL,
     PRIMARY KEY (`bucket`),
     KEY `expires_at` (`expires_at`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

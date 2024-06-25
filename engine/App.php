@@ -64,7 +64,7 @@ class App extends \Arris\App
         ]);
 
         config('app', [
-            'copyright'     =>  getenv('COPYRIGHT') ?? 'LiveMap Engine version 1.5+ "Algrist"',
+            'copyright'     =>  'Confmap Pre-Release (based on LiveMap Engine v2+)',
         ]);
     }
 

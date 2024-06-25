@@ -1,3 +1,7 @@
+/**
+ * 2024-06-24 - добавлен новый код в openmanager()
+ * 2024-06-25 - добавлена иконка для кнопки (её показ)
+ */
 tinymce.PluginManager.add('responsivefilemanager', function (editor) {
     function responsivefilemanager_onMessage(event) {
 
@@ -105,6 +109,7 @@ tinymce.PluginManager.add('responsivefilemanager', function (editor) {
     if (tinymce.majorVersion < 5) {
         editor.addButton('responsivefilemanager', {
             icon: 'browse',
+            image: tinymce.baseURL + '/plugins/responsivefilemanager/img/insertfile.gif',
             tooltip: 'Insert file',
             shortcut: 'Ctrl+E',
             onClick: openmanager
@@ -123,6 +128,7 @@ tinymce.PluginManager.add('responsivefilemanager', function (editor) {
     } else {
         editor.ui.registry.addButton('responsivefilemanager', {
             icon: 'browse',
+            image: tinymce.baseURL + '/plugins/responsivefilemanager/img/insertfile.gif',
             tooltip: 'Insert file',
             shortcut: 'Ctrl+E',
             onAction: openmanager

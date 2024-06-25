@@ -385,6 +385,7 @@ class MapMaker implements IMapMaker
         foreach ($data as $i => $value) {
             $fields[] = $i;
             $fields_p[] = ':' . $i;
+            //@todo: вот тут мы можем проверять, является ли value не строкой, а массивом или объектом и в этом случае делать json_encode. Но надо ли?
         }
 
         $query_set = [

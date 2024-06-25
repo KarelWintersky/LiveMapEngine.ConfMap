@@ -21,6 +21,7 @@ fieldset {
 label {
     float:left;
     padding-right:55px;
+    white-space: nowrap;
 }
 .label_textarea {
     padding: 0;
