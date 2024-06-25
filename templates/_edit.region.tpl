@@ -146,6 +146,9 @@
             start_tinymce_instance(tiny_config, 'editor_assets_social');
             start_tinymce_instance(tiny_config, 'editor_assets_oldmoney');
 
+            start_tinymce_instance(tiny_config, 'editor_other_local_heroes');
+            start_tinymce_instance(tiny_config, 'editor_legacy_description');
+
 
             setTimeout(function(){
                 $('input#title').focus()
@@ -213,19 +216,16 @@
         <label for="title">
             <input type="text" name="edit:region:title" id="title" size="90" value="{$content_title}" tabindex="1" required style="font-size: x-large; color: blue"/>
         </label>
-    </fieldset>
-
-    {* ======================================================================================= *}
-    {* Теперь попробуем сделать множественные кастомные поля и хранение в JSON *}
-    {* ======================================================================================= *}
-    <fieldset>
-        <legend>Краткое описание:</legend>
+        <br><br>
         <label for="editor_summary" class="label_textarea label_fullwidth">
             <textarea name="edit:region:content" id="editor_summary" cols="10" tabindex="4" data-height="100">{$content}</textarea>
         </label>
     </fieldset>
 
     {* ======================================================================================= *}
+    {* Теперь попробуем сделать множественные кастомные поля и хранение в JSON *}
+    {* ======================================================================================= *}
+
     <fieldset>
         <legend>Индекс жизнеобеспечения (Life Support Index)</legend>
         <label>
@@ -376,6 +376,19 @@
                 </td>
             </tr>
         </table>
+    </fieldset>
+
+    <fieldset>
+        <legend>Прочее</legend>
+        <label>
+            Известные личности: <br>
+            <textarea name="json:other.local_heroes" id="editor_other_local_heroes" data-height="100" data-menubar="">{$json.other.local_heroes|default:''}</textarea>
+        </label>
+    </fieldset>
+
+    <fieldset>
+        <legend>Legacy-описание</legend>
+        <textarea name="json:legacy.description" id="editor_legacy_description" data-height="100" data-menubar="">{$json.legacy.description|default:''}</textarea>
     </fieldset>
 
 

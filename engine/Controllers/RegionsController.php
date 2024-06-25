@@ -191,6 +191,22 @@ class RegionsController extends AbstractClass
                 'export'    =>  self::json('trade-export'),
                 'import'    =>  self::json('trade-import'),
             ],
+            'statehood' =>  [
+                'ss'        =>  self::json('statehood-ss'),
+                'gunrights' =>  self::json('statehood-gun-rights'),
+                'governance'=>  self::json('statehood-governance'),
+                'army'      =>  self::json('statehood-army'),
+                'css'       =>  self::json('statehood-css'),
+                'drc'       =>  self::json('statehood-drc'),
+                'psi'       =>  self::json('statehood-psi')
+            ],
+            // 'infrastructure'    =>  [], //
+            'other'     =>  [
+                'local_heroes'  =>  self::json('heroes')
+            ],
+            'legacy'            =>  [
+                'description'      => self::json('legacy.description')
+            ]
         ];
 
         // пакуем контент в JSON
@@ -216,7 +232,11 @@ class RegionsController extends AbstractClass
      */
     private static function json(string $field = ''): string
     {
-        return empty($field) ? '' : $_REQUEST["json:{$field}"];
+        $rq_field = "json:{$field}";
+
+        return empty($field) ? '' : (
+            $_REQUEST[$rq_field] ?: ''
+        );
     }
 
 }
