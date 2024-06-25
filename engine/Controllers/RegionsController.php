@@ -228,15 +228,19 @@ class RegionsController extends AbstractClass
      * Хелпер для доступа к REQUEST json: полям
      *
      * @param string $field
-     * @return mixed|string
+     * @param string $prefix
+     * @return string
      */
-    private static function json(string $field = ''): string
+    private static function json(string $field = '', string $prefix = 'json:'): string
     {
-        $rq_field = "json:{$field}";
+        if (empty($field)) {
+            return '';
+        }
+        $rq_field = "{$prefix}{$field}";
 
-        return empty($field) ? '' : (
-            $_REQUEST[$rq_field] ?: ''
-        );
+        return  array_key_exists($rq_field, $_REQUEST)
+                ? $_REQUEST[$rq_field]
+                : '';
     }
 
 }
