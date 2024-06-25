@@ -165,7 +165,12 @@ class RegionsController extends AbstractClass
             'history'   =>  [
                 'year'      =>  self::json('history-year'),
                 'text'      =>  self::json('history-text')
-            ]
+            ],
+            'population'=>  [
+                'count'     =>  self::json('population-count'),
+                'ethnic'    =>  self::json('population-ethnic'),
+                'features'  =>  self::json('population-features')
+            ],
         ];
 
         // пакуем контент в JSON

@@ -6,6 +6,11 @@ button {
     font-size: large;
 }
 
+table.aligned-center td {
+    text-align: center;
+    align-content: center;
+}
+
 fieldset {
     margin: 0;
 }

@@ -50,7 +50,7 @@
 
             // toolbar1: "undo redo | bold italic underline subscript superscript strikethrough | fontsizeselect styleselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | ",
             // toolbar2: "responsivefilemanager image | template table charmap | link unlink anchor | pastetext removeformat | preview",
-            toolbar1: "bold italic underline strikethrough | fontsizeselect | responsivefilemanager | image charmap | link unlink anchor | | pastetext removeformat | preview",
+            toolbar1: "bold italic underline strikethrough | fontsizeselect | bullist numlist | responsivefilemanager | image charmap | link unlink anchor | | pastetext removeformat | preview",
 
             // charmap https://www.tinymce.com/docs/plugins/charmap/
             // https://stackoverflow.com/a/22156412/5127037
@@ -240,6 +240,32 @@
             Краткая история колонизации:
             <textarea name="json:history-text" id="editor_history" data-height="100" data-menubar="">{$json.history.text|default:''}</textarea>
         </label>
+    </fieldset>
+
+    <fieldset>
+        <legend>Население</legend>
+        <table width="100%" class="aligned-center">
+            <tr>
+                <td>Численность (млн)</td>
+                <td>
+                    Национальный состав:
+                </td>
+                <td>
+                    Этнопсихологические особенности:
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" name="json:population-count" size="10" value="{$json.population.count|default:0}">
+                </td>
+                <td>
+                    <textarea cols="40" rows="5" name="json:population-ethnic">{$json.population.ethnic|default:''}</textarea>
+                </td>
+                <td>
+                    <textarea cols="40" rows="5" name="json:population-features">{$json.population.features|default:''}</textarea>
+                </td>
+            </tr>
+        </table>
     </fieldset>
 
 
