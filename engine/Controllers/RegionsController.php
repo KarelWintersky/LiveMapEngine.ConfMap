@@ -171,6 +171,15 @@ class RegionsController extends AbstractClass
                 'ethnic'    =>  self::json('population-ethnic'),
                 'features'  =>  self::json('population-features')
             ],
+            'economy'   =>  [
+                'type'      =>  self::json('economy-type'),
+                'shares'    =>  [
+                    'natural'   =>  self::json('economy-shares-natural'),
+                    'financial' =>  self::json('economy-shares-financial'),
+                    'industrial'=>  self::json('economy-shares-industrial'),
+                    'social'    =>  self::json('economy-shares-social')
+                ]
+            ]
         ];
 
         // пакуем контент в JSON

@@ -268,6 +268,50 @@
         </table>
     </fieldset>
 
+    <fieldset>
+        <legend>Экономика</legend>
+        <label>
+            Тип экономики:  <input type="text" name="json:economy-type" size="70" value="{$json.economy.type|default:''}">
+        </label>
+        <br>
+        <hr width="40%">
+        <table width="100%" class="aligned-center">
+            <tr>
+                <td colspan="4">Доли капитала (?/12)</td>
+            </tr>
+            <tr>
+                <td>
+                    Природный
+                </td>
+                <td>
+                    Финансовый
+                </td>
+                <td>
+                    Реальный <br>
+                    <small>(промышленный)</small>
+                </td>
+                <td>
+                    Социальный
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" name="json:economy-shares-natural" size="10" value="{$json.economy.shares.natural|default:''}">
+                </td>
+                <td>
+                    <input type="text" name="json:economy-shares-financial" size="10" value="{$json.economy.shares.financial|default:''}">
+                </td>
+                <td>
+                    <input type="text" name="json:economy-shares-industrial" size="10" value="{$json.economy.shares.industrial|default:''}">
+                </td>
+                <td>
+                    <input type="text" name="json:economy-shares-social" size="10" value="{$json.economy.shares.social|default:''}">
+                </td>
+            </tr>
+
+        </table>
+    </fieldset>
+
 
 
     <hr>
