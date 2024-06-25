@@ -1,3 +1,7 @@
+{*
+Код отличается от LiveMap Engine
+Код определений filemanager и старта tinyMCE надо скопировать в основной проект
+*}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -16,7 +20,6 @@
             success_edit_timeout: 1000
         };
         const tiny_config = {
-            // cache_suffix: '?v=2024-06-23-1',
             theme: "modern",
             skin: "lightgray",
             language: 'ru',
@@ -24,8 +27,6 @@
             forced_root_block: "",
             force_br_newlines: true,
             force_p_newlines: false,
-
-            height: 300,
 
             plugins: ["advlist lists autolink link image anchor responsivefilemanager charmap insertdatetime paste searchreplace contextmenu code textcolor template hr pagebreak table print preview wordcount visualblocks visualchars legacyoutput"],
             formats: {
@@ -42,9 +43,14 @@
             insertdatetime_formats: [
                 "%d.%m.%Y", "%H:%m", "%d/%m/%Y"
             ],
+
+            // menubar: 'file edit insert view format table tools',
+            menubar: false,
             contextmenu: "link image responsivefilemanager | inserttable cell row column deletetable | charmap",
-            toolbar1: "undo redo | bold italic underline subscript superscript strikethrough | fontsizeselect styleselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | ",
-            toolbar2: "responsivefilemanager image | template table charmap | link unlink anchor | pastetext removeformat | preview",
+
+            // toolbar1: "undo redo | bold italic underline subscript superscript strikethrough | fontsizeselect styleselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | ",
+            // toolbar2: "responsivefilemanager image | template table charmap | link unlink anchor | pastetext removeformat | preview",
+            toolbar1: "bold italic underline strikethrough | fontsizeselect | responsivefilemanager | image charmap | link unlink anchor | | pastetext removeformat | preview",
 
             // charmap https://www.tinymce.com/docs/plugins/charmap/
             // https://stackoverflow.com/a/22156412/5127037
@@ -71,22 +77,67 @@
             },*/
 
             paste_as_text: true,
+            height: 300,
         };
 
         // add markdown and simple configs
 
-        function tinify(config, elem, mode)
+        /**
+         * @todo: код перенести в LiveMapEngine
+         *
+         * @param config
+         * @param target
+         * @param is_active
+         * @param options
+         */
+        function start_tinymce_instance(config, target, options = { }, is_active = true)
         {
-            m = (typeof mode != 'undefined') ? mode : true;
             tinyMCE.settings = config;
-            m       ? tinyMCE.execCommand('mceAddEditor', true, elem)
-                    : tinyMCE.execCommand('mceRemoveEditor', false, elem);
+
+            let $target = $('#' + target);
+            let action = (typeof is_active != 'undefined') ? is_active : true;
+
+             // custom height
+            let height = $target.data('height') || tinyMCE.settings.height || 300;
+            tinyMCE.settings.height = height;
+
+            //@todo: передавать значение toolbar через data-атрибут?
+            /*let toolbar = options.hasOwnProperty('toolbar') ? options.toolbar : false;
+            if (toolbar) {
+                tinyMCE.settings.toolbar1 = toolbar;
+            } else {
+                tinyMCE.settings.toolbar1 = "undo redo | bold italic underline subscript superscript strikethrough | fontsizeselect styleselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | ";
+                tinyMCE.settings.toolbar2 = "responsivefilemanager image | template table charmap | link unlink anchor | pastetext removeformat | preview";
+            }*/
+
+            // как бы работает, НО - system-wide, на все инстансы tinyMCE. А как сделать для каждого инстанса редактора свое меню и настройки?
+            /*let menubar = $target.data('menubar') ? $target.data('menubar') : ( options.hasOwnProperty('menubar') ? options.menubar : 'file edit insert view format table tools' );
+            if (menubar) {
+                tinyMCE.settings.menu = menubar;
+            } else {
+                tinyMCE.settings.menu = false;
+            }*/
+
+            action  ? tinyMCE.execCommand('mceAddEditor', true, target)
+                    : tinyMCE.execCommand('mceRemoveEditor', false, target);
+            /*tinymce.init({
+                selector: target,
+                inline: true,
+                menubar: menubar,
+                toolbar: toolbar,
+                height: height
+            });*/
         }
-    </script>
-    <script type="text/javascript" id="init">
+
         let saving_in_progress = false;
+
         $(document).ready(function(){
-            tinify(tiny_config, 'edit-textarea');
+            start_tinymce_instance(tiny_config, 'editor_summary', {
+                toolbar: "bold italic underline strikethrough | fontsizeselect | responsivefilemanager | image charmap | link unlink anchor | | pastetext removeformat | preview"
+            });
+            start_tinymce_instance(tiny_config, 'editor_history', {
+                toolbar: "bold italic underline strikethrough | fontsizeselect | responsivefilemanager | image charmap | link unlink anchor | | pastetext removeformat | preview"
+            });
 
             setTimeout(function(){
                 $('input#title').focus()
@@ -143,61 +194,95 @@
     </script>
 </head>
 <body>
-<h3 style="margin-bottom: 1px">Регион:<span style="color: blue">  {if $is_present}{$region_title}{else}{$id_region}{/if}</span></h3>
-
 <form action="{Arris\AppRouter::getRouter('update.region.info')}" method="post" id="form-edit-region">
     <input type="hidden" name="edit:id:map"     value="{$id_map}">
     <input type="hidden" name="edit:id:region"  value="{$id_region}">
     <input type="hidden" name="edit:html_callback" value="{$html_callback}" />
     <input type="hidden" name="edit:layout:type" value="svg">
 
-    <table width="100%" style="text-align: left" border="1">
-        <tr>
-            <td>
-                <fieldset class="fields_area">
-                    <div class="field">
-                        <label for="title">Название региона:</label> <br>
-                        <input type="text" name="edit:region:title" id="title" size="90" value="{$content.title}" tabindex="1" required />
-                        <span class="mark-required">*</span>
-                    </div>
-                </fieldset>
-            </td>
-            <td>
-                <label tabindex="2">
-                    В списках:
-                    <select name="edit:is:excludelists">
-                        <option value="N"{if $is_exludelists eq "N"} selected{/if}>Во всех</option>
-                        <option value="F"{if $is_exludelists eq "F"} selected{/if}>Только слоя</option>
-                        <option value="A"{if $is_exludelists eq "A"} selected{/if}>Нигде</option>
-                    </select>
-                </label>
-            </td>
-            <td>
-                <label tabindex="3">
-                    Видимость:
-                    <select name="edit:is:publicity">
-                        <option value="ANYONE"{if $is_publicity eq "ANYONE"} selected{/if}>Всем</option>
-                        <option value="VISITOR"{if $is_publicity eq "VISITOR"} selected{/if}>Участникам</option>
-                        <option value="EDITOR"{if $is_publicity eq "EDITOR"} selected{/if}>Редакторам</option>
-                        <option value="OWNER"{if $is_publicity eq "OWNER"} selected{/if}>Владельцу</option>
-                    </select>
-                </label>
-            </td>
-        </tr>
-    </table>
+    <fieldset>
+        <legend> {if $is_present}Название объекта:{else}Это новый регион с ID {$id_region}, нужно задать ему имя:{/if} </legend>
+        <label for="title">
+            <input type="text" name="edit:region:title" id="title" size="90" value="{$content_title}" tabindex="1" required style="font-size: x-large; color: blue"/>
+        </label>
+    </fieldset>
+
+    {* ======================================================================================= *}
+    {* Теперь попробуем сделать множественные кастомные поля и хранение в JSON *}
+    {* ======================================================================================= *}
+    <fieldset>
+        <legend>Краткое описание:</legend>
+        <label for="editor_summary" class="label_textarea label_fullwidth">
+            <textarea name="edit:region:content" id="editor_summary" cols="10" tabindex="4" data-height="100">{$content}</textarea>
+        </label>
+    </fieldset>
+
+    {* ======================================================================================= *}
+    <fieldset>
+        <legend>Индекс жизнеобеспечения (Life Support Index)</legend>
+        <label>
+            КЖП: <input type="text" name="json:lsi-index" size="10" placeholder="0..12" value="{$json.lsi.index|default:'0'}">
+        </label>
+        <label>
+            Тип экосферы: <input type="text" name="json:lsi-type" size="40" placeholder="Тип планеты, тип атмосферы и аквасферы" value="{$json.lsi.type|default:''}">
+        </label>
+        <label>
+            Климат заселенных регионов: <input type="text" name="json:lsi-climate" size="40" placeholder="Климат заселенных регионов" value="{$json.lsi.climate|default:''}">
+        </label>
+    </fieldset>
+
+    <fieldset>
+        <legend>История:</legend>
+        <label>
+            Год колонизации: <input type="text" name="json:history-year" value="{$json.history.year|default:0}">
+        </label>
+        <label class="label_textarea label_fullwidth">
+            Краткая история колонизации:
+            <textarea name="json:history-text" id="editor_history" data-height="100" data-menubar="">{$json.history.text|default:''}</textarea>
+        </label>
+    </fieldset>
 
 
 
-    <label for="edit-textarea" class="label_textarea label_fullwidth">
-        <textarea name="edit:region:content" id="edit-textarea" cols="10" tabindex="4">{$content.content}</textarea>
-    </label>
+    <hr>
+    <fieldset>
+        <legend>Content Restrictions:</legend>
+        <table width="90%" style="text-align: left" border="0">
+            <tr>
+                <td>
+                    <label for="edit-restricted">Access Denied Message:
+                        <input type="text" name="edit:region:content_restricted" size="70%" value="{$content_restricted}" id="edit-restricted" tabindex="2" autocomplete="off"/>
+                    </label>
+                </td>
+                <td>
+                    <label>
+                        В списках:
+                        <select name="edit:is:excludelists">
+                            <option value="N"{if $is_exludelists eq "N"} selected{/if}>Во всех</option>
+                            <option value="F"{if $is_exludelists eq "F"} selected{/if}>Только слоя</option>
+                            <option value="A"{if $is_exludelists eq "A"} selected{/if}>Нигде</option>
+                        </select>
+                    </label>
+                </td>
+                <td>
+                    <label>
+                        Видимость:
+                        <select name="edit:is:publicity">
+                            <option value="ANYONE"{if $is_publicity eq "ANYONE"} selected{/if}>Всем</option>
+                            <option value="VISITOR"{if $is_publicity eq "VISITOR"} selected{/if}>Участникам</option>
+                            <option value="EDITOR"{if $is_publicity eq "EDITOR"} selected{/if}>Редакторам</option>
+                            <option value="OWNER"{if $is_publicity eq "OWNER"} selected{/if}>Владельцу</option>
+                        </select>
+                    </label>
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+
+    <hr>
+
     <fieldset class="fields_area">
-        <div class="field">
-            <label for="edit-restricted">Сообщение при недоступности региона:
-                <input type="text" name="edit:region:content_restricted" size="120" value="{$content.content_restricted}" id="edit-restricted" tabindex="5" autocomplete="off"/>
-            </label>
-        </div>
-        <hr />
+        <legend>Техническое</legend>
         <div class="field">
             <label for="edit-reason">Комментарий редактора:
                 <input type="text" name="edit:region:comment" size="90" value="" id="edit-reason" tabindex="6" autocomplete="off"/>
