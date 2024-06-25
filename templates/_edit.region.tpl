@@ -90,8 +90,7 @@
          * @param is_active
          * @param options
          */
-        function start_tinymce_instance(config, target, options = { }, is_active = true)
-        {
+        function start_tinymce_instance(config, target, options = { }, is_active = true)         {
             tinyMCE.settings = config;
 
             let $target = $('#' + target);
@@ -140,6 +139,13 @@
             });
             start_tinymce_instance(tiny_config, 'editor_trade_export');
             start_tinymce_instance(tiny_config, 'editor_trade_import');
+
+            start_tinymce_instance(tiny_config, 'editor_assets_natural');
+            start_tinymce_instance(tiny_config, 'editor_assets_financial');
+            start_tinymce_instance(tiny_config, 'editor_assets_industrial');
+            start_tinymce_instance(tiny_config, 'editor_assets_social');
+            start_tinymce_instance(tiny_config, 'editor_assets_oldmoney');
+
 
             setTimeout(function(){
                 $('input#title').focus()
@@ -325,6 +331,48 @@
                 </td>
                 <td>
                     <textarea name="json:trade-import" id="editor_trade_import" data-height="100" data-menubar="">{$json.trade.import|default:''}</textarea>
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <fieldset>
+        <legend>Крупные представители капитала:</legend>
+        <table>
+            <tr>
+                <td>Природный капитал: </td>
+                <td>
+                    <textarea name="json:economy-assets-natural" id="editor_assets_natural" data-height="100" data-menubar="">{$json.economy.assets.natural|default:''}</textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>Финансовый капитал: </td>
+                <td>
+                    <textarea name="json:economy-assets-financial" id="editor_assets_financial" data-height="100" data-menubar="">{$json.economy.assets.financial|default:''}</textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>Реальный капитал: <br>
+                    <small>(промышленный)</small>
+                </td>
+                <td>
+                    <textarea name="json:economy-assets-industrial" id="editor_assets_industrial" data-height="100" data-menubar="">{$json.economy.assets.industrial|default:''}</textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Социальный капитал<br>
+                    <small>(образование, медицина, <br>интеллектуальная собственность)</small>
+                </td>
+                <td>
+                    <textarea name="json:economy-assets-social" id="editor_assets_social" data-height="100" data-menubar="">{$json.economy.assets.social|default:''}</textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Старые семьи
+                </td>
+                <td>
+                    <textarea name="json:economy-assets-oldmoney" id="editor_assets_oldmoney" data-height="100" data-menubar="">{$json.economy.assets.oldmoney|default:''}</textarea>
                 </td>
             </tr>
         </table>

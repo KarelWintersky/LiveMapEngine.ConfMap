@@ -178,6 +178,13 @@ class RegionsController extends AbstractClass
                     'financial' =>  self::json('economy-shares-financial'),
                     'industrial'=>  self::json('economy-shares-industrial'),
                     'social'    =>  self::json('economy-shares-social')
+                ],
+                'assets'    =>  [
+                    'natural'   =>  self::json('economy-assets-natural'),
+                    'financial' =>  self::json('economy-assets-financial'),
+                    'industrial'=>  self::json('economy-assets-industrial'),
+                    'social'    =>  self::json('economy-assets-social'),
+                    'oldmoney'  =>  self::json('economy-assets-oldmoney')
                 ]
             ],
             'trade' =>  [
