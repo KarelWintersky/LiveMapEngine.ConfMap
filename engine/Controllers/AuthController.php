@@ -44,7 +44,9 @@ class AuthController extends \Confmap\AbstractClass
         $expire = _env( 'AUTH.EXPIRE_TIME', 86400, 'int');
 
         try {
-            App::$auth->login($_REQUEST['email'], $_REQUEST['password'], $expire);
+            // App::$auth->login($_REQUEST['email'], $_REQUEST['password'], $expire);
+
+            App::$acl->auth->login($_REQUEST['email'], $_REQUEST['password'], $expire);
 
             // echo 'User is logged in';
 
@@ -77,14 +79,14 @@ class AuthController extends \Confmap\AbstractClass
      */
     public function callback_logout()
     {
-        if (!App::$auth->isLoggedIn()) {
+        if (!App::$acl->isLoggedIn()) {
             die('Hacking attempt!'); //@todo: logging
         }
 
-        $u_id = App::$auth->getUserId();
-        $u_email = App::$auth->getEmail();
+        $u_id = App::$acl->auth->getUserId();
+        $u_email = App::$acl->auth->getEmail();
 
-        App::$auth->logOut();
+        App::$acl->auth->logOut();
 
         AppLogger::scope('main')->debug("Logged out user {$u_id} ($u_email)");
 

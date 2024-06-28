@@ -10,7 +10,7 @@ use Arris\DelightAuth\Auth\Auth;
 use Arris\Path;
 use Arris\Template\Template;
 use Kuria\Error\ErrorHandler;
-use Arris\Helpers\Server;
+use LiveMapEngine\Auth\AccessControl;
 
 class App extends \Arris\App
 {
@@ -28,7 +28,7 @@ class App extends \Arris\App
     /**
      * @var Auth
      */
-    public static $auth;
+    // public static $auth;
 
     /**
      * @var Template;
@@ -39,6 +39,10 @@ class App extends \Arris\App
      * @var FlashMessages
      */
     public static $flash;
+    /**
+     * @var AccessControl
+     */
+    public static AccessControl $acl;
 
     public static function init()
     {
@@ -114,10 +118,10 @@ class App extends \Arris\App
             'charset_collate'   =>  'utf8_general_ci',
             'slow_query_threshold'  => 1
         ];
-        config('db_credentials', $db_credentials);
+        config('credentials.db', $db_credentials);
 
         App::$pdo = new DBWrapper(
-            config('db_credentials'),
+            config('credentials.db'),
             [ 'slow_query_threshold' => 100 ],
             AppLogger::scope('mysql')
         );
@@ -126,30 +130,24 @@ class App extends \Arris\App
 
     public static function initAuth()
     {
-        $app = self::factory();
-
-        /**
-         * Auth Delight
-         */
-        App::$auth = new Auth(new \PDO(
-            sprintf(
-                "mysql:dbname=%s;host=%s;charset=utf8mb4",
-                config('db_credentials.database'),
-                config('db_credentials.hostname')
-            ),
-            config('db_credentials.username'),
-            config('db_credentials.password')
-        ));
-        $app->addService(Auth::class, App::$auth);
-        config('auth', [
-            'id'            =>  App::$auth->id(),
-            'is_logged_in'  =>  App::$auth->isLoggedIn(),       // флаг "залогинен"
-            'username'      =>  App::$auth->getUsername(),      // пользователь
-            'email'         =>  App::$auth->getEmail(),
-            'ipv4'          =>  Server::getIP(),                // IPv4
-
-            'is_admin'      =>  App::$auth->hasRole(\Confmap\AuthRoles::ADMIN),
+        App::$acl = new AccessControl([
+            'hostname'  =>  config('credentials.db.hostname'),
+            'database'  =>  config('credentials.db.database'),
+            'username'  =>  config('credentials.db.username'),
+            'password'  =>  config('credentials.db.password')
         ]);
+
+        config('auth', [
+            'id'            =>  App::$acl->currentUser->id,
+            'is_logged_in'  =>  App::$acl->currentUser->is_logged_in,
+            'username'      =>  App::$acl->currentUser->username,
+            'email'         =>  App::$acl->currentUser->email,
+            'ipv4'          =>  App::$acl->currentUser->ipv4,
+
+            'is_admin'      =>  App::$acl->currentUser->is_admin
+        ]);
+
+        // config('auth', App::$acl->currentUser);
 
     }
 

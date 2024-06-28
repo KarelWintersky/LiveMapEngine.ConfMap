@@ -16,9 +16,9 @@ class AuthMiddleware extends AbstractClass
      * @param $route_info
      * @return void
      */
-    public function check_not_logged_in($uri, $route_info)
+    public function check_not_logged_in($uri, $route_info): void
     {
-        if (App::$auth->isLoggedIn()) {
+        if (App::$acl->isLoggedIn()) {
             Server::redirect('/');
         }
     }
@@ -28,9 +28,9 @@ class AuthMiddleware extends AbstractClass
      * @param $route_info
      * @return void
      */
-    public function check_is_logged_in($uri, $route_info)
+    public function check_is_logged_in($uri, $route_info): void
     {
-        if (!App::$auth->isLoggedIn()) {
+        if (!App::$acl->isLoggedIn()) {
             throw new AccessDeniedException("Вы не авторизованы. <br><br>Возможно, истекла сессия авторизации.");
         }
     }
@@ -40,9 +40,9 @@ class AuthMiddleware extends AbstractClass
      * @param $route_info
      * @return void
      */
-    public function check_is_admin_logged($uri, $route_info)
+    public function check_is_admin_logged($uri, $route_info): void
     {
-        if (!App::$auth->isLoggedIn() && App::$auth->hasRole(\Confmap\AuthRoles::ADMIN)) {
+        if (!App::$acl->isLoggedIn() && App::$acl->auth->hasRole(\LiveMapEngine\Auth\AuthRoles::ADMIN)) {
             throw new AccessDeniedException("У вас недостаточный уровень допуска. <br><br>Возможно, истекла сессия авторизации.");
         }
 
