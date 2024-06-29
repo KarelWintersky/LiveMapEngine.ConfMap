@@ -17,18 +17,37 @@
     <script type="text/javascript" src="/frontend/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" id="define">
         window.editor_config = {
-            success_edit_timeout: 1000
+            success_edit_timeout: 1000,
         };
-        const tiny_config = {
+
+        /**
+         * Некоторые настройки tinyMCE по-умолчанию
+         *
+         * @todo: add markdown and simple configs
+         */
+        const tinymce_defaults = {
+            height: 300,
+            toolbar: {
+                simple: [
+                    "bold italic underline strikethrough | fontsizeselect | bullist numlist | responsivefilemanager | image charmap | link unlink anchor | | pastetext removeformat | preview"
+                ],
+                advanced: [
+                    "undo redo | bold italic underline subscript superscript strikethrough | fontsizeselect styleselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | ",
+                    "responsivefilemanager image | template table charmap | link unlink anchor | pastetext removeformat | preview"
+                ]
+            },
+            contextmenu: "link image responsivefilemanager | inserttable cell row column deletetable | charmap",
+            menubar: "file edit insert view format table tools"
+        };
+
+        /**
+         * Шаблон для конфигурации инстанса tinyMCE
+         */
+        const tinymce_common_options = {
             theme: "modern",
             skin: "lightgray",
             language: 'ru',
 
-            forced_root_block: "",
-            force_br_newlines: true,
-            force_p_newlines: false,
-
-            plugins: ["advlist lists autolink link image anchor responsivefilemanager charmap insertdatetime paste searchreplace contextmenu code textcolor template hr pagebreak table print preview wordcount visualblocks visualchars legacyoutput"],
             formats: {
                 strikethrough: {
                     inline: 'del'
@@ -40,26 +59,32 @@
                 }
             },
 
+            forced_root_block: "",
+            force_br_newlines: true,
+            force_p_newlines: false,
+
             insertdatetime_formats: [
                 "%d.%m.%Y", "%H:%m", "%d/%m/%Y"
             ],
 
-            // menubar: 'file edit insert view format table tools',
-            menubar: false,
-            contextmenu: "link image responsivefilemanager | inserttable cell row column deletetable | charmap",
+            plugins: [
+                "advlist lists autolink link image anchor responsivefilemanager charmap insertdatetime paste ",
+                "searchreplace contextmenu code textcolor template hr pagebreak table print preview wordcount",
+                "visualblocks visualchars legacyoutput"
+            ],
 
-            // toolbar1: "undo redo | bold italic underline subscript superscript strikethrough | fontsizeselect styleselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | ",
-            // toolbar2: "responsivefilemanager image | template table charmap | link unlink anchor | pastetext removeformat | preview",
-            toolbar1: "bold italic underline strikethrough | fontsizeselect | bullist numlist | responsivefilemanager | image charmap | link unlink anchor | | pastetext removeformat | preview",
+            /*menubar: false,
+            contextmenu: false,
+            toolbar: false,*/
 
-            // charmap https://www.tinymce.com/docs/plugins/charmap/
-            // https://stackoverflow.com/a/22156412/5127037
             charmap_append: [
                 ["0x27f7", 'LONG LEFT RIGHT ARROW'],
                 ["0x27fa", 'LONG LEFT RIGHT DOUBLE ARROW'],
                 ["0x2600", 'sun'],
                 ["0x2601", 'cloud']
             ],
+
+            paste_as_text: true,
 
             // responsive filemanager
             relative_urls: false,
@@ -70,85 +95,67 @@
             filemanager_title: "Responsive Filemanager",
             filemanager_width: 980,
             filemanager_height: window.innerHeight - 200,
-
-            /*external_plugins: {
-                // не требуется, потому что грузится и так, но требует файла plugin.min.js по тому же пути. Следует это помнить!
-                "filemanager": "/frontend/tinymce/plugins/responsivefilemanager/plugin.js"
-            },*/
-
-            paste_as_text: true,
-            height: 300,
         };
 
-        // add markdown and simple configs
-
         /**
-         * @todo: код перенести в LiveMapEngine
          *
-         * @param config
+         *
+         *
+         *
          * @param target
-         * @param is_active
          * @param options
          */
-        function start_tinymce_instance(config, target, options = { }, is_active = true)         {
-            tinyMCE.settings = config;
-
+        function createInstance(target, options = { })
+        {
             let $target = $('#' + target);
-            let action = (typeof is_active != 'undefined') ? is_active : true;
+            let height = $target.data('height') || tinymce_defaults.height || 300;
 
-             // custom height
-            let height = $target.data('height') || tinyMCE.settings.height || 300;
-            tinyMCE.settings.height = height;
+            let toolbar
+                = options.hasOwnProperty('toolbar')
+                ? options.toolbar
+                : tinymce_defaults.toolbar.simple;
 
-            //@todo: передавать значение toolbar через data-атрибут?
-            /*let toolbar = options.hasOwnProperty('toolbar') ? options.toolbar : false;
-            if (toolbar) {
-                tinyMCE.settings.toolbar1 = toolbar;
-            } else {
-                tinyMCE.settings.toolbar1 = "undo redo | bold italic underline subscript superscript strikethrough | fontsizeselect styleselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | ";
-                tinyMCE.settings.toolbar2 = "responsivefilemanager image | template table charmap | link unlink anchor | pastetext removeformat | preview";
-            }*/
+            let contextmenu
+                = options.hasOwnProperty('contextmenu')
+                ? options.contextmenu
+                : tinymce_defaults.contextmenu;
 
-            // как бы работает, НО - system-wide, на все инстансы tinyMCE. А как сделать для каждого инстанса редактора свое меню и настройки?
-            /*let menubar = $target.data('menubar') ? $target.data('menubar') : ( options.hasOwnProperty('menubar') ? options.menubar : 'file edit insert view format table tools' );
-            if (menubar) {
-                tinyMCE.settings.menu = menubar;
-            } else {
-                tinyMCE.settings.menu = false;
-            }*/
 
-            action  ? tinyMCE.execCommand('mceAddEditor', true, target)
-                    : tinyMCE.execCommand('mceRemoveEditor', false, target);
-            /*tinymce.init({
-                selector: target,
-                inline: true,
+            let menubar
+                = $target.data('menubar')
+                ? $target.data('menubar')
+                : (
+                    options.hasOwnProperty('menubar')
+                        ? options.menubar
+                        : tinymce_defaults.menubar
+                );
+
+            let instance_options = Object.assign({
+                selector: "#" + target,
                 menubar: menubar,
                 toolbar: toolbar,
+                contextmenu: contextmenu,
                 height: height
-            });*/
+            }, tinymce_common_options);
+
+            tinymce.init(instance_options);
         }
+
 
         let saving_in_progress = false;
 
         $(document).ready(function(){
-            start_tinymce_instance(tiny_config, 'editor_summary', {
-                toolbar: "bold italic underline strikethrough | fontsizeselect | responsivefilemanager | image charmap | link unlink anchor | | pastetext removeformat | preview"
-            });
-            start_tinymce_instance(tiny_config, 'editor_history', {
-                toolbar: "bold italic underline strikethrough | fontsizeselect | responsivefilemanager | image charmap | link unlink anchor | | pastetext removeformat | preview"
-            });
-            start_tinymce_instance(tiny_config, 'editor_trade_export');
-            start_tinymce_instance(tiny_config, 'editor_trade_import');
-
-            start_tinymce_instance(tiny_config, 'editor_assets_natural');
-            start_tinymce_instance(tiny_config, 'editor_assets_financial');
-            start_tinymce_instance(tiny_config, 'editor_assets_industrial');
-            start_tinymce_instance(tiny_config, 'editor_assets_social');
-            start_tinymce_instance(tiny_config, 'editor_assets_oldmoney');
-
-            start_tinymce_instance(tiny_config, 'editor_other_local_heroes');
-            start_tinymce_instance(tiny_config, 'editor_legacy_description');
-
+            createInstance('editor_summary');
+            createInstance('editor_history');
+            createInstance('editor_trade_export');
+            createInstance('editor_trade_import');
+            createInstance('editor_assets_natural');
+            createInstance('editor_assets_financial');
+            createInstance('editor_assets_industrial');
+            createInstance('editor_assets_social');
+            createInstance('editor_assets_oldmoney');
+            createInstance('editor_other_local_heroes');
+            createInstance('editor_legacy_description');
 
             setTimeout(function(){
                 $('input#title').focus()
