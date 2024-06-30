@@ -14,7 +14,7 @@
 
     <script type="text/javascript" src="/frontend/html5shiv.js"></script>
     <script type="text/javascript" src="/frontend/jquery/jquery-3.2.1_min.js"></script>
-    <script type="text/javascript" src="/frontend/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="/frontend/tinymce-7.2.0/tinymce.min.js"></script>
     <script type="text/javascript" id="define">
         window.editor_config = {
             success_edit_timeout: 1000,
@@ -26,6 +26,8 @@
          * @todo: add markdown and simple configs
          */
         const tinymce_defaults = {
+            TINYMCE_VERSION: 7,
+
             height: 300,
             toolbar: {
                 simple: [
@@ -44,6 +46,7 @@
          * Шаблон для конфигурации инстанса tinyMCE
          */
         const tinymce_common_options = {
+            version: tinymce_defaults.TINYMCE_VERSION,
             theme: "modern",
             skin: "lightgray",
             language: 'ru',
@@ -86,6 +89,67 @@
 
             paste_as_text: true,
 
+            filemanager_options: {
+                relative_urls: false,
+                document_base_url: "/",
+                external_filemanager_path: "/frontend/filemanager/",
+
+                title: "Responsive Filemanager",
+                width: 980,
+                height: window.innerHeight - 200,
+            },
+
+            // responsive filemanager
+            /*relative_urls: false,
+            document_base_url: "/",
+            external_filemanager_path: "/frontend/filemanager/",
+
+            // Кастомные настройки для размера и заголовка окна плагина responsive filemanager
+            filemanager_title: "Responsive Filemanager",
+            filemanager_width: 980,
+            filemanager_height: window.innerHeight - 200,*/
+        };
+
+        const tinymce_common_options_7 = {
+            language: 'ru',
+
+            formats: {
+                strikethrough: {
+                    inline: 'del'
+                },
+                underline: {
+                    inline: 'span',
+                    'classes': 'underline',
+                    exact: true
+                }
+            },
+
+            forced_root_block: "",
+            force_br_newlines: true,
+            force_p_newlines: false,
+
+            insertdatetime_formats: [
+                "%d.%m.%Y", "%H:%m", "%d/%m/%Y"
+            ],
+
+            plugins: [
+                "advlist", "lists", "autolink", "link", "image", "anchor", "responsivefilemanager", "charmap", "insertdatetime",
+                "searchreplace", "code", "pagebreak", "table", "preview", "wordcount", "visualblocks", "visualchars", "emoticons"
+            ],
+
+            /*menubar: false,
+            contextmenu: false,
+            toolbar: false,*/
+
+            charmap_append: [
+                ["0x27f7", 'LONG LEFT RIGHT ARROW'],
+                ["0x27fa", 'LONG LEFT RIGHT DOUBLE ARROW'],
+                ["0x2600", 'sun'],
+                ["0x2601", 'cloud']
+            ],
+
+            paste_as_text: true,
+
             // responsive filemanager
             relative_urls: false,
             document_base_url: "/",
@@ -97,6 +161,14 @@
             filemanager_height: window.innerHeight - 200,
         };
 
+        function createInstance(target, options = { }) {
+            if (tinymce_defaults.TINYMCE_VERSION === 7) {
+                createInstance_720(target, options);
+            } else {
+                createInstance_424(target, options);
+            }
+        }
+
         /**
          *
          *
@@ -105,8 +177,7 @@
          * @param target
          * @param options
          */
-        function createInstance(target, options = { })
-        {
+        function createInstance_424(target, options = { }) {
             let $target = $('#' + target);
             let height = $target.data('height') || tinymce_defaults.height || 300;
 
@@ -137,6 +208,56 @@
                 contextmenu: contextmenu,
                 height: height
             }, tinymce_common_options);
+
+            tinymce.init(instance_options);
+        }
+
+        function createInstance_720(target, options = { }) {
+            let $target = $('#' + target);
+            let height = /*$target.data('height') || tinymce_defaults.height ||*/ 300;
+
+            let toolbar
+                = options.hasOwnProperty('toolbar')
+                ? options.toolbar
+                : tinymce_defaults.toolbar.simple;
+
+            let contextmenu
+                = options.hasOwnProperty('contextmenu')
+                ? options.contextmenu
+                : tinymce_defaults.contextmenu;
+
+
+            let menubar
+                = $target.data('menubar')
+                ? $target.data('menubar')
+                : (
+                    options.hasOwnProperty('menubar')
+                        ? options.menubar
+                        : tinymce_defaults.menubar
+                );
+
+            let instance_options = Object.assign({
+                selector: "#" + target,
+                menubar: menubar,
+                toolbar: toolbar,
+                contextmenu: contextmenu,
+                height: height,
+                setup: (editor) => {
+                    editor.options.register('filemanager_options', {
+                        processor: 'object',
+                        default: {
+                            version: 7,
+                            relative_urls: false,
+                            document_base_url: "/",
+                            external_filemanager_path: "/frontend/filemanager/",
+
+                            title: "Responsive Filemanager",
+                            width: 980,
+                            height: window.innerHeight - 200,
+                        }
+                    })
+                },
+            }, tinymce_common_options_7);
 
             tinymce.init(instance_options);
         }
