@@ -14,7 +14,7 @@
 
     <script type="text/javascript" src="/frontend/html5shiv.js"></script>
     <script type="text/javascript" src="/frontend/jquery/jquery-3.2.1_min.js"></script>
-    <script type="text/javascript" src="/frontend/tinymce-7.2.0/tinymce.min.js"></script>
+    <script type="text/javascript" src="/frontend/tinymce-4.2.4/tinymce.min.js"></script>
     <script type="text/javascript" id="define">
         window.editor_config = {
             success_edit_timeout: 1000,
@@ -26,8 +26,6 @@
          * @todo: add markdown and simple configs
          */
         const tinymce_defaults = {
-            TINYMCE_VERSION: 7,
-
             height: 300,
             toolbar: {
                 simple: [
@@ -44,9 +42,10 @@
 
         /**
          * Шаблон для конфигурации инстанса tinyMCE
+         *
+         * Разницы с tinymce_common_options7 нет, только в версии 4 передаем theme и skin (и то, возможно, не нужно)
          */
         const tinymce_common_options = {
-            version: tinymce_defaults.TINYMCE_VERSION,
             theme: "modern",
             skin: "lightgray",
             language: 'ru',
@@ -89,7 +88,7 @@
 
             paste_as_text: true,
 
-            filemanager_options: {
+            /*filemanager_options: {
                 relative_urls: false,
                 document_base_url: "/",
                 external_filemanager_path: "/frontend/filemanager/",
@@ -97,17 +96,7 @@
                 title: "Responsive Filemanager",
                 width: 980,
                 height: window.innerHeight - 200,
-            },
-
-            // responsive filemanager
-            /*relative_urls: false,
-            document_base_url: "/",
-            external_filemanager_path: "/frontend/filemanager/",
-
-            // Кастомные настройки для размера и заголовка окна плагина responsive filemanager
-            filemanager_title: "Responsive Filemanager",
-            filemanager_width: 980,
-            filemanager_height: window.innerHeight - 200,*/
+            },*/
         };
 
         const tinymce_common_options_7 = {
@@ -149,16 +138,6 @@
             ],
 
             paste_as_text: true,
-
-            // responsive filemanager
-            relative_urls: false,
-            document_base_url: "/",
-            external_filemanager_path: "/frontend/filemanager/",
-
-            // Кастомные настройки для размера и заголовка окна плагина responsive filemanager
-            filemanager_title: "Responsive Filemanager",
-            filemanager_width: 980,
-            filemanager_height: window.innerHeight - 200,
         };
 
         function createInstance(target, options = { }) {
@@ -206,7 +185,16 @@
                 menubar: menubar,
                 toolbar: toolbar,
                 contextmenu: contextmenu,
-                height: height
+                height: height,
+                filemanager_options: {
+                    relative_urls: false,
+                    document_base_url: "/",
+                    external_filemanager_path: "/frontend/filemanager/",
+
+                    title: "Responsive Filemanager",
+                    width: 980,
+                    height: window.innerHeight - 200,
+                }
             }, tinymce_common_options);
 
             tinymce.init(instance_options);
@@ -306,12 +294,11 @@
                         $("#ajax-process").show();
 
                         // disable buttons
-                        $("#actor-submit").prop('disabled', true);
+                        // $("#actor-submit").prop('disabled', true);
+                        $(".action-submit").prop('disabled', true);
                         $("#actor-back").prop('disabled', true);
                     },
                     success     : function(answer) {
-                        console.log(answer);
-
                         if (answer['is_success']) {
                             $("#ajax-result").show();
                             setTimeout(function(){
@@ -321,7 +308,8 @@
                             saving_in_progress = false;
                             $("#ajax-result").show().html( answer['message'] );
                             // enable buttons
-                            $("#actor-submit").removeAttr('disabled');
+                            // $("#actor-submit").removeAttr('disabled');
+                            $(".action-submit").removeAttr('disabled');
                             $("#actor-back").removeAttr('disabled');
                         }
                     }
@@ -342,11 +330,12 @@
     <fieldset>
         <legend> {if $is_present}Название объекта:{else}Это новый регион с ID {$id_region}, нужно задать ему имя:{/if} </legend>
         <label for="title">
-            <input type="text" name="edit:region:title" id="title" size="90" value="{$content_title}" tabindex="1" required style="font-size: x-large; color: blue"/>
+            <input type="text" name="edit:region:title" id="title" size="90" value="{$content_title}" required style="font-size: x-large; color: blue"/>
         </label>
+        <button type="submit" class="action-submit" style="float: right; font-size: x-large">Сохранить</button>
         <br><br>
         <label for="editor_summary" class="label_textarea label_fullwidth">
-            <textarea name="edit:region:content" id="editor_summary" cols="10" tabindex="4" data-height="100">{$content}</textarea>
+            <textarea name="edit:region:content" id="editor_summary" cols="10" data-height="100">{$content}</textarea>
         </label>
     </fieldset>
 
@@ -528,7 +517,7 @@
             <tr>
                 <td>
                     <label for="edit-restricted">Access Denied Message:
-                        <input type="text" name="edit:region:content_restricted" size="70%" value="{$content_restricted}" id="edit-restricted" tabindex="2" autocomplete="off"/>
+                        <input type="text" name="edit:region:content_restricted" size="70%" value="{$content_restricted}" id="edit-restricted" autocomplete="off"/>
                     </label>
                 </td>
                 <td>
@@ -562,7 +551,7 @@
         <legend>Техническое</legend>
         <div class="field">
             <label for="edit-reason">Комментарий редактора:
-                <input type="text" name="edit:region:comment" size="90" value="" id="edit-reason" tabindex="6" autocomplete="off"/>
+                <input type="text" name="edit:region:comment" size="90" value="" id="edit-reason" autocomplete="off"/>
             </label>
         </div>
     </fieldset>
@@ -570,13 +559,13 @@
 
     <fieldset>
         <div class="label_fullwidth">
-            <button type="submit" id="actor-submit" tabindex="7">Сохранить</button>
+            <button type="submit" class="action-submit">Сохранить</button>
             <span id="ajax-process" style="display: none">
                 Сохраняю... &nbsp;
                 <img src="/frontend/images/spinner_saving.svg" height="18" alt="ready"/>
             </span>
             <span id="ajax-result" style="display: none;">Сохранение успешно! Через несколько секунд возвращаемся на карту.</span>
-            <button type="button" id="actor-back" style="float:right" tabindex="8" data-href="{Arris\AppRouter::getRouter('view.frontpage')}">Назад на карту</button>
+            <button type="button" id="actor-back" style="float:right" data-href="{Arris\AppRouter::getRouter('view.frontpage')}">Назад на карту</button>
         </div>
     </fieldset>
 </form>
