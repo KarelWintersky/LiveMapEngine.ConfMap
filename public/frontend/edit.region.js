@@ -24,16 +24,39 @@ class EditRegion {
         },
         contextmenu: "link image responsivefilemanager | inserttable cell row column deletetable | charmap",
         menubar: "file edit insert view format table tools",
-        // разные списки плагинов для разных версий
+        // Еще, _кажется_, для версии 4.2.4 используется кастомная сборка с рядом встроенных плагинов, а 7* - чистая, с плагинами отдельно
         plugins: {
+            // в блоке 0 перечислены общие для обеих версий плагины
+            '*': [
+                "advlist",
+                "anchor",
+                "autolink",
+                "charmap",
+                "code",
+                "insertdatetime",
+                "image",
+                "link",
+                "lists",
+                "pagebreak",
+                "preview",
+                "responsivefilemanager",
+                "searchreplace",
+                "table",
+                "visualblocks",
+                "visualchars",
+                "wordcount"
+            ],
             4: [
-                "advlist lists autolink link image anchor responsivefilemanager charmap insertdatetime paste ",
-                "searchreplace contextmenu code textcolor template hr pagebreak table print preview wordcount",
-                "visualblocks visualchars legacyoutput"
+                "contextmenu", // не требуется в 7.*, встроенный
+                "hr", // для 7* нет?
+                "legacyoutput",  // для 7* нет?
+                "paste", // бесплатного аналога для 7.* нет
+                "print", // для 7* нет?
+                "textcolor", // в 7* вероятно, встроенный
+                "template", // есть в 7*, отдельно, помечен как deprecated
             ],
             7: [
-                "advlist", "lists", "autolink", "link", "image", "anchor", "responsivefilemanager", "charmap", "insertdatetime",
-                "searchreplace", "code", "pagebreak", "table", "preview", "wordcount", "visualblocks", "visualchars", "emoticons"
+                "emoticons"
             ]
         },
     };
@@ -63,19 +86,6 @@ class EditRegion {
             "%d.%m.%Y", "%H:%m", "%d/%m/%Y"
         ],
 
-        // там есть какая-то разница между списками плагинов для 4 и 7 версий. Но ключевая - в седьмой нужен массив строк,
-        // а в 4-ой можно строкой через пробелы
-
-        /*plugins: [
-            "advlist lists autolink link image anchor responsivefilemanager charmap insertdatetime paste ",
-            "searchreplace contextmenu code textcolor template hr pagebreak table print preview wordcount",
-            "visualblocks visualchars legacyoutput"
-        ],*/
-        /*plugins: [
-            "advlist", "lists", "autolink", "link", "image", "anchor", "responsivefilemanager", "charmap", "insertdatetime",
-            "searchreplace", "code", "pagebreak", "table", "preview", "wordcount", "visualblocks", "visualchars", "emoticons"
-        ],*/
-
         charmap_append: [
             ["0x27f7", 'LONG LEFT RIGHT ARROW'],
             ["0x27fa", 'LONG LEFT RIGHT DOUBLE ARROW'],
@@ -104,6 +114,20 @@ class EditRegion {
         }
     }
 
+    /**
+     * Строит список плагинов в зависимости от версии
+     *
+     * @returns {{}}
+     */
+    makePluginsList() {
+        return []
+            .concat(
+                EditRegion.tinymce_defaults.plugins[ '*' ]
+            ).concat(
+                EditRegion.tinymce_defaults.plugins[ tinyMCE.majorVersion ]
+            );
+    }
+
 
 
     /**
@@ -130,7 +154,7 @@ class EditRegion {
             ? options.contextmenu
             : tinymce_defaults.contextmenu;
 
-        let plugins = tinymce_defaults.plugins[ tinyMCE.majorVersion ];
+        let plugins = this.makePluginsList();
 
         let menubar
             = $target.data('menubar')

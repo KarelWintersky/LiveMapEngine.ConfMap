@@ -14,7 +14,7 @@
 
     <script type="text/javascript" src="/frontend/html5shiv.js"></script>
     <script type="text/javascript" src="/frontend/jquery/jquery-3.2.1_min.js"></script>
-    <script type="text/javascript" src="/frontend/tinymce-4.2.4/tinymce.min.js"></script>
+    <script type="text/javascript" src="/frontend/tinymce-7.2.0/tinymce.min.js"></script>
     <script type="text/javascript" src="/frontend/edit.region.js"></script>
     <script type="text/javascript" id="define">
         window.editor_config = {
