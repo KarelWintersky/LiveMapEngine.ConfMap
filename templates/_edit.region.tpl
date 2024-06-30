@@ -14,7 +14,7 @@
 
     <script type="text/javascript" src="/frontend/html5shiv.js"></script>
     <script type="text/javascript" src="/frontend/jquery/jquery-3.2.1_min.js"></script>
-    <script type="text/javascript" src="/frontend/tinymce-4.2.4/tinymce.min.js"></script>
+    <script type="text/javascript" src="/frontend/tinymce-7.2.0/tinymce.min.js"></script>
     <script type="text/javascript" src="/frontend/edit.region.js"></script>
     <script type="text/javascript" id="define">
         window.editor_config = {
@@ -23,11 +23,7 @@
         let editRegion = new EditRegion();
 
         function createInstance(target, options = { }) {
-            if (tinyMCE.majorVersion == 7) {
-                createInstance_720(target, options);
-            } else {
-                createInstance_424(target, options);
-            }
+            editRegion.createInstance(target, options);
         }
 
         /**
@@ -38,7 +34,7 @@
          * @param target
          * @param options
          */
-        function createInstance_424(target, options = { }) {
+        /*function createInstance_424(target, options = { }) {
             let tinymce_defaults = EditRegion.tinymce_defaults;
             let tinymce_common_options = EditRegion.tinymce_common_options;
 
@@ -100,7 +96,7 @@
 
             // ну и высота по-разному считается для разных версий
 
-            let height = /*$target.data('height') || tinymce_defaults.height ||*/ 300;
+            let height = /!*$target.data('height') || tinymce_defaults.height ||*!/ 300;
             let tinymce_defaults = EditRegion.tinymce_defaults;
             let tinymce_common_options = EditRegion.tinymce_common_options;
 
@@ -152,8 +148,7 @@
             }, tinymce_common_options);
 
             tinymce.init(instance_options);
-        }
-
+        }*/
 
         let saving_in_progress = false;
 
