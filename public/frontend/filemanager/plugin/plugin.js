@@ -3,7 +3,7 @@
  * 2024-06-25 - добавлена иконка для кнопки (её показ)
  */
 tinymce.PluginManager.add('responsivefilemanager', function (editor) {
-    const TINYMCE_VERSION = 4;
+    const TINYMCE_VERSION = 7;
 
     /**
      * Вычисляет путь, как - зависит от версии tinyMCE
@@ -11,6 +11,7 @@ tinymce.PluginManager.add('responsivefilemanager', function (editor) {
      * @returns {string}
      */
     function getExternalFileManagerPath() {
+        console.log('[' + tinyMCE.majorVersion + ']');
 
         if (tinyMCE.majorVersion == 4) {
             return editor.settings.filemanager_options.external_filemanager_path;
@@ -38,55 +39,8 @@ tinymce.PluginManager.add('responsivefilemanager', function (editor) {
         }
     }
 
-    /*function responsivefilemanager_onMessage_424(event) {
-        let external_filemanager_path = editor.settings.filemanager_options.external_filemanager_path;
-
-        if (external_filemanager_path.toLowerCase().indexOf(event.origin.toLowerCase()) === 0) {
-            if (event.data.sender === 'responsivefilemanager') {
-                tinymce.activeEditor.insertContent(event.data.html);
-                tinymce.activeEditor.windowManager.close();
-
-                // Remove event listener for a message from ResponsiveFilemanager
-                if (window.removeEventListener) {
-                    window.removeEventListener('message', responsivefilemanager_onMessage_424, false);
-                } else {
-                    window.detachEvent('onmessage', responsivefilemanager_onMessage_424);
-                }
-            }
-        }
-    }
-
-    function responsivefilemanager_onMessage_720(event) {
-        let external_filemanager_path = editor.options.get('filemanager_options');
-        external_filemanager_path = external_filemanager_path.external_filemanager_path;
-
-        if (external_filemanager_path.toLowerCase().indexOf(event.origin.toLowerCase()) === 0) {
-            if (event.data.sender === 'responsivefilemanager') {
-                tinymce.activeEditor.insertContent(event.data.html);
-                tinymce.activeEditor.windowManager.close();
-
-                // Remove event listener for a message from ResponsiveFilemanager
-                if (window.removeEventListener) {
-                    window.removeEventListener('message', responsivefilemanager_onMessage_720, false);
-                } else {
-                    window.detachEvent('onmessage', responsivefilemanager_onMessage_720);
-                }
-            }
-        }
-    }*/
-
-
-    /*function responsivefilemanager_onMessage(event)
-    {
-        if (TINYMCE_VERSION === 7) {
-            responsivefilemanager_onMessage_720(event)
-        } else {
-            responsivefilemanager_onMessage_424(event);
-        }
-    }*/
-
     function openmanager() {
-        if (TINYMCE_VERSION === 7) {
+        if (tinyMCE.majorVersion == 7) {
             openmanager_720()
         } else {
             openmanager_424();

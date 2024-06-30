@@ -15,133 +15,15 @@
     <script type="text/javascript" src="/frontend/html5shiv.js"></script>
     <script type="text/javascript" src="/frontend/jquery/jquery-3.2.1_min.js"></script>
     <script type="text/javascript" src="/frontend/tinymce-4.2.4/tinymce.min.js"></script>
+    <script type="text/javascript" src="/frontend/edit.region.js"></script>
     <script type="text/javascript" id="define">
         window.editor_config = {
             success_edit_timeout: 1000,
         };
-
-        /**
-         * Некоторые настройки tinyMCE по-умолчанию
-         *
-         * @todo: add markdown and simple configs
-         */
-        const tinymce_defaults = {
-            height: 300,
-            toolbar: {
-                simple: [
-                    "bold italic underline strikethrough | fontsizeselect | bullist numlist | responsivefilemanager | image charmap | link unlink anchor | | pastetext removeformat | preview"
-                ],
-                advanced: [
-                    "undo redo | bold italic underline subscript superscript strikethrough | fontsizeselect styleselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | ",
-                    "responsivefilemanager image | template table charmap | link unlink anchor | pastetext removeformat | preview"
-                ]
-            },
-            contextmenu: "link image responsivefilemanager | inserttable cell row column deletetable | charmap",
-            menubar: "file edit insert view format table tools"
-        };
-
-        /**
-         * Шаблон для конфигурации инстанса tinyMCE
-         *
-         * Разницы с tinymce_common_options7 нет, только в версии 4 передаем theme и skin (и то, возможно, не нужно)
-         */
-        const tinymce_common_options = {
-            theme: "modern",
-            skin: "lightgray",
-            language: 'ru',
-
-            formats: {
-                strikethrough: {
-                    inline: 'del'
-                },
-                underline: {
-                    inline: 'span',
-                    'classes': 'underline',
-                    exact: true
-                }
-            },
-
-            forced_root_block: "",
-            force_br_newlines: true,
-            force_p_newlines: false,
-
-            insertdatetime_formats: [
-                "%d.%m.%Y", "%H:%m", "%d/%m/%Y"
-            ],
-
-            plugins: [
-                "advlist lists autolink link image anchor responsivefilemanager charmap insertdatetime paste ",
-                "searchreplace contextmenu code textcolor template hr pagebreak table print preview wordcount",
-                "visualblocks visualchars legacyoutput"
-            ],
-
-            /*menubar: false,
-            contextmenu: false,
-            toolbar: false,*/
-
-            charmap_append: [
-                ["0x27f7", 'LONG LEFT RIGHT ARROW'],
-                ["0x27fa", 'LONG LEFT RIGHT DOUBLE ARROW'],
-                ["0x2600", 'sun'],
-                ["0x2601", 'cloud']
-            ],
-
-            paste_as_text: true,
-
-            /*filemanager_options: {
-                relative_urls: false,
-                document_base_url: "/",
-                external_filemanager_path: "/frontend/filemanager/",
-
-                title: "Responsive Filemanager",
-                width: 980,
-                height: window.innerHeight - 200,
-            },*/
-        };
-
-        const tinymce_common_options_7 = {
-            language: 'ru',
-
-            formats: {
-                strikethrough: {
-                    inline: 'del'
-                },
-                underline: {
-                    inline: 'span',
-                    'classes': 'underline',
-                    exact: true
-                }
-            },
-
-            forced_root_block: "",
-            force_br_newlines: true,
-            force_p_newlines: false,
-
-            insertdatetime_formats: [
-                "%d.%m.%Y", "%H:%m", "%d/%m/%Y"
-            ],
-
-            plugins: [
-                "advlist", "lists", "autolink", "link", "image", "anchor", "responsivefilemanager", "charmap", "insertdatetime",
-                "searchreplace", "code", "pagebreak", "table", "preview", "wordcount", "visualblocks", "visualchars", "emoticons"
-            ],
-
-            /*menubar: false,
-            contextmenu: false,
-            toolbar: false,*/
-
-            charmap_append: [
-                ["0x27f7", 'LONG LEFT RIGHT ARROW'],
-                ["0x27fa", 'LONG LEFT RIGHT DOUBLE ARROW'],
-                ["0x2600", 'sun'],
-                ["0x2601", 'cloud']
-            ],
-
-            paste_as_text: true,
-        };
+        let editRegion = new EditRegion();
 
         function createInstance(target, options = { }) {
-            if (tinymce_defaults.TINYMCE_VERSION === 7) {
+            if (tinyMCE.majorVersion == 7) {
                 createInstance_720(target, options);
             } else {
                 createInstance_424(target, options);
@@ -157,7 +39,13 @@
          * @param options
          */
         function createInstance_424(target, options = { }) {
+            let tinymce_defaults = EditRegion.tinymce_defaults;
+            let tinymce_common_options = EditRegion.tinymce_common_options;
+
             let $target = $('#' + target);
+
+            // ну и высота по-разному считается для разных версий
+
             let height = $target.data('height') || tinymce_defaults.height || 300;
 
             let toolbar
@@ -180,21 +68,28 @@
                         : tinymce_defaults.menubar
                 );
 
+            let filemanager_options = {
+                relative_urls: false,
+                document_base_url: "/",
+                external_filemanager_path: "/frontend/filemanager/",
+
+                title: "Responsive Filemanager",
+                width: 980,
+                height: window.innerHeight - 200,
+            };
+
+            let plugins = tinymce_defaults.plugins[ tinyMCE.majorVersion ];
+
             let instance_options = Object.assign({
+                theme: "modern",
+                skin: "lightgray",
                 selector: "#" + target,
                 menubar: menubar,
                 toolbar: toolbar,
                 contextmenu: contextmenu,
+                plugins: plugins,
                 height: height,
-                filemanager_options: {
-                    relative_urls: false,
-                    document_base_url: "/",
-                    external_filemanager_path: "/frontend/filemanager/",
-
-                    title: "Responsive Filemanager",
-                    width: 980,
-                    height: window.innerHeight - 200,
-                }
+                filemanager_options: filemanager_options
             }, tinymce_common_options);
 
             tinymce.init(instance_options);
@@ -202,7 +97,12 @@
 
         function createInstance_720(target, options = { }) {
             let $target = $('#' + target);
+
+            // ну и высота по-разному считается для разных версий
+
             let height = /*$target.data('height') || tinymce_defaults.height ||*/ 300;
+            let tinymce_defaults = EditRegion.tinymce_defaults;
+            let tinymce_common_options = EditRegion.tinymce_common_options;
 
             let toolbar
                 = options.hasOwnProperty('toolbar')
@@ -224,28 +124,32 @@
                         : tinymce_defaults.menubar
                 );
 
+            let filemanager_options = {
+                relative_urls: false,
+                document_base_url: "/",
+                external_filemanager_path: "/frontend/filemanager/",
+
+                title: "Responsive Filemanager",
+                width: 980,
+                height: window.innerHeight - 200,
+            };
+
+            let plugins = tinymce_defaults.plugins[ tinyMCE.majorVersion ];
+
             let instance_options = Object.assign({
                 selector: "#" + target,
                 menubar: menubar,
                 toolbar: toolbar,
                 contextmenu: contextmenu,
+                plugins: plugins,
                 height: height,
                 setup: (editor) => {
                     editor.options.register('filemanager_options', {
                         processor: 'object',
-                        default: {
-                            version: 7,
-                            relative_urls: false,
-                            document_base_url: "/",
-                            external_filemanager_path: "/frontend/filemanager/",
-
-                            title: "Responsive Filemanager",
-                            width: 980,
-                            height: window.innerHeight - 200,
-                        }
+                        default: filemanager_options
                     })
                 },
-            }, tinymce_common_options_7);
+            }, tinymce_common_options);
 
             tinymce.init(instance_options);
         }

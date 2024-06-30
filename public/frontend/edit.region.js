@@ -6,11 +6,12 @@
 */
 class EditRegion {
 
-    used_tinymce_version = 7;
-
-    tinymce_defaults = {
-        TINYMCE_VERSION: version,
-
+    /**
+     * Некоторые настройки tinyMCE по-умолчанию
+     *
+     * @todo: add markdown and simple configs
+     */
+    static tinymce_defaults = {
         height: 300,
         toolbar: {
             simple: [
@@ -22,12 +23,25 @@ class EditRegion {
             ]
         },
         contextmenu: "link image responsivefilemanager | inserttable cell row column deletetable | charmap",
-        menubar: "file edit insert view format table tools"
+        menubar: "file edit insert view format table tools",
+        // разные списки плагинов для разных версий
+        plugins: {
+            4: [
+                "advlist lists autolink link image anchor responsivefilemanager charmap insertdatetime paste ",
+                "searchreplace contextmenu code textcolor template hr pagebreak table print preview wordcount",
+                "visualblocks visualchars legacyoutput"
+            ],
+            7: [
+                "advlist", "lists", "autolink", "link", "image", "anchor", "responsivefilemanager", "charmap", "insertdatetime",
+                "searchreplace", "code", "pagebreak", "table", "preview", "wordcount", "visualblocks", "visualchars", "emoticons"
+            ]
+        },
     };
 
-    tinymce_common_options = {
-        theme: "modern",
-        skin: "lightgray",
+    /**
+     * Шаблон для конфигурации инстанса tinyMCE
+     */
+    static tinymce_common_options = {
         language: 'ru',
 
         formats: {
@@ -49,15 +63,18 @@ class EditRegion {
             "%d.%m.%Y", "%H:%m", "%d/%m/%Y"
         ],
 
-        plugins: [
+        // там есть какая-то разница между списками плагинов для 4 и 7 версий. Но ключевая - в седьмой нужен массив строк,
+        // а в 4-ой можно строкой через пробелы
+
+        /*plugins: [
             "advlist lists autolink link image anchor responsivefilemanager charmap insertdatetime paste ",
             "searchreplace contextmenu code textcolor template hr pagebreak table print preview wordcount",
             "visualblocks visualchars legacyoutput"
-        ],
-
-        /*menubar: false,
-        contextmenu: false,
-        toolbar: false,*/
+        ],*/
+        /*plugins: [
+            "advlist", "lists", "autolink", "link", "image", "anchor", "responsivefilemanager", "charmap", "insertdatetime",
+            "searchreplace", "code", "pagebreak", "table", "preview", "wordcount", "visualblocks", "visualchars", "emoticons"
+        ],*/
 
         charmap_append: [
             ["0x27f7", 'LONG LEFT RIGHT ARROW'],
@@ -67,22 +84,11 @@ class EditRegion {
         ],
 
         paste_as_text: true,
-
-        // responsive filemanager
-        relative_urls: false,
-        document_base_url: "/",
-        external_filemanager_path: "/frontend/filemanager/",
-
-        // Кастомные настройки для размера и заголовка окна плагина responsive filemanager
-        filemanager_title: "Responsive Filemanager",
-        filemanager_width: 980,
-        filemanager_height: window.innerHeight - 200,
     };
 
 
-
-    constructor(version = 7) {
-        this.used_tinymce_version = version;
+    constructor() {
+        this.test = '123';
     }
 
 
