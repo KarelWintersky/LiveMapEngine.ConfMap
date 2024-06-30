@@ -5,11 +5,10 @@
 Скрипты для подключения tinyMCE
 */
 class EditRegion {
+    V7_TEXTAREA_ADDITIONAL_HEIGHT = 120; // на самом деле где-то 117 для одного ряда кнопок, но пускай будет размер ПРИМЕРНЫЙ
 
     /**
      * Некоторые настройки tinyMCE по-умолчанию
-     *
-     * @todo: add markdown and simple configs
      */
     static tinymce_defaults = {
         height: 300,
@@ -25,9 +24,9 @@ class EditRegion {
         contextmenu: "link image responsivefilemanager | inserttable cell row column deletetable | charmap",
         menubar: "file edit insert view format table tools",
         // Еще, _кажется_, для версии 4.2.4 используется кастомная сборка с рядом встроенных плагинов, а 7* - чистая, с плагинами отдельно
+        // https://www.tiny.cloud/docs/tinymce/6/plugins/
         plugins: {
-            // в блоке 0 перечислены общие для обеих версий плагины
-            '*': [
+            0: [
                 "advlist",
                 "anchor",
                 "autolink",
@@ -39,7 +38,7 @@ class EditRegion {
                 "lists",
                 "pagebreak",
                 "preview",
-                "responsivefilemanager",
+                // "responsivefilemanager",
                 "searchreplace",
                 "table",
                 "visualblocks",
@@ -94,6 +93,18 @@ class EditRegion {
         ],
 
         paste_as_text: true,
+
+        /*
+        Custom plugins can be added to a TinyMCE instance by either:
+        - Using external_plugins: Use the external_plugins option to specify the URL-based location of the entry point file for the plugin.
+        - Copy code into plugins folder: Copy the entry point file (and any other files) into the plugins folder of the distributed TinyMCE code. The plugin can then be used by including it in the list of plugins specified by the plugins option.
+        see: https://www.tiny.cloud/docs/tinymce/latest/creating-a-plugin/#using-custom-plugins-with-tinymce
+
+        Поэтому при использовании плагина вот так его нужно отключить в списке tinymce_defaults.plugins[0]
+         */
+        external_plugins: {
+            "responsivefilemanager": "/frontend/filemanager/plugin/plugin.js"
+        }
     };
 
 
@@ -104,13 +115,19 @@ class EditRegion {
      * Вычисляет высоту контейнера редактора
      *
      * @param $target
+     * @param selected_toolbar = 'simple'
      * @returns {*|number|number}
      */
-    calculateHeight($target) {
-        if (tinyMCE.majorVersion == 7) {
-            return 300; // тут нужны эксперименты!
-        } else {
+    calculateHeight($target, selected_toolbar = 'simple') {
+        if (tinyMCE.majorVersion < 5) {
             return $target.data('height') || EditRegion.tinymce_defaults.height || 300;
+        } else {
+            // Для версии 7 высота контейнера считается не как высота textArea, а высота всего редактора.
+            // Поэтому добавляем еще ~120 пикселей с учетом одного ряда кнопок.
+            //@todo: нужно учитывать количество строк в тулбаре
+            let h = $target.data('height') || EditRegion.tinymce_defaults.height || 300; // тут нужны эксперименты!
+            h += this.V7_TEXTAREA_ADDITIONAL_HEIGHT;
+            return h;
         }
     }
 
@@ -122,7 +139,7 @@ class EditRegion {
     makePluginsList() {
         return []
             .concat(
-                EditRegion.tinymce_defaults.plugins[ '*' ]
+                EditRegion.tinymce_defaults.plugins[ 0 ]
             ).concat(
                 EditRegion.tinymce_defaults.plugins[ tinyMCE.majorVersion ]
             );
