@@ -151,37 +151,30 @@ class EditRegion {
             height: window.innerHeight - 200,
         };
 
-        let instance_options;
+        let instance_options = Object.assign({
+            selector: "#" + target,
+            menubar: menubar,
+            toolbar: toolbar,
+            contextmenu: contextmenu,
+            plugins: plugins,
+            height: height,
+        }, tinymce_common_options);
 
-        if (tinyMCE.majorVersion == 7) {
-            instance_options = Object.assign({
-                selector: "#" + target,
-                menubar: menubar,
-                toolbar: toolbar,
-                contextmenu: contextmenu,
-                plugins: plugins,
-                height: height,
-
+        if (tinyMCE.majorVersion < 5) {
+            Object.assign(instance_options, {
+                theme: "modern",
+                skin: "lightgray",
+                filemanager_options: filemanager_options
+            });
+        } else {
+            Object.assign(instance_options, {
                 setup: (editor) => {
                     editor.options.register('filemanager_options', {
                         processor: 'object',
                         default: filemanager_options
                     })
-                },
-            }, tinymce_common_options);
-        } else {
-            instance_options = Object.assign({
-                selector: "#" + target,
-                menubar: menubar,
-                toolbar: toolbar,
-                contextmenu: contextmenu,
-                plugins: plugins,
-                height: height,
-
-                theme: "modern",
-                skin: "lightgray",
-                filemanager_options: filemanager_options
-            }, tinymce_common_options);
+                }
+            });
         }
 
         return tinymce.init(instance_options);

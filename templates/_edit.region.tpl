@@ -14,156 +14,28 @@
 
     <script type="text/javascript" src="/frontend/html5shiv.js"></script>
     <script type="text/javascript" src="/frontend/jquery/jquery-3.2.1_min.js"></script>
-    <script type="text/javascript" src="/frontend/tinymce-7.2.0/tinymce.min.js"></script>
+    <script type="text/javascript" src="/frontend/tinymce-4.2.4/tinymce.min.js"></script>
     <script type="text/javascript" src="/frontend/edit.region.js"></script>
     <script type="text/javascript" id="define">
         window.editor_config = {
             success_edit_timeout: 1000,
         };
-        let editRegion = new EditRegion();
-
-        function createInstance(target, options = { }) {
-            editRegion.createInstance(target, options);
-        }
-
-        /**
-         *
-         *
-         *
-         *
-         * @param target
-         * @param options
-         */
-        /*function createInstance_424(target, options = { }) {
-            let tinymce_defaults = EditRegion.tinymce_defaults;
-            let tinymce_common_options = EditRegion.tinymce_common_options;
-
-            let $target = $('#' + target);
-
-            // ну и высота по-разному считается для разных версий
-
-            let height = $target.data('height') || tinymce_defaults.height || 300;
-
-            let toolbar
-                = options.hasOwnProperty('toolbar')
-                ? options.toolbar
-                : tinymce_defaults.toolbar.simple;
-
-            let contextmenu
-                = options.hasOwnProperty('contextmenu')
-                ? options.contextmenu
-                : tinymce_defaults.contextmenu;
-
-
-            let menubar
-                = $target.data('menubar')
-                ? $target.data('menubar')
-                : (
-                    options.hasOwnProperty('menubar')
-                        ? options.menubar
-                        : tinymce_defaults.menubar
-                );
-
-            let filemanager_options = {
-                relative_urls: false,
-                document_base_url: "/",
-                external_filemanager_path: "/frontend/filemanager/",
-
-                title: "Responsive Filemanager",
-                width: 980,
-                height: window.innerHeight - 200,
-            };
-
-            let plugins = tinymce_defaults.plugins[ tinyMCE.majorVersion ];
-
-            let instance_options = Object.assign({
-                theme: "modern",
-                skin: "lightgray",
-                selector: "#" + target,
-                menubar: menubar,
-                toolbar: toolbar,
-                contextmenu: contextmenu,
-                plugins: plugins,
-                height: height,
-                filemanager_options: filemanager_options
-            }, tinymce_common_options);
-
-            tinymce.init(instance_options);
-        }
-
-        function createInstance_720(target, options = { }) {
-            let $target = $('#' + target);
-
-            // ну и высота по-разному считается для разных версий
-
-            let height = /!*$target.data('height') || tinymce_defaults.height ||*!/ 300;
-            let tinymce_defaults = EditRegion.tinymce_defaults;
-            let tinymce_common_options = EditRegion.tinymce_common_options;
-
-            let toolbar
-                = options.hasOwnProperty('toolbar')
-                ? options.toolbar
-                : tinymce_defaults.toolbar.simple;
-
-            let contextmenu
-                = options.hasOwnProperty('contextmenu')
-                ? options.contextmenu
-                : tinymce_defaults.contextmenu;
-
-
-            let menubar
-                = $target.data('menubar')
-                ? $target.data('menubar')
-                : (
-                    options.hasOwnProperty('menubar')
-                        ? options.menubar
-                        : tinymce_defaults.menubar
-                );
-
-            let filemanager_options = {
-                relative_urls: false,
-                document_base_url: "/",
-                external_filemanager_path: "/frontend/filemanager/",
-
-                title: "Responsive Filemanager",
-                width: 980,
-                height: window.innerHeight - 200,
-            };
-
-            let plugins = tinymce_defaults.plugins[ tinyMCE.majorVersion ];
-
-            let instance_options = Object.assign({
-                selector: "#" + target,
-                menubar: menubar,
-                toolbar: toolbar,
-                contextmenu: contextmenu,
-                plugins: plugins,
-                height: height,
-                setup: (editor) => {
-                    editor.options.register('filemanager_options', {
-                        processor: 'object',
-                        default: filemanager_options
-                    })
-                },
-            }, tinymce_common_options);
-
-            tinymce.init(instance_options);
-        }*/
+        let _editRegion = new EditRegion();
 
         let saving_in_progress = false;
 
         $(document).ready(function(){
-            createInstance('editor_summary');
-            createInstance('editor_history');
-            createInstance('editor_trade_export');
-            createInstance('editor_trade_import');
-            createInstance('editor_assets_natural');
-            createInstance('editor_assets_financial');
-            createInstance('editor_assets_industrial');
-            createInstance('editor_assets_social');
-            createInstance('editor_assets_oldmoney');
-            createInstance('editor_other_local_heroes');
-            createInstance('editor_legacy_description');
+            _editRegion.createInstance('editor_summary');
+            _editRegion.createInstance('editor_history');
+            _editRegion.createInstance('editor_trade_export');
+            _editRegion.createInstance('editor_trade_import');
+            _editRegion.createInstance('editor_assets_natural');
+            _editRegion.createInstance('editor_assets_financial');
+            _editRegion.createInstance('editor_assets_industrial');
+            _editRegion.createInstance('editor_assets_social');
+            _editRegion.createInstance('editor_assets_oldmoney');
+            _editRegion.createInstance('editor_other_local_heroes');
+            _editRegion.createInstance('editor_legacy_description');
 
             setTimeout(function(){
                 $('input#title').focus()
