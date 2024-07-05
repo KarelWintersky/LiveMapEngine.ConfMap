@@ -13,6 +13,8 @@ PATH_CONFIG=/etc/arris/confmap
 PATH_STORAGE_LINKED=${PATH_PUBLIC}/storage
 PATH_CACHE_SMARTY=${PATH_PROJECT}/cache
 
+PHP_VERSIONS=$(ps -e -o stat,command | grep -E '^Ss\s+php-fpm' | grep -E '[0-9]+\.[0-9]+' -o)
+
 case "$1" in
     configure)
         echo "\n ${ANSI_YELLOW} Running LIVEMAP post-install tasks... ${ANSI_RESET} \n"
@@ -47,6 +49,11 @@ case "$1" in
         echo "Fixing access rights..."
         chown -R www-data:www-data ${PATH_PROJECT}/*
         echo "${ANSI_GREEN} Ok. ${ANSI_RESET}"
+
+        echo
+        echo "Restarting all running php-fpm processes..."
+        for version in $PHP_VERSIONS; do echo "Restarting ${ANSI_YELLOW}php${version}-fpm${ANSI_RESET} process..."; systemctl restart php${version}-fpm; done
+        echo "${ANSI_GREEN}Finished.${ANSI_RESET}"
 
         echo
         echo "${ANSI_YELLOW} ... post-install finished. ${ANSI_RESET}"

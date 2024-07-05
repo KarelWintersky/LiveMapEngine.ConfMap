@@ -38,7 +38,7 @@ class EditRegion {
                 "lists",
                 "pagebreak",
                 "preview",
-                // "responsivefilemanager",
+                // "responsivefilemanager", // отключаем, так-как загружается через external_plugins
                 "searchreplace",
                 "table",
                 "visualblocks",
@@ -46,13 +46,13 @@ class EditRegion {
                 "wordcount"
             ],
             4: [
-                "contextmenu", // не требуется в 7.*, встроенный
-                "hr", // для 7* нет?
-                "legacyoutput",  // для 7* нет?
-                "paste", // бесплатного аналога для 7.* нет
-                "print", // для 7* нет?
-                "textcolor", // в 7* вероятно, встроенный
-                "template", // есть в 7*, отдельно, помечен как deprecated
+                "contextmenu",      // в 7.*  встроенный
+                "hr",               // в 7.* встроенный
+                "legacyoutput",     // deprecated, удален в tinyMCE 6, changes TinyMCE’s output, producing legacy elements such as font, b, i, u, strike, and use align attributes.
+                "paste",            // бесплатного аналога для 7.* нет
+                "print",            // в 7* то ли встроенный, то ли непонятно
+                "textcolor",        // в 7* вероятно, встроенный
+                "template",         // есть в 7*, отдельно, помечен как deprecated
             ],
             7: [
                 "emoticons"

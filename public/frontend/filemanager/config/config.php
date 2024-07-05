@@ -1,26 +1,21 @@
 <?php
 $version = "9.14.0";
-if (session_id() == '') {
-    session_start();
+if (\session_id() == '') {
+    \session_start();
 }
 
-mb_internal_encoding('UTF-8');
-mb_http_output('UTF-8');
-mb_language('uni');
-mb_regex_encoding('UTF-8');
-ob_start('mb_output_handler');
-date_default_timezone_set('Europe/Moscow');
-setlocale(LC_CTYPE, 'en_US'); //correct transliteration
+\mb_internal_encoding('UTF-8');
+\mb_http_output('UTF-8');
+\mb_language('uni');
+\mb_regex_encoding('UTF-8');
+\ob_start('mb_output_handler');
+\date_default_timezone_set('Europe/Moscow');
+\setlocale(LC_CTYPE, 'en_US'); //correct transliteration
 
 /*
 |--------------------------------------------------------------------------
 | Optional security
 |--------------------------------------------------------------------------
-| @todo: с новым filemanager'ом минимальная ширина попапа 950 пикселей - ну, чтобы все элементы управления были в одной строке
- Сейчас выставляется 860 или 858 и хз как изменить...
-
-И tinyMCE в проекте 4.2.4, возможно, нужно обновить...
-
 |
 | if set to true only those will access RF whose url contains the access key(akey) like:
 | <input type="button" href="../filemanager/dialog.php?field_id=imgField&lang=en_EN&akey=myPrivateKey" value="Files">
