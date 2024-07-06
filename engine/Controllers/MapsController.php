@@ -50,12 +50,14 @@ class MapsController extends AbstractClass
         // может быть перекрыто настройкой из конфига.
         //@todo: обновить в livemap с учетом нового модуля Map
         $this->template->assign("sections_present", [
-            'infobox'   =>  true,
+            'infobox'   =>  false,
             'regions'   =>  true && ( $this->map->mapConfig->display->sections->regions ?? true ),
             'backward'  =>  true && ( $this->map->mapConfig->display->sections->backward ?? true ),
-            'title'     =>  false,
-            'colorbox'  =>  false,
+            'title'     =>  false, //@todo: rename to hintbox
+            'colorbox'  =>  true,
         ]);
+
+        //@todo: по-хорошему, надо назвать 'hintbox' то, что сейчас открывается как `$sections_present.title`
 
         // @todo: перенести в livemap
         $this->template->assign("sections_custom_regions_title", $this->map->getConfig("display_defaults->sections->regions->title") ?: 'Интересные места на карте');

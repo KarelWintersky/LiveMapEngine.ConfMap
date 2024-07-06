@@ -33,12 +33,34 @@ $(function() {
             // альтернатива - менять window.location.hash
             // а ниже отлавливать его изменения
 
-            if (MapManager.current_infobox_region_id === id_region) {
-                _mapManager.manageInfoBox('toggle', id_region);
-            } else {
-                _mapManager.manageInfoBox('show', id_region);
+            // infobox или colorbox - зависит от режима отображения региона
+            if (_mapManager.infobox_mode === 'infobox') {
+
+                if (MapManager.current_infobox_region_id === id_region) {
+                    _mapManager.manageInfoBox('toggle', id_region);
+                } else {
+                    _mapManager.manageInfoBox('show', id_region);
+                }
+                MapManager.current_infobox_region_id = id_region;
+
+            } else if (_mapManager.infobox_mode === 'colorbox') {
+
+                window.location.hash = MapManager.WLH_makeLink(id_region);
+
+                //@todo: вот это должно происходить внутри функции manageColorBox, данные о title
+                // мы должны из...
+                // this.regionsDataset[id_region] ?
+
+                let title = (window.theMap['regions'][id_region]['title'] != '')
+                    ? window.theMap['regions'][id_region]['title']
+                    : '';
+
+                _mapManager.manageColorBox('show', id_region, title);
+            } else if (_mapManager.infobox_mode === 'hintbox') {
+                _mapManager.manageHintBox('show', id_region);
             }
-            MapManager.current_infobox_region_id = id_region;
+
+
 
         }).on('mouseover', function() {
             // выставляем стили для региона при наведении на него мышки, для маркера типа POI стиль не ставится
@@ -138,10 +160,11 @@ $(function() {
     });
 
 
-
+    //@todo: нужно устанавливать в MapControls соотв.флаги
     let controlRegionsBoxPresent    = MapControls.declareControl_RegionsBox();
     let controlInfoBoxPresent       = MapControls.declareControl_InfoBox();
     let controlBackwardPresent      = MapControls.declareControl_Backward();
+    let controlHintBoxPresent       = MapControls.declareControl_RegionTitle(); //@todo: rename to hintbox
 
     // не показываем контрол "назад" если страница загружена в iframe
     if (! MapControls.isLoadedToIFrame()) {
@@ -169,6 +192,9 @@ $(function() {
 
             if (wlh_options.id_region != null) {
                 _mapManager.wlhFocusRegion(_mapManager.map, wlh_options.id_region, _mapManager.LGS);
+
+                //@todo: Какой контейнер открывать - зависит от режима!!! Сейчас только infoBox
+                //@todo: нужен универсальный метод открытия инфо-окна, который открывает нужный тип внутри
                 _mapManager.manageInfoBox('show', wlh_options.id_region);
             }
 
@@ -197,28 +223,37 @@ $(function() {
         });
     });
 
-}).on('click', '#actor-edit', function(){
+}).on('click', '#actor-edit', function() {
+    // клик на кнопку "редактировать"
     let _mapManager = window._mapManager;
 
     let region_id = $(this).data('region-id');
     document.location.href = MapManager.makeURL('edit', _mapManager.map_alias, region_id);
 
 }).on('click', '#actor-regions-toggle', function (el) {
-    MapControls.toggle_Regions(this);
-}).on('click', '#actor-viewbox-toggle', function (el) {
-    MapControls.toggle_Info(this);
-}).on('click', "#actor-backward-toggle", function (el) {
-    MapControls.toggle_Backward(this);
-}).on('change', "#sort-select", function(e){
 
+    MapControls.toggle_Regions(this);
+
+}).on('click', '#actor-viewbox-toggle', function (el) {
+
+    MapControls.toggle_Info(this);
+
+}).on('click', "#actor-backward-toggle", function (el) {
+
+    MapControls.toggle_Backward(this);
+
+}).on('change', "#sort-select", function(e){
+    // клик на смену режима сортировки в инфобоксе "regions"
     let must_display = (e.target.value === 'total') ? "#data-ordered-alphabet" : "#data-ordered-latest";
     let must_hide = (e.target.value === 'total') ? "#data-ordered-latest" : "#data-ordered-alphabet";
     $(must_hide).hide();
     $(must_display).show();
 
 }).on('click', '.action-focus-at-region', function(){
-    let _mapManager = window._mapManager;
     // клик на ссылке в списке регионов
+
+    let _mapManager = window._mapManager;
+
     let id_region = $(this).data('region-id');
     console.log(`current_infobox_region_id = ${MapManager.current_infobox_region_id}`);
 
@@ -229,12 +264,20 @@ $(function() {
     return false;
 
 }).on('click', '#actor-section-infobox-toggle', function(){
+
     let _mapManager = window._mapManager;
 
     _mapManager.manageInfoBox('hide', null);
 
-}).escape(function(){
+}).escape(function() {
+    // ловит ESCAPE
     let _mapManager = window._mapManager;
 
-    _mapManager.manageInfoBox('hide', null);
+    if (_mapManager.infobox_mode === 'infobox') {
+        _mapManager.manageInfoBox('hide', null);
+    } else if (_mapManager.infobox_mode === 'colorbox') {
+        _mapManager.manageColorBox('hide', null, '');
+    } else if (_mapManager.infobox_mode === 'hintbox') {
+        _mapManager.manageHintBox('hide');
+    }
 });

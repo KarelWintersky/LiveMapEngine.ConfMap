@@ -58,6 +58,13 @@ class MapManager {
     baseMapBounds = {};
 
     /**
+     * Режим показа окна с информацией о регионе: infobox|colorbox
+     *
+     * @type {string}
+     */
+    infobox_mode = '';
+
+    /**
      *
      * @param mapDefinition - определение карты, полученное из JS-запроса `/map:js/ID.js`
      * @param options
@@ -74,6 +81,9 @@ class MapManager {
         this.theMap = mapDefinition;
         this.IS_DEBUG = is_debug;
         this.map_alias = this.theMap.map.id;
+
+        // infobox | colorbox
+        this.infobox_mode = 'colorbox'; //@todo: на самом деле из mapDefinition
 
         this.LGS = {};
         this.regionsDataset = {};
@@ -461,6 +471,8 @@ class MapManager {
     /**
      * Загружает контент из БД и записывает его в контейнер infoBox
      *
+     * @todo: метод loadContent должен только ходить на бэк!
+     *
      * @param target
      * @param id_region
      * @returns {boolean}
@@ -546,12 +558,52 @@ class MapManager {
     }
 
     /**
-     * Показывает контентное окно colorbox'ом
+     * Управляет поведением контейнера HintBox.
+     * В версии от 2024-07-06 и ранее оно называется $sections_present.title, #section-region-title
+     * А должно быть `section-region-hintbox` (и задаваться через конструктор MapControls!
      *
+     * @param event
      * @param id_region
      * @param title
      */
-    showContentColorBox(id_region, title) {
+    manageHintBox(event = 'show', id_region, title = '') {
+        //@todo: еще нужно проверять, существует ли этот контейнер!
+
+        let $target = $("#section-region-title-content");
+        if (event === 'hide') {
+            if ($target) {
+                $target.html('');
+            }
+            return true;
+        }
+
+        let t = (this.regionsDataset[id_region]['title'] !== '')
+            ? this.regionsDataset[id_region]['title']
+            : '';
+
+        if ($target) {
+            $target.html(t);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Исходя из имени, управляет поведением окна ColorBox, в которое загружается контент.
+     * Но в силу специфики колорбокса на данный момент (2024-07-06 12:40) имеет только событие 'show'
+     * То есть практически - только показывает контент.
+     *
+     * @param event
+     * @param id_region
+     * @param title
+     */
+    manageColorBox(event = 'show', id_region, title = '') {
+        if (event === 'hide') {
+            parent.$.colorbox.close();
+            return true;
+        }
+
         let url = MapManager.makeURL(
             'view',
             this.theMap.map['id'],
@@ -559,19 +611,26 @@ class MapManager {
             MapControls.isLoadedToIFrame()
         );
 
-        $.get( url, function() {
+        title = (this.regionsDataset[id_region]['options']['title'] !== '')
+            ? this.regionsDataset[id_region]['options']['title']
+            : '';
 
+        $.get( url, function() {
         }).done(function(data) {
-            let colorbox_width  = 800;
+            let colorbox_width  = 800; //@todo: эти опции надо брать из какого-то конфига
             let colorbox_height = 600;
+
+            window.location.hash = MapManager.WLH_makeLink(id_region);
 
             $.colorbox({
                 html: data,
                 width: colorbox_width,
                 height: colorbox_height,
                 title: title,
-                onClosed: function(){
+                onClosed: function() {
+                    // что делаем при закрытии колобокса?
                     history.pushState('', document.title, window.location.pathname);
+                    window.location.hash = '';
                 }
             });
         });

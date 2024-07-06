@@ -31,6 +31,11 @@
     <link href="/frontend/leaflet/L.Icon.FontAwesome.css" rel="stylesheet">
     <script src="/frontend/leaflet/SmoothWheelZoom.js"></script>
 
+    {if $sections_present.colorbox}
+        <script type="text/javascript" src="/frontend/colorbox/jquery.colorbox-min.js"></script>
+        <link rel="stylesheet" href="/frontend/colorbox/colorbox.css">
+    {/if}
+
     <script data-comment="init">
         window.theMap = { };
         window.REGION_URLS = {
