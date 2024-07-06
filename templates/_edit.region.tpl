@@ -120,7 +120,13 @@
             КЖП: <input type="text" name="json:lsi-index" size="10" placeholder="0..12" value="{$json.lsi.index|default:'0'}">
         </label>
         <label>
-            Тип экосферы: <input type="text" name="json:lsi-type" size="40" placeholder="Тип планеты, тип атмосферы и аквасферы" value="{$json.lsi.type|default:''}">
+            Тип: <input type="text" name="json:lsi-type" size="40" placeholder="Тип планеты, тип атмосферы и аквасферы" value="{$json.lsi.type|default:''}">
+        </label>
+        <label>
+            Атмосфера: <input type="text" name="json:lsi-atmosphere" size="40" placeholder="Атмосфера, % состав" value="{$json.lsi.atmosphere|default:''}">
+        </label>
+        <label>
+            Гидросфера: <input type="text" name="json:lsi-hydrosphere" size="40" placeholder="Гидросфера, %" value="{$json.lsi.hydrosphere|default:''}">
         </label>
         <label>
             Климат заселенных регионов: <input type="text" name="json:lsi-climate" size="40" placeholder="Климат заселенных регионов" value="{$json.lsi.climate|default:''}">

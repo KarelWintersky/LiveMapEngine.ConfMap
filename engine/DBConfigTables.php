@@ -5,24 +5,21 @@ namespace Confmap;
 #[\AllowDynamicProperties]
 final class DBConfigTables
 {
-    public $folders;
+    /**
+     * @var
+     */
+    public string $projects;
 
-    public $files;
+    public string $maps; 
 
-    public $log_download;
+    public string $log_actions;
 
-    public $log_view;
-
-    public $log_actions;
-
-    public $users;
+    public string $users;
 
     public string $map_data_regions;
 
     public function __construct()
     {
-        $this->log_download = 'log_download';
-        $this->log_view     = 'log_view';
         $this->log_actions  = 'log_actions';
 
         /*

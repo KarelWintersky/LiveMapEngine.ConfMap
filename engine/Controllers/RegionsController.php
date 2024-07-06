@@ -160,6 +160,8 @@ class RegionsController extends AbstractClass
             'lsi'       =>  [
                 'index'     =>  self::json('lsi-index'),
                 'type'      =>  self::json('lsi-type'),
+                'atmosphere'=>  self::json('lsi-atmosphere'),
+                'hydrosphere'   =>  self::json('lsi-hydrosphere'),
                 'climate'   =>  self::json('lsi-climate')
             ],
             'history'   =>  [
