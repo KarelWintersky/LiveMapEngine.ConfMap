@@ -2,11 +2,64 @@
 
 namespace Confmap\Units;
 
+use LiveMapEngine\Helpers;
+
+/**
+ * Кастомный механизм парсинга
+ */
 class Map
 {
-    public static function parseJSONFile($fn)
+    private $data;
+
+    public function __construct()
+    {
+    }
+
+    /**
+     * Кастомный парсер, используемый для парсинга конфига
+     *
+     * @param $fn
+     * @return mixed
+     * @throws \ColinODell\Json5\SyntaxError
+     */
+    public function parseJSONFile($fn)
     {
         return json5_decode($fn);
+    }
+
+    /**
+     * Кастомный парсер, используемый для парсинга данных, принятых из БД
+     *
+     * @param $data
+     * @return mixed
+     * @throws \ColinODell\Json5\SyntaxError
+     */
+    public function parseJSON($data)
+    {
+        $this->data = json_decode($data);
+        return $this->data;
+    }
+
+    /**
+     * Получение поля данных из распарсенного выше блока JSON-данных.
+     * Используется для упрощения работы с JSON-данными в проекте LiveMap.Confmap.
+     * Вряд ли требуется перенос во фреймворк. Только если мы во фреймворке не допустим JSON-поля "искаропки" (а можем!)
+     *
+     * @param string $path
+     * @param mixed $default
+     * @param string $separator
+     * @return mixed
+     */
+    public function getData(string $path = '', mixed $default = '', string $separator = '->'): mixed
+    {
+        if (!empty($path)) {
+            if (Helpers::property_exists_recursive($this->data, $path, $separator)) {
+                return Helpers::property_get_recursive($this->data, $path, $separator, $default);
+            } else {
+                return $default;
+            }
+        }
+        return $this->data;
     }
 
 }

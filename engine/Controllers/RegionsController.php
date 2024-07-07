@@ -49,13 +49,16 @@ class RegionsController extends AbstractClass
             throw new \RuntimeException($this->map->state->getMessage());
         }
 
-        $region_data = $this->map->getMapRegionData($id_region, [ 'title', 'content', 'content_restricted']);
+        $region_data = $this->map->getMapRegionData($id_region, [ 'title', 'content', 'content_restricted', 'content_json']);
 
         $t = new Template();
         $t
             ->setTemplateDir( config('smarty.path.template'))
             ->setCompileDir( config('smarty.path.cache'))
             ->setForceCompile( config('smarty.force_compile'))
+            ->registerPlugin(Template::PLUGIN_MODIFIER, 'json_decode', 'json_decode', false)
+            ->registerPlugin(Template::PLUGIN_MODIFIER, 'dd', 'dd', false)
+            ->registerPlugin(Template::PLUGIN_MODIFIER, 'implode', 'implode', false)
             ->registerClass("Arris\AppRouter", "Arris\AppRouter");
 
         $t->assign('is_present', $region_data['is_present']);
@@ -65,6 +68,78 @@ class RegionsController extends AbstractClass
         $t->assign('region_text', $region_data['content']);
         $t->assign('is_can_edit', $region_data['can_edit']);
         $t->assign('edit_button_url', AppRouter::getRouter('update.region.info'));
+
+        $json = $region_data['content_json'] ?? '{}';
+        $t->assign('json', json_decode($json)); //@TODO: ВАЖНО, В ШАБЛОНЕ ХОДИМ ТАК: {$json->economy->type}, А НЕ ЧЕРЕЗ ТОЧКУ!!!!
+
+        /*
+        Для упрощения построения круговой диаграммы долей экономики часть расчетов сделаем здесь.
+        */
+        $m = new \Confmap\Units\Map();
+        $m->parseJSON($json);
+
+        $pcd_natural = (int)$m->getData("economy->shares->natural", 0);
+        $pcd_financial = (int)$m->getData("economy->shares->financial", 0);
+        $pcd_industrial = (int)$m->getData("economy->shares->industrial", 0);
+        $pcd_social = (int)$m->getData("economy->shares->social", 0);
+        $pcd_sum = $pcd_natural + $pcd_financial + $pcd_industrial + $pcd_social;
+
+        $pie_chart_data = [];
+        $pie_chart_labels = [];
+        $pie_chart_colors = [ '"#77e359"', '"#ff85ef"', '"#ed8d26"', '"#8bd5f7"' ];
+
+        $pcd = [];
+
+        if ($pcd_sum > 0) {
+            $pcd[] = [
+                'data'  =>  $pcd_natural * 30,
+                'label' =>  '"' . round( $pcd_natural / $pcd_sum, 2 )*100 . '%"',
+                'color' =>  '"#77e359"',
+                'hint'  =>  '"Природная"'
+            ];
+            $pcd[] = [
+                'data'  =>  $pcd_financial * 30,
+                'label' =>  '"' . round( $pcd_financial / $pcd_sum, 2 )*100 . '%"',
+                'color' =>  '"#ff85ef"',
+                'hint'  =>  '"Финансовая"'
+            ];
+            $pcd[] = [
+                'data'  =>  $pcd_industrial * 30,
+                'label' =>  '"' . round( $pcd_industrial / $pcd_sum, 2 )*100 . '%"',
+                'color' =>  '"#ed8d26"',
+                'hint'  =>  '"Реальная"'
+            ];
+            $pcd[] = [
+                'data'  =>  $pcd_social * 30,
+                'label' =>  '"' . round( $pcd_social / $pcd_sum, 2 )*100 . '%"',
+                'color' =>  '"#8bd5f7"',
+                'hint'  =>  '"Социальная"'
+            ];
+
+            // единичка экономики = сектору в 30 градусов
+            $pie_chart_data[] = $pcd_natural * 30;
+            $pie_chart_data[] = $pcd_financial * 30;
+            $pie_chart_data[] = $pcd_industrial * 30;
+            $pie_chart_data[] = $pcd_social * 30;
+
+            $pie_chart_labels = [
+                '"' . round( $pcd_natural / $pcd_sum, 2 )*100 . '%"',
+                '"' . round( $pcd_financial / $pcd_sum, 2 )*100 . '%"',
+                '"' . round( $pcd_industrial / $pcd_sum, 2 )*100 . '%"',
+                '"' . round( $pcd_social / $pcd_sum, 2 )*100 . '%"',
+            ];
+        }
+
+        $t->assign("pie_chart", [
+            'present'   =>  $pcd_sum > 0,
+            'data'      =>  implode(', ', $pie_chart_data),
+            'colors'    =>  implode(', ', $pie_chart_colors),
+            'labels'    =>  implode(', ', $pie_chart_labels),
+            'hints'     =>  implode(', ', [ '"Природная"', '"Финансовая"', '"Реальная"', '"Социальная"']),
+            'full'      =>  $pcd
+        ]);
+
+        //
         $t->setTemplate('view.region/view.region.html.tpl');
 
         $content = $t->render(false);

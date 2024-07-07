@@ -224,7 +224,23 @@ class MapMaker implements MapMakerInterface
             return $this->state;
         }
 
-        $json = \call_user_func($this->json_parser, $json_config_content);
+        // Применяем кастомный парсер правильно. Это может быть функция
+        if (is_array($this->json_parser) && \count($this->json_parser)) {
+
+            // только вот тут надо проверять рефлексией, является ли  $this->json_parser[1] статическим методом класса  $this->json_parser[0] ?
+
+            $json = \call_user_func([ (new $this->json_parser[0]), $this->json_parser[1]] , $json_config_content);
+        } elseif (is_string($this->json_parser)) {
+            $json = \call_user_func($this->json_parser, $json_config_content);
+        } elseif (is_callable($this->json_parser)) {
+            $json = ($this->json_parser)($json_config_content);
+        } else {
+            $this->state->error("Invalid JSON Parser option given to class constructor");
+            $this->state->setData([
+                'parser'    =>  $this->json_parser
+            ]);
+            return $this->state;
+        }
 
         if (null === $json) {
             $this->state->error("{$this->json_config_filename} json file is invalid");
