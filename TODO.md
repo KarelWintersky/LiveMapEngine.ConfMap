@@ -1,3 +1,19 @@
+## Круговые диаграммы на HTML+CSS
+
+Это для отображения соотношения типов капитала в окне информации по региону:
+
+Элементарный вариант через `conic-gradient`, изящно, но без подписей:
+https://www.geeksforgeeks.org/how-to-create-a-pie-chart-using-html-css/
+
+https://blog.logrocket.com/build-interactive-pie-charts-css-html/
+Более сложный, много кода
+
+https://stackoverflow.com/questions/10028182/how-to-make-a-pie-chart-in-css
+Несколько вариантов, в том числе на канвасе (что довольно интересное решение)
+
+И мне больше всего нравится вариант на канвасе!
+
+
 ## FileManager changes
 
 https://github.com/trippo/ResponsiveFilemanager

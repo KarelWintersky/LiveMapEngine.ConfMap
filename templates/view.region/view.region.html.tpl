@@ -18,5 +18,7 @@
     <div class="region-content">
         <h2>{$region_title}</h2>
         {$region_text}
+
+        {* сюда вкладываем отображение всех остальных полей *}
     </div>
 {/if}
