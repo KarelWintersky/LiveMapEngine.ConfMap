@@ -56,9 +56,10 @@ class RegionsController extends AbstractClass
             ->setTemplateDir( config('smarty.path.template'))
             ->setCompileDir( config('smarty.path.cache'))
             ->setForceCompile( config('smarty.force_compile'))
-            ->registerPlugin(Template::PLUGIN_MODIFIER, 'json_decode', 'json_decode', false)
+            // ->registerPlugin(Template::PLUGIN_MODIFIER, 'json_decode', 'json_decode', false)
+            // ->registerPlugin(Template::PLUGIN_MODIFIER, 'json_encode', 'json_encode', false)
             ->registerPlugin(Template::PLUGIN_MODIFIER, 'dd', 'dd', false)
-            ->registerPlugin(Template::PLUGIN_MODIFIER, 'implode', 'implode', false)
+            // ->registerPlugin(Template::PLUGIN_MODIFIER, 'implode', 'implode', false)
             ->registerClass("Arris\AppRouter", "Arris\AppRouter");
 
         $t->assign('is_present', $region_data['is_present']);
@@ -70,6 +71,7 @@ class RegionsController extends AbstractClass
         $t->assign('edit_button_url', AppRouter::getRouter('update.region.info'));
 
         $json = $region_data['content_json'] ?? '{}';
+
         $t->assign('json', json_decode($json)); //@TODO: ВАЖНО, В ШАБЛОНЕ ХОДИМ ТАК: {$json->economy->type}, А НЕ ЧЕРЕЗ ТОЧКУ!!!!
 
         /*
@@ -85,59 +87,39 @@ class RegionsController extends AbstractClass
         $pcd_sum = $pcd_natural + $pcd_financial + $pcd_industrial + $pcd_social;
 
         $pie_chart_data = [];
-        $pie_chart_labels = [];
-        $pie_chart_colors = [ '"#77e359"', '"#ff85ef"', '"#ed8d26"', '"#8bd5f7"' ];
-
-        $pcd = [];
-
         if ($pcd_sum > 0) {
-            $pcd[] = [
-                'data'  =>  $pcd_natural * 30,
-                'label' =>  '"' . round( $pcd_natural / $pcd_sum, 2 )*100 . '%"',
-                'color' =>  '"#77e359"',
-                'hint'  =>  '"Природная"'
-            ];
-            $pcd[] = [
-                'data'  =>  $pcd_financial * 30,
-                'label' =>  '"' . round( $pcd_financial / $pcd_sum, 2 )*100 . '%"',
-                'color' =>  '"#ff85ef"',
-                'hint'  =>  '"Финансовая"'
-            ];
-            $pcd[] = [
-                'data'  =>  $pcd_industrial * 30,
-                'label' =>  '"' . round( $pcd_industrial / $pcd_sum, 2 )*100 . '%"',
-                'color' =>  '"#ed8d26"',
-                'hint'  =>  '"Реальная"'
-            ];
-            $pcd[] = [
-                'data'  =>  $pcd_social * 30,
-                'label' =>  '"' . round( $pcd_social / $pcd_sum, 2 )*100 . '%"',
-                'color' =>  '"#8bd5f7"',
-                'hint'  =>  '"Социальная"'
-            ];
-
             // единичка экономики = сектору в 30 градусов
-            $pie_chart_data[] = $pcd_natural * 30;
-            $pie_chart_data[] = $pcd_financial * 30;
-            $pie_chart_data[] = $pcd_industrial * 30;
-            $pie_chart_data[] = $pcd_social * 30;
-
-            $pie_chart_labels = [
-                '"' . round( $pcd_natural / $pcd_sum, 2 )*100 . '%"',
-                '"' . round( $pcd_financial / $pcd_sum, 2 )*100 . '%"',
-                '"' . round( $pcd_industrial / $pcd_sum, 2 )*100 . '%"',
-                '"' . round( $pcd_social / $pcd_sum, 2 )*100 . '%"',
+            $pie_chart_data[] = [
+                'data'  =>  $pcd_natural * 30,
+                'label' =>  round( $pcd_natural / $pcd_sum, 2 )*100 . '%',
+                'color' =>  '#77e359',
+                'hint'  =>  'Природная'
+            ];
+            $pie_chart_data[] = [
+                'data'  =>  $pcd_financial * 30,
+                'label' =>  round( $pcd_financial / $pcd_sum, 2 )*100 . '%',
+                'color' =>  '#ff85ef',
+                'hint'  =>  'Финансовая'
+            ];
+            $pie_chart_data[] = [
+                'data'  =>  $pcd_industrial * 30,
+                'label' =>  round( $pcd_industrial / $pcd_sum, 2 )*100 . '%',
+                'color' =>  '#ed8d26',
+                'hint'  =>  'Реальная'
+            ];
+            $pie_chart_data[] = [
+                'data'  =>  $pcd_social * 30,
+                'label' =>  round( $pcd_social / $pcd_sum, 2 )*100 . '%',
+                'color' =>  '#8bd5f7',
+                'hint'  =>  'Социальная'
             ];
         }
 
         $t->assign("pie_chart", [
             'present'   =>  $pcd_sum > 0,
-            'data'      =>  implode(', ', $pie_chart_data),
-            'colors'    =>  implode(', ', $pie_chart_colors),
-            'labels'    =>  implode(', ', $pie_chart_labels),
-            'hints'     =>  implode(', ', [ '"Природная"', '"Финансовая"', '"Реальная"', '"Социальная"']),
-            'full'      =>  $pcd
+            'full'      =>  json_encode($pie_chart_data, JSON_UNESCAPED_UNICODE)
         ]);
+        // закончили с данными для круговой диаграммы
 
         //
         $t->setTemplate('view.region/view.region.html.tpl');
@@ -148,8 +130,7 @@ class RegionsController extends AbstractClass
     }
 
     /**
-     * @throws SyntaxError
-     */
+     д*/
     public function view_region_edit_form()
     {
         if ($this->map->loadConfig()->is_error) {
@@ -175,6 +156,7 @@ class RegionsController extends AbstractClass
         $this->template->assign("content_restricted", htmlspecialchars($region_data['content_restricted'] ?? '', ENT_QUOTES | ENT_HTML5));
 
         // Конвертируем значение поля content_json в JSON-структуру и передаем её в шаблон
+        // Если associative: true - то доступ через точку, иначе через стрелочку
         $this->template->assign("json", json_decode($region_data['content_json'] ?? '', true));
         // и больше никаких действий здесь не требуется!
         // магия сохранения будет в коллбэке!

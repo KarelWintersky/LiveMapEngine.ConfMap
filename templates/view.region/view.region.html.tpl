@@ -24,45 +24,39 @@
             <legend>Экономика</legend>
             Тип: {$json->economy->type}<br> <br>
 
-            {$pie_chart|dd}
-
             {if $pie_chart.present}
                 <canvas id="economy_pie_chart" width="400" height="200"></canvas>
                 <script>
+                    var chart_data = {$pie_chart.full};
                     var canvas = document.getElementById("economy_pie_chart");
                     var ctx = canvas.getContext("2d");
                     var lastend = 0;
-                    var data = [ {$pie_chart.data} ];
-                    var myTotal = 0;
-                    var myColor = [{$pie_chart.colors}];
-                    var labels = [{$pie_chart.labels}];
-                    var hints = [{$pie_chart.hints}];
+                    var sum_of_data_values = 0;
 
-                    for (let e = 0; e < data.length; e++) { myTotal += data[e]; }
+                    for (let e = 0; e < chart_data.length; e++) { sum_of_data_values += chart_data[e].data; }
 
-                    // make the chart 10 px smaller to fit on canvas
-                    var off = 10;
-                    var h = (canvas.height - off) / 2;
+                    var offset = 10; // make the chart 10 px smaller to fit on canvas
+                    var h = (canvas.height - offset) / 2;
                     var w = h; // (canvas.width - off) / 2;
-                    for (let i = 0; i < data.length; i++) {
-                        ctx.fillStyle = myColor[i];
+                    for (let i = 0; i < chart_data.length; i++) {
+                        ctx.fillStyle = chart_data[i].color;
                         ctx.strokeStyle ='white';
                         ctx.lineWidth = 2;
                         ctx.beginPath();
                         ctx.moveTo(w,h);
-                        let len = (data[i] / myTotal) * 2 * Math.PI;
-                        let r = h - off / 2;
-                        ctx.arc(w , h, r, lastend,lastend + len,false);
+                        let len = (chart_data[i].data / sum_of_data_values) * 2 * Math.PI;
+                        let r = h - offset / 2;
+                        ctx.arc(w , h, r, lastend, lastend + len,false);
                         ctx.lineTo(w,h);
                         ctx.fill();
                         ctx.stroke();
-                        ctx.fillStyle ='white';
-                        ctx.font = "20px Arial";
+                        ctx.fillStyle = 'white';
+                        ctx.font = "16px Arial";
                         ctx.textAlign = "center";
                         ctx.textBaseline = "middle";
                         let mid = lastend + len / 2;
-                        ctx.fillText(labels[i],w + Math.cos(mid) * (r/2) , h + Math.sin(mid) * (r/2));
-                        lastend += Math.PI*2*(data[i]/myTotal);
+                        ctx.fillText(chart_data[i].label, w + Math.cos(mid) * (r/2) , h + Math.sin(mid) * (r/2));
+                        lastend += Math.PI*2*(chart_data[i].data / sum_of_data_values);
                     }
                     // рисуем подписи
                     var rectX = h + 100;
@@ -70,16 +64,16 @@
                     var rectHeight = 40;
                     var rectWidth = 100;
                     var padding_vertical = 5;
-                    for (let i = 0; i < data.length; i++) {
+                    for (let i = 0; i < chart_data.length; i++) {
                         // ctx.lineWidth = 1;
                         // ctx.strokeStyle = "#000000";
-                        ctx.fillStyle = myColor[i];
+                        ctx.fillStyle = chart_data[i].color;
                         roundRect(ctx, rectX, rectY, rectWidth, rectHeight, 10, true);
                         ctx.font = "14px Georgia";
                         ctx.textAlign = "center";
                         ctx.textBaseline = "middle";
                         ctx.fillStyle = "#000000";
-                        ctx.fillText(hints[i], rectX + (rectWidth/2), rectY + (rectHeight/2));
+                        ctx.fillText(chart_data[i].hint, rectX + (rectWidth/2), rectY + (rectHeight/2));
                         rectY += rectHeight + padding_vertical;
                     }
 
