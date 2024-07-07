@@ -27,7 +27,8 @@ class RegionsController extends AbstractClass
 
         // Выносим в конструктор, но только по одной причине: ID карты для проекта livemap.confmap ИЗВЕСТЕН
         $this->map = new MapMaker($this->pdo, $id_map, [
-            'config_path'   =>  Path::create( config('path.storage') )->join($id_map),
+            'path_storage'  =>  Path::create( config('path.storage') ),
+            'path_config'   =>  Path::create( config('path.storage') )->join($id_map),
             'json_parser'   =>  [Map::class, 'parseJSONFile']
         ]);
     }

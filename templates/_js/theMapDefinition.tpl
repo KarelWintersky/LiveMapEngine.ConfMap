@@ -31,7 +31,7 @@ window.theMap = {
         "zoom_mode"         :   "{$display.zoom_mode|default:'slider'}",
         "background_color"  :   "{$display.background_color}",
 
-        {if $display.custom_css}"custom_css" : "{$display.custom_css}", {/if}
+        "custom_css"        :   {$display.custom_css|json_encode},
 
         "maxbounds"         :   {$maxbounds|json_encode},
 
@@ -41,9 +41,9 @@ window.theMap = {
             "timeout"           : {$display.focus_timeout},
         },
 
+        "viewmode"              : "{$display.viewmode}",
 
-
-
+        "viewoptions"           : {$display.viewoptions|json_encode},
     },
 
     "display_defaults": {

@@ -61,17 +61,22 @@ class MapMaker implements MapMakerInterface
     /**
      * @var string;
      */
-    private string $config_path = __DIR__;
+    public string $path_config = __DIR__;
 
     /**
      * @var array
      */
-    private array $config_files;
+    public array $config_files;
 
     /**
      * @var callable
      */
-    private mixed $json_parser;
+    public mixed $json_parser;
+
+    /**
+     * @var string
+     */
+    public string $path_storage = __DIR__;
 
     /**
      * Используемый путь к JSON-конфигу карты
@@ -154,9 +159,9 @@ class MapMaker implements MapMakerInterface
             ? $options['users']
             : 'users';
 
-        $this->config_path
-            = array_key_exists('config_path', $options)
-            ? $options['config_path']
+        $this->path_config
+            = array_key_exists('path_config', $options)
+            ? $options['path_config']
             : '';
 
         $this->config_files
@@ -168,6 +173,11 @@ class MapMaker implements MapMakerInterface
             = array_key_exists('json_parser', $options)
             ? $options['json_parser']
             : 'json_decode';
+
+        $this->path_storage
+            = array_key_exists('path_storage', $options)
+            ? $options['path_storage']
+            : dirname($options['path_config'], 1);
     }
 
     /**
@@ -178,12 +188,12 @@ class MapMaker implements MapMakerInterface
      */
     public function loadConfig($path = null): Result
     {
-        if (empty($this->config_path) && empty($path)) {
+        if (empty($this->path_config) && empty($path)) {
             $this->state->error("Config path not defined");
             return $this->state;
         }
 
-        $path = $path ?: $this->config_path;
+        $path = $path ?: $this->path_config;
 
         if (empty($this->config_files)) {
             $this->state->error("[JS Builder] No config files for map {$this->id_map} declared");
@@ -223,6 +233,17 @@ class MapMaker implements MapMakerInterface
 
         $this->mapConfig = $json;
 
+        // Модифицируем конфиг, приводя некоторые значения к рекомендуемому виду
+
+        // Custom CSS может быть передан как массив, как строка и отсутствовать.
+        // Если отсутствует - передается пустой массив.
+        // Если строка - делаем из него массив с единственным значением
+        // Если массив - никак ен модифицируем
+        $custom_css = $this->getConfig("display->custom_css", '');
+        if (is_string($custom_css)) {
+            $this->mapConfig->display->custom_css = empty($custom_css) ? [] : [ $custom_css ];
+        }
+
         return $this->state;
     }
 
@@ -232,11 +253,11 @@ class MapMaker implements MapMakerInterface
      * ИЛИ один из ключей конфига!
      *
      * @param string $path
-     * @param string $default
+     * @param mixed $default
      * @param string $separator
      * @return \stdClass|mixed
      */
-    public function getConfig(string $path = '', string $default = '', string $separator = '->'): mixed
+    public function getConfig(string $path = '', mixed $default = '', string $separator = '->'): mixed
     {
         if (!empty($path)) {
             if (Helpers::property_exists_recursive($this->mapConfig, $path, $separator)) {
@@ -246,6 +267,19 @@ class MapMaker implements MapMakerInterface
             }
         }
         return $this->mapConfig;
+    }
+
+    /**
+     * @todo: устанавливает значение в конфиге по пути
+     *
+     * @param string $path
+     * @param mixed $value
+     * @param string $separator
+     * @return bool
+     */
+    public function setConfig(string $path = '', mixed $value = '', string $separator = '->'):bool
+    {
+        //@todo
     }
 
     /**

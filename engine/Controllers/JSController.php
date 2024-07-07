@@ -41,7 +41,8 @@ class JSController extends AbstractClass
         $map_id = App::$id_map;
 
         $this->map = new MapMaker($this->pdo, $map_id, [
-            'config_path'   =>  Path::create( config('path.storage') )->join($map_id),
+            'path_storage'  =>  Path::create( config('path.storage') ),
+            'path_config'   =>  Path::create( config('path.storage') )->join($map_id),
             'json_parser'   =>  [Map::class, 'parseJSONFile']
         ]);
 
@@ -290,7 +291,7 @@ class JSController extends AbstractClass
             'zoom_min'                  =>  $json->display->zoom_min,
             'zoom_mode'                 =>  $json->display->zoom_mode ?? 'slider',
             'background_color'          =>  $json->display->background_color,
-            'custom_css'                =>  $json->display->custom_css ?? '',                       // файл кастомных стилей для карты
+            'custom_css'                =>  $json->display->custom_css ?? [], // файлы кастомных стилей для карты
             'focus_animate_duration'    =>  $json->display->focus_animate_duration ?? 0.7,
             'focus_highlight_color'     =>  $json->display->focus_highlight_color ?? '#ff0000',
             'focus_timeout'             =>  $json->display->focus_timeout ?? 1000,
@@ -306,11 +307,11 @@ class JSController extends AbstractClass
                 break;
             }
             case 'infobox': {
-                $_assign_display['viewoptions'] = $json->display->viewoptions ?? 'infobox>regionbox';
+                $_assign_display['viewoptions'] = $json->display->viewoptions->order ?? 'infobox>regionbox';
                 break;
             }
             case 'hintbox': {
-                $_assign_display['viewoptions'] = $json->display->viewoptions ?? 'topright';
+                $_assign_display['viewoptions'] = $json->display->viewoptions->position ?? 'topright';
                 break;
             }
             default: {

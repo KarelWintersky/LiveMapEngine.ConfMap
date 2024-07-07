@@ -29,10 +29,10 @@ class Helpers
      * @param $object
      * @param string $path
      * @param string $separator
-     * @param $default
+     * @param mixed|null $default
      * @return mixed|null
      */
-    public static function property_get_recursive($object, string $path, string $separator = '->', $default = null)
+    public static function property_get_recursive($object, string $path, string $separator = '->', mixed $default = null)
     {
         $properties = \explode($separator, $path);
 

@@ -4,19 +4,23 @@
     <meta charset="UTF-8">
     <title>{$html_title}</title>
 
-    {include file="_common/favicon_defs.tpl"}
     {include file="_common/opengraph.tpl"}
+
+    {include file="_common/favicon_defs.tpl"}
 
     <link href="https://fonts.googleapis.com/css?family=PT+Serif" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="/frontend/leaflet/leaflet.css">
-    <link rel="stylesheet" href="/frontend/view.map.fullscreen.css">
+    <link href="/frontend/leaflet/leaflet.css" rel="stylesheet">
+    <link href="/frontend/view.map.fullscreen.css" rel="stylesheet">
 
-    {if !empty($custom_css)}
-    <link rel="stylesheet" href="{$custom_css}">
-    {/if}
+    {foreach $custom_css_paths as $file}
+
+    <link href="{$file}" rel="stylesheet" data-comment="custom CSS for this map">
+
+    {/foreach}
+
 
     <script src="/frontend/jquery/jquery-3.2.1_min.js"></script>
     <script src="/frontend/leaflet/leaflet.js"></script>
@@ -25,15 +29,17 @@
     <script src="/frontend/MapControls.js"></script>
 
     <script src="/frontend/leaflet/L.Control.Zoomslider.js"></script>
-    <link rel="stylesheet" href="/frontend/leaflet/L.Control.Zoomslider.css">
+    <link href="/frontend/leaflet/L.Control.Zoomslider.css" rel="stylesheet">
 
     <script src="/frontend/leaflet/L.Icon.FontAwesome.js"></script>
     <link href="/frontend/leaflet/L.Icon.FontAwesome.css" rel="stylesheet">
     <script src="/frontend/leaflet/SmoothWheelZoom.js"></script>
 
     {if $sections_present.colorbox}
+
         <script type="text/javascript" src="/frontend/colorbox/jquery.colorbox-min.js"></script>
-        <link rel="stylesheet" href="/frontend/colorbox/colorbox.css">
+        <link href="/frontend/colorbox/colorbox.css" rel="stylesheet">
+
     {/if}
 
     <script data-comment="init">

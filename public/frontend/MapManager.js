@@ -601,6 +601,8 @@ class MapManager {
      * @param title
      */
     manageColorBox(event = 'show', id_region, title = '') {
+        let that = this;
+
         if (event === 'hide') {
             parent.$.colorbox.close();
             return true;
@@ -621,8 +623,8 @@ class MapManager {
 
         $.get( url, function() {
         }).done(function(data) {
-            let colorbox_width  = 800; //@todo: эти опции надо брать из какого-то конфига
-            let colorbox_height = 600;
+            let colorbox_width  = that.theMap.display.viewoptions.width || 800;
+            let colorbox_height = that.theMap.display.viewoptions.height || 600;
 
             window.location.hash = MapManager.WLH_makeLink(id_region);
 
