@@ -33,6 +33,7 @@ window.theMap = {
         {if $display.custom_css}"custom_css" : "{$display.custom_css}", {/if}
 
         {if $maxbounds}
+
         "maxbounds": {
 
             {foreach $maxbounds as $key => $value}
@@ -56,22 +57,18 @@ window.theMap = {
         "focus_timeout": {$focus_timeout},
         {/if}
 
+    },
+
+    "display_defaults": {
         "region": {
-            "empty": {$display_defaults.region.empty|json_encode},
-            "empty_hover": {$display_defaults.region.empty_hover|json_encode},
-            "present": {$display_defaults.region.present|default:[]|json_encode},
-            "present_hover": {$display_defaults.region.present_hover|default:[]|json_encode},
+            "empty"         : {$display_defaults.region.empty|json_encode},
+            "empty_hover"   : {$display_defaults.region.empty_hover|json_encode},
+            "present"       : {$display_defaults.region.present|default:[]|json_encode},
+            "present_hover" : {$display_defaults.region.present_hover|default:[]|json_encode},
         },
         "poi": {
-            "any": {$display_defaults.poi.any|json_encode},
-
-            {*"empty": {$display_defaults.poi.empty|json_encode},
-            "empty_hover": {$display_defaults.poi.empty_hover|default:[]|json_encode},
-            "present": {$display_defaults.poi.present|default:[]|json_encode},
-            "present_hover": {$display_defaults.poi.present_hover|default:[]|json_encode},*}
-
+            "any"           : {$display_defaults.poi.any|json_encode},
         }
-
     },
 
     "layers": {

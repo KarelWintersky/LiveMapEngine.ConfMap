@@ -80,6 +80,9 @@ $(function() {
                 });
             } else {
                 // Событие MOUSEOVER для L.Marker'а ловится корректно и позволяет изменить иконку элемента, НО...
+                // ... но событие MOUSEOUT не ловится (или ловится однократно) и поменять иконку обратно невозможно.
+                // Вполне вероятно, что это баг плагина FontAwesomeIcon, надо тестировать.
+                // По этой же причине дефолтные параметры для POI закомментированы в конфиге
                 return false;
                 /*map_element
                     .setIcon(L.icon.fontAwesome({
@@ -89,8 +92,6 @@ $(function() {
                     iconXOffset: map_element.options.poi.hover.iconXOffset,
                     iconYOffset: map_element.options.poi.hover.iconYOffset,
                 }));*/
-                // обработчик события закомментирован, поскольку событие MOUSEOUT НЕ ЛОВИТСЯ и поменять иконку обратно невозможно
-                // возможно это баг плагина FontAwesomeIcon
             }
 
         }).on('mouseout', function() {

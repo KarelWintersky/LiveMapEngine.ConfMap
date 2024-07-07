@@ -8,7 +8,7 @@ use PDO;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-class MapMaker implements IMapMaker
+class MapMaker implements MapMakerInterface
 {
     const allowed_cursors = [
         'auto', 'default', 'none', 'context-menu', 'help', 'pointer', 'progress', 'wait', 'cell', 'crosshair',

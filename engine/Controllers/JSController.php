@@ -10,7 +10,7 @@ use Confmap\AbstractClass;
 use Confmap\App;
 use Confmap\Units\Map;
 use LiveMapEngine\Helpers;
-use LiveMapEngine\IMapMaker;
+use LiveMapEngine\MapMakerInterface;
 use LiveMapEngine\MapMaker;
 use LiveMapEngine\SVGParser;
 use Psr\Log\LoggerInterface;
@@ -19,7 +19,7 @@ use RuntimeException;
 #[\AllowDynamicProperties]
 class JSController extends AbstractClass
 {
-    public IMapMaker $map;
+    public MapMakerInterface $map;
 
     private Result $state;
 
@@ -33,6 +33,8 @@ class JSController extends AbstractClass
     /**
      * @return void
      * @throws SyntaxError
+     * 
+     * @todo: перенести в framework, как и шаблон к нему
      */
     public function view_js_map_definition()
     {
@@ -278,7 +280,8 @@ class JSController extends AbstractClass
             'ox'            =>  $image_info['ox'],
             'oy'            =>  $image_info['oy'],
         ]);
-        $this->template->assign("display", [
+
+        $_assign_display = [
             'zoom'                      =>  $json->display->zoom,
             'zoom_max'                  =>  $json->display->zoom_max,
             'zoom_min'                  =>  $json->display->zoom_min,
@@ -288,14 +291,40 @@ class JSController extends AbstractClass
             'focus_animate_duration'    =>  $json->display->focus_animate_duration ?? 0.7,
             'focus_highlight_color'     =>  $json->display->focus_highlight_color ?? '#ff0000',
             'focus_timeout'             =>  $json->display->focus_timeout ?? 1000,
-        ]);
+            'viewmode'                  =>  $json->display->viewmode ?? 'colorbox'
+        ];
+
+
+        switch ($_assign_display['viewmode']) {
+            case 'colorbox': {
+                $_assign_display['viewoptions'] = [
+                    'width'     =>  $json->display->viewoptions->width ?? 800,
+                    'height'    =>  $json->display->viewoptions->height ?? 600,
+                ];
+                break;
+            }
+            case 'infobox': {
+                $_assign_display['viewoptions'] = $json->display->viewoptions ?? 'infobox>regionbox';
+                break;
+            }
+            case 'hintbox': {
+                $_assign_display['viewoptions'] = $json->display->viewoptions ?? 'topright';
+                break;
+            }
+            default: {
+                // folio
+            }
+        }
+        // dd($_assign_display);
+
+        $this->template->assign("display", $_assign_display);
+
         $this->template->assign('maxbounds', $max_bounds);
 
         /*
          * Новый механизм данных для расцветки регионов по-умолчанию
          */
         $display_defaults_region =[];
-
         $display_defaults_region['empty'] = [
             "stroke"        =>  $json->display_defaults->region->{'empty'}->{'stroke'} ?? 0,
             "borderColor"   =>  $json->display_defaults->region->{'empty'}->{'borderColor'} ?? "#ff0000",
@@ -314,7 +343,6 @@ class JSController extends AbstractClass
             "fillColor"     =>  $json->display_defaults->region->{'empty:hover'}->{'fillColor'}       ?? $display_defaults_region['empty']['fillColor'],
             "fillOpacity"   =>  $json->display_defaults->region->{'empty:hover'}->{'fillOpacity'}     ?? $display_defaults_region['empty']['fillOpacity'],
         ];
-
         $display_defaults_region['present'] = [
             "stroke"        =>  $json->display_defaults->region->{'present'}->{'stroke'}          ?? $display_defaults_region['empty']['stroke'],
             "borderColor"   =>  $json->display_defaults->region->{'present'}->{'borderColor'}     ?? $display_defaults_region['empty']['borderColor'],
@@ -324,7 +352,6 @@ class JSController extends AbstractClass
             "fillColor"     =>  $json->display_defaults->region->{'present'}->{'fillColor'}       ?? $display_defaults_region['empty']['fillColor'],
             "fillOpacity"   =>  $json->display_defaults->region->{'present'}->{'fillOpacity'}     ?? $display_defaults_region['empty']['fillOpacity'],
         ];
-
         $display_defaults_region['present_hover'] = [
             "stroke"        =>  $json->display_defaults->region->{'present:hover'}->{'stroke'}          ?? $display_defaults_region['present']['stroke'],
             "borderColor"   =>  $json->display_defaults->region->{'present:hover'}->{'borderColor'}     ?? $display_defaults_region['present']['borderColor'],
@@ -345,7 +372,10 @@ class JSController extends AbstractClass
             'iconXOffset'     =>  $json->display_defaults->poi->{'any'}->{'iconXOffset'}      ?? -1,
             'iconYOffset'     =>  $json->display_defaults->poi->{'any'}->{'iconYOffset'}      ?? 0,
         ];
-        $display_defaults_poi['empty'] = [
+       /*
+       // не используются, так как есть проблемы с отловом события mouseover/mouseout над POI
+       // см /public/frontend/view.map.fullscreen.js:82
+       $display_defaults_poi['empty'] = [
             'iconClass'     =>  $json->display_defaults->poi->{'empty'}->{'iconClass'}          ?? 'fa-fort-awesome',
             'markerColor'     =>  $json->display_defaults->poi->{'empty'}->{'markerColor'}      ?? 'black',
             'iconColor'     =>  $json->display_defaults->poi->{'empty'}->{'iconColor'}          ?? 'white',
@@ -372,12 +402,15 @@ class JSController extends AbstractClass
             'iconColor'     =>  $json->display_defaults->poi->{'present:hover'}->{'iconColor'}    ?? $display_defaults_poi['present']['iconColor'],
             'iconXOffset'   =>  $json->display_defaults->poi->{'present:hover'}->{'iconXOffset'}  ?? $display_defaults_poi['present']['iconXOffset'],
             'iconYOffset'   =>  $json->display_defaults->poi->{'present:hover'}->{'iconYOffset'}  ?? $display_defaults_poi['present']['iconYOffset'],
-        ];
-        // параметры для секции theMap.display.region и theMap.display.poi
-        $this->template->assign("display_defaults", [
+        ];*/
+
+        $display_defaults = [
             "region"    =>  $display_defaults_region,
             "poi"       =>  $display_defaults_poi
-        ]);
+        ];
+
+        // параметры для секции theMap.display.region и theMap.display.poi
+        $this->template->assign("display_defaults", $display_defaults);
 
         $this->template->assign('layers', $layers);
         $this->template->assign('regions', $paths_data);

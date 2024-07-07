@@ -5,7 +5,7 @@ namespace LiveMapEngine;
 use Arris\Entity\Result;
 use Psr\Log\LoggerInterface;
 
-interface IMapMaker
+interface MapMakerInterface
 {
     /**
      * @param null $PDO

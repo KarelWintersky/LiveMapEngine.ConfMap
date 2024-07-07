@@ -277,9 +277,9 @@ class MapManager {
      */
     buildRegionsDataset() {
         let theMapRegions = this.theMap['regions'];
-        let defaultDisplaySettings = this.theMap.display;
+        let defaultDisplaySettings = this.theMap.display_defaults;
 
-        let dataset = Object.create(null);
+        let dataset = Object.create({ }); // если создавать с null - то массив будет короче, но не будет содержать метода hasOwnProperty, который полезен.
 
         Object.keys( theMapRegions ).forEach(function( key ) {
             let region = theMapRegions[key];
@@ -291,8 +291,7 @@ class MapManager {
             let dd_key = is_have_content ? 'present' : 'empty';
             let dd_key_hover = is_have_content ? 'present_hover' : 'empty_hover';
 
-            let options = Object.create(null);
-            options = {
+            let options = {
                 id: region.id,
                 title: region.title || region.id,
                 coords: coords,
@@ -345,7 +344,10 @@ class MapManager {
                         iconXOffset: defaultDisplaySettings.poi.any.iconXOffset,
                         iconYOffset: defaultDisplaySettings.poi.any.iconYOffset,
                     },
-                    /*default: {
+                    /*
+                    // не используются, так как есть проблемы с отловом события mouseover/mouseout над POI
+                    // см /public/frontend/view.map.fullscreen.js:82
+                    default: {
                         iconClasses: 'fa-brands fa-fort-awesome', // display.poi.any
                         markerColor: 'green',
                         iconColor: '#FFF',
@@ -611,8 +613,10 @@ class MapManager {
             MapControls.isLoadedToIFrame()
         );
 
-        title = (this.regionsDataset[id_region]['options']['title'] !== '')
-            ? this.regionsDataset[id_region]['options']['title']
+        let region = this.getRegionProperties(id_region);
+        title
+            = (region.hasOwnProperty('title') && region['title'] !== '')
+            ? region['title']
             : '';
 
         $.get( url, function() {
@@ -634,6 +638,18 @@ class MapManager {
                 }
             });
         });
+    }
+
+    /**
+     * Возвращает информацию (options) о регионе из датасета regionsDataset или false при отсутствии
+     *
+     * @param id_region
+     */
+    getRegionProperties(id_region) {
+        return (
+            this.regionsDataset.hasOwnProperty(id_region) && this.regionsDataset[id_region].hasOwnProperty('options')
+            ? this.regionsDataset[id_region]['options']
+            : false);
     }
 
     /**
