@@ -1,7 +1,7 @@
-const VERSION = '2024-06-22';
-const focus_animate_duration = window.theMap['display']['focus_animate_duration'] || 0.7;
-const focus_highlight_color = window.theMap['display']['focus_highlight_color'] || '#ff0000';
-const focus_timeout = window.theMap['display']['focus_timeout'] || 1500;
+const VERSION = '2024-07-07';
+const focus_animate_duration = window.theMap['display']['focus']['animate_duration'] || 0.7;
+const focus_highlight_color = window.theMap['display']['focus']['highlight_color'] || '#ff0000';
+const focus_timeout = window.theMap['display']['focus']['timeout'] || 1500;
 const IS_DEBUG = false;
 const DEBUG_SET_STYLE_WHILE_HOVER = true;
 

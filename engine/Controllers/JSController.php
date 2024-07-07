@@ -251,28 +251,31 @@ class JSController extends AbstractClass
                 $paths_data += $paths_at_layer;
             }
 
-            // maxbounds
-            if (property_exists_recursive($json, 'display->maxbounds')) {
-                $max_bounds = [
-                    'present'   =>  1,
-                    'topleft_h'     =>  $json->display->maxbounds[0][0],
-                    'topleft_w'     =>  $json->display->maxbounds[0][1],
-                    'bottomright_h' =>  $json->display->maxbounds[1][0],
-                    'bottomright_w' =>  $json->display->maxbounds[1][1]
-                ];
-            }
-
         } catch (\RuntimeException $e) {
-            $this->state->error($e->getMessage());
-        }
-
-        if ($this->state->is_error) {
             $this->template->assign('/JSBuilderError', $this->state->getMessage());
         }
 
+        // maxbounds {
+        $max_bounds = [
+            'present'   =>  0
+        ];
+        if (property_exists_recursive($json, 'display->maxbounds')) {
+            $max_bounds = [
+                'present'   =>  1,
+                'topleft_h'     =>  $json->display->maxbounds[0][0] ?? -1,
+                'topleft_w'     =>  $json->display->maxbounds[0][1] ?? -1,
+                'bottomright_h' =>  $json->display->maxbounds[1][0] ?? 1,
+                'bottomright_w' =>  $json->display->maxbounds[1][1] ?? 1
+            ];
+        }
+        $this->template->assign('maxbounds', $max_bounds);
+        // } maxbounds
+
+        // Основная информация о карте
         $this->template->assign("map", [
-            'title'         =>  $json->title,
             'type'          =>  $json->type,
+            'title'         =>  $json->title,
+            'description'   =>  $json->description ?? $json->title ?? '',
             'alias'         =>  $map_id,
             'imagefile'     =>  $json->image->file,
             'width'         =>  $image_info['width'],
@@ -294,7 +297,6 @@ class JSController extends AbstractClass
             'viewmode'                  =>  $json->display->viewmode ?? 'colorbox'
         ];
 
-
         switch ($_assign_display['viewmode']) {
             case 'colorbox': {
                 $_assign_display['viewoptions'] = [
@@ -315,11 +317,10 @@ class JSController extends AbstractClass
                 // folio
             }
         }
-        // dd($_assign_display);
 
         $this->template->assign("display", $_assign_display);
 
-        $this->template->assign('maxbounds', $max_bounds);
+
 
         /*
          * Новый механизм данных для расцветки регионов по-умолчанию
@@ -415,8 +416,36 @@ class JSController extends AbstractClass
         $this->template->assign('layers', $layers);
         $this->template->assign('regions', $paths_data);
 
+        /*
+         * В рамках фреймворка нужно рендерить шаблон из файла во фреймворке и отдавать CONTENT_TYPE_RAW с заголовком JS
+         * Либо рендерить не из файла, а из HEREDOC
+         * */
+
         $this->template->setTemplate("_js/theMapDefinition.tpl");
         $this->template->setRenderType(Template::CONTENT_TYPE_JS);
+    }
+
+    public function test()
+    {
+        // нам нужно отдать во фреймворк инстанс шаблонизатора, а получить - срендеренный текст.
+        // инстанс класса Template может не поддерживать chaining
+
+        $t = new Template();
+
+        $t
+            ->setTemplateDir( '' /* путь к файлам фреймворка */)
+            ->setCompileDir( '/dev/shm/')
+            ->setForceCompile( true)
+            ->registerPlugin( Template::PLUGIN_MODIFIER, 'json_encode', 'json_encode', false)
+            ->setTemplate( '', /* путь к файлу шаблона */);
+        $t->assign("data", []);
+
+        // как вариант,
+
+
+        $t->setRenderType(Template::CONTENT_TYPE_JS);
+
+
     }
 
 }

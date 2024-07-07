@@ -4,6 +4,7 @@ window.theMap = {
     "map": {
         "id"                :   "{$map.alias}",
         "title"             :   "{$map.title}",
+        "description"       :   "{$map.description|default:''}",
         "type"              :   "{$map.type}",
         "imagefile"         :   "/storage/{$map.alias}/{$map.imagefile}",
         "width"             :   {$map.width},
@@ -32,30 +33,16 @@ window.theMap = {
 
         {if $display.custom_css}"custom_css" : "{$display.custom_css}", {/if}
 
-        {if $maxbounds}
+        "maxbounds"         :   {$maxbounds|json_encode},
 
-        "maxbounds": {
-
-            {foreach $maxbounds as $key => $value}
-
-            "{$key}": "{$value}",
-
-            {/foreach}
-
+        "focus": {
+            "animate_duration"  : {$display.focus_animate_duration},
+            "highlight_color"   : "{$display.focus_highlight_color}",
+            "timeout"           : {$display.focus_timeout},
         },
-        {/if}
 
-        {if $focus_animate_duration}
-        "focus_animate_duration": {$focus_animate_duration},
-        {/if}
 
-        {if $focus_highlight_color}
-        "focus_highlight_color": "{$focus_highlight_color}",
-        {/if}
 
-        {if $focus_timeout}
-        "focus_timeout": {$focus_timeout},
-        {/if}
 
     },
 
