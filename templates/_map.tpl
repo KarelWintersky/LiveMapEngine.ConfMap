@@ -58,8 +58,10 @@
         let regions_with_content_ids = [
             {$regions_with_content_ids}
         ];
-        window._mapManager = new MapManager(window.theMap);
+        var mapManager = new MapManager(window.theMap);
     </script>
+    <script src="/frontend/view.map.fullscreen.js"></script>
+
 </head>
 <body>
 <div tabindex="0" class="leaflet-container leaflet-fade-anim leaflet-grab leaflet-touch-drag" id="map"></div>
@@ -148,7 +150,7 @@
     </section>
 {/if}
 
-<script src="/frontend/view.map.fullscreen.js"></script>
+
 
 </body>
 </html>

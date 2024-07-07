@@ -82,8 +82,7 @@ class MapManager {
         this.IS_DEBUG = is_debug;
         this.map_alias = this.theMap.map.id;
 
-        // infobox | colorbox
-        this.infobox_mode = 'colorbox'; //@todo: на самом деле из mapDefinition
+        this.infobox_mode = this.theMap.display['viewmode'];
 
         this.LGS = {};
         this.regionsDataset = {};
@@ -433,8 +432,8 @@ class MapManager {
      * @param action
      * @returns {string}
      */
-    static WLH_makeLink(id, action = 'view') {
-        return `#${action}=[${id}]`;
+    static WLH_makeLink(id = '', action = 'view') {
+        return id !== '' ? `#${action}=[${id}]` : ``
     }
 
     /**
@@ -445,7 +444,7 @@ class MapManager {
      * передается массив карты (и имя текущего слоя?).
      *
      * @param dataset
-     * @returns {action, id_region}
+     * @returns {{id_region: null, action: null}}
      */
     static WLH_getAction(dataset) {
         let regexp_pattern = /(view|focus)=\[(.*)\]/;
@@ -569,7 +568,9 @@ class MapManager {
      * @param title
      */
     manageHintBox(event = 'show', id_region, title = '') {
-        //@todo: еще нужно проверять, существует ли этот контейнер!
+        if (!MapControls.controlHintBoxPresent) {
+            return false;
+        }
 
         let $target = $("#section-region-title-content");
         if (event === 'hide') {
@@ -593,8 +594,6 @@ class MapManager {
 
     /**
      * Исходя из имени, управляет поведением окна ColorBox, в которое загружается контент.
-     * Но в силу специфики колорбокса на данный момент (2024-07-06 12:40) имеет только событие 'show'
-     * То есть практически - только показывает контент.
      *
      * @param event
      * @param id_region
@@ -636,7 +635,7 @@ class MapManager {
                 onClosed: function() {
                     // что делаем при закрытии колобокса?
                     history.pushState('', document.title, window.location.pathname);
-                    window.location.hash = '';
+                    window.location.hash = MapManager.WLH_makeLink();
                 }
             });
         });

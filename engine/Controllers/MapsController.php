@@ -86,7 +86,9 @@ class MapsController extends AbstractClass
 
         //@todo: по-хорошему, надо назвать 'hintbox' то, что сейчас открывается как `$sections_present.title`
 
-        $this->template->assign("sections_custom_regions_title", $this->map->getConfig("display_defaults->sections->regions->title") ?: 'Интересные места на карте');
+        $this->template->assign("sections_custom_regions_title",
+            $this->map->getConfig("display->sections->regions->title") ?: 'Интересные места на карте'
+        );
 
         $this->template->assign("section_backward_content", [
             [ 'link' => '/about', 'text' => 'Что это?' ]

@@ -9,7 +9,7 @@ let base_map_bounds;
 let map;
 
 $(function() {
-    let _mapManager = window._mapManager;
+    let _mapManager = window.mapManager;
 
     map = _mapManager.createMap('map'); // also _mapManager.map;
     _mapManager.setBackgroundColor(".leaflet-container");
@@ -34,6 +34,10 @@ $(function() {
             // а ниже отлавливать его изменения
 
             // infobox или colorbox - зависит от режима отображения региона
+
+            //@todo: что дальше? Универсальный метод открытия описания региона, переименовать hintbox
+            //@todo: переименуем в hintbox
+
             if (_mapManager.infobox_mode === 'infobox') {
 
                 if (MapManager.current_infobox_region_id === id_region) {
@@ -47,15 +51,8 @@ $(function() {
 
                 window.location.hash = MapManager.WLH_makeLink(id_region);
 
-                //@todo: вот это должно происходить внутри функции manageColorBox, данные о title
-                // мы должны из...
-                // this.regionsDataset[id_region] ?
+                _mapManager.manageColorBox('show', id_region);
 
-                let title = (window.theMap['regions'][id_region]['title'] != '')
-                    ? window.theMap['regions'][id_region]['title']
-                    : '';
-
-                _mapManager.manageColorBox('show', id_region, title);
             } else if (_mapManager.infobox_mode === 'hintbox') {
                 _mapManager.manageHintBox('show', id_region);
             }
@@ -162,15 +159,15 @@ $(function() {
 
 
     //@todo: нужно устанавливать в MapControls соотв.флаги
-    let controlRegionsBoxPresent    = MapControls.declareControl_RegionsBox();
-    let controlInfoBoxPresent       = MapControls.declareControl_InfoBox();
-    let controlBackwardPresent      = MapControls.declareControl_Backward();
-    let controlHintBoxPresent       = MapControls.declareControl_RegionTitle(); //@todo: rename to hintbox
+    MapControls.controlRegionsBoxPresent    = MapControls.declareControl_RegionsBox();
+    MapControls.controlInfoBoxPresent       = MapControls.declareControl_InfoBox();
+    MapControls.controlBackwardPresent      = MapControls.declareControl_Backward();
+    MapControls.controlHintBoxPresent       = MapControls.declareControl_RegionTitle(); //@todo: rename to hintbox
 
     // не показываем контрол "назад" если страница загружена в iframe
     if (! MapControls.isLoadedToIFrame()) {
         // и контрол создан
-        if (controlBackwardPresent) {
+        if (MapControls.controlBackwardPresent) {
             _mapManager.map.addControl( new L.Control.Backward() );
         }
     }
@@ -178,35 +175,41 @@ $(function() {
     // показываем список регионов только если он не пуст
     if (regions_with_content_ids.length) {
         // и контрол создан
-        if (controlRegionsBoxPresent) {
+        if (MapControls.controlRegionsBoxPresent) {
             _mapManager.map.addControl( new L.Control.RegionsBox() );
         }
     }
 
     // анализируем window.location.hash
     // (_mapManager.options.checkWLH_onStart)
+    //@todo: этот режим должен работать, если в MapManager установлен какой-то флаг. Какой? И как он передается из конфига карты?
     if (true) {
         let wlh_options = MapManager.WLH_getAction(_mapManager.regionsDataset);
         if (wlh_options) {
+            let id_region = wlh_options.id_region;
+
             // было бы более интересным решением имитировать триггером клик по ссылке на регионе, но.. оно не работает
             // $("a.action-focus-at-region[data-region-id='" + wlh_options.id_region + "']").trigger('click');
 
             if (wlh_options.id_region != null) {
                 _mapManager.wlhFocusRegion(_mapManager.map, wlh_options.id_region, _mapManager.LGS);
 
-                //@todo: Какой контейнер открывать - зависит от режима!!! Сейчас только infoBox
-                //@todo: нужен универсальный метод открытия инфо-окна, который открывает нужный тип внутри
-                _mapManager.manageInfoBox('show', wlh_options.id_region);
+                if (_mapManager.infobox_mode === 'infobox') {
+                    _mapManager.manageInfoBox('show', id_region);
+                    MapManager.current_infobox_region_id = id_region;
+                } else if (_mapManager.infobox_mode === 'colorbox') {
+                    _mapManager.manageColorBox('show', id_region);
+                } else if (_mapManager.infobox_mode === 'hintbox') {
+                    _mapManager.manageHintBox('show', id_region);
+                }
             }
-
-        } else {
         }
     }
 
     // Событие на зуме
     _mapManager.map.on('zoomend', function() {
         let currentZoom = _mapManager.map.getZoom();
-        console.log("Current zoom: " + currentZoom);
+        // console.log("Current zoom: " + currentZoom);
 
         Object.keys( _mapManager.LGS ).forEach(function(lg){
             let zmin = _mapManager.LGS[lg].zoom_min;
@@ -224,9 +227,11 @@ $(function() {
         });
     });
 
-}).on('click', '#actor-edit', function() {
+});
+
+$(document).on('click', '#actor-edit', function() {
     // клик на кнопку "редактировать"
-    let _mapManager = window._mapManager;
+    let _mapManager = window.mapManager;
 
     let region_id = $(this).data('region-id');
     document.location.href = MapManager.makeURL('edit', _mapManager.map_alias, region_id);
@@ -253,10 +258,10 @@ $(function() {
 }).on('click', '.action-focus-at-region', function(){
     // клик на ссылке в списке регионов
 
-    let _mapManager = window._mapManager;
+    let _mapManager = window.mapManager;
 
     let id_region = $(this).data('region-id');
-    console.log(`current_infobox_region_id = ${MapManager.current_infobox_region_id}`);
+    // console.log(`current_infobox_region_id = ${MapManager.current_infobox_region_id}`);
 
     _mapManager.onClickFocusRegion(map, id_region, _mapManager.LGS);
     _mapManager.manageInfoBox('show', id_region);
@@ -266,13 +271,13 @@ $(function() {
 
 }).on('click', '#actor-section-infobox-toggle', function(){
 
-    let _mapManager = window._mapManager;
+    let _mapManager = window.mapManager;
 
     _mapManager.manageInfoBox('hide', null);
 
 }).escape(function() {
     // ловит ESCAPE
-    let _mapManager = window._mapManager;
+    let _mapManager = window.mapManager;
 
     if (_mapManager.infobox_mode === 'infobox') {
         _mapManager.manageInfoBox('hide', null);

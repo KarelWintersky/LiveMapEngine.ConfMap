@@ -4,6 +4,25 @@
 class MapControls {
     static VERSION = '2024-06-14';
 
+    // А может для каждого контрола свой класс?
+    // Тогда можно будет инкапсулировать в каждом контроле свое поведение. Инстанциировать все контролы, но создавать только нужные.
+    // И обрабатывать их поведение только при их реальном наличии...
+    // ?
+    static controlRegionsBoxPresent = false;
+    static controlInfoBoxPresent = false;
+    static controlBackwardPresent = false;
+    static controlHintBoxPresent = false;
+    /**
+     * Инстансы контролов
+     */
+    static __regionsBox = null;
+
+    static __infoBox = null;
+
+    static __backward = null;
+
+    static __hintBox = null;
+
     /**
      * Создает в объекте L Control-элемент: имя региона (для карт типа folio)
      * @todo: rename to hintBox (и метод, и контейнер)
