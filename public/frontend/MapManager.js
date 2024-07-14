@@ -40,9 +40,9 @@ class MapManager {
     /**
      * Глобальный объект карты
      *
-     * @type {null}
+     * @type {{}}
      */
-    map = null;
+    map = {};
 
     /**
      * Объект глобальной декларации регионов на карте. Включает параметры по каждому региону и созданные на их основе Leaflet Vector Layers
@@ -531,6 +531,8 @@ class MapManager {
      * @param id_region
      */
     manageInfoBox(event, id_region) {
+        // Если контейнера нет - создаем его.
+        // @todo: инстанс контейнера должен объявляться в MapManager ? как и признак его создания?
         if (!MapManager.__InfoBox) {
             MapManager.__InfoBox = new L.Control.InfoBox();
             this.map.addControl( MapManager.__InfoBox );
@@ -578,7 +580,6 @@ class MapManager {
     /**
      * Управляет поведением контейнера HintBox.
      * В версии от 2024-07-06 и ранее оно называется $sections_present.title, #section-region-title
-     * А должно быть `section-region-hintbox` (и задаваться через конструктор MapControls!
      *
      * @param event
      * @param id_region
@@ -589,7 +590,7 @@ class MapManager {
             return false;
         }
 
-        let $target = $("#section-region-title-content");
+        let $target = $("#section-region-hint-content");
         if (event === 'hide') {
             if ($target) {
                 $target.html('');
@@ -597,12 +598,14 @@ class MapManager {
             return true;
         }
 
-        let t = (this.regionsDataset[id_region]['title'] !== '')
-            ? this.regionsDataset[id_region]['title']
+        let region = this.getRegionProperties(id_region);
+        title
+            = (region.hasOwnProperty('title') && region['title'] !== '')
+            ? region['title']
             : '';
 
         if ($target) {
-            $target.html(t);
+            $target.html(title);
             return true;
         }
 
@@ -637,8 +640,24 @@ class MapManager {
             ? region['title']
             : '';
 
-        $.get( url, function() {
-        }).done(function(data) {
+        $.colorbox({
+            href: url,
+            width: that.theMap.display.viewoptions.width || 800,
+            height: that.theMap.display.viewoptions.height || 600,
+            title: title,
+            onComplete: function () {
+                window.location.hash = MapManager.WLH_makeLink(id_region);
+            },
+            onClosed: function() {
+                // что делаем при закрытии колобокса?
+                history.pushState('', document.title, window.location.pathname);
+                // window.location.hash = MapManager.WLH_makeLink(); // не нужно, потому что иначе оставляет решётку в WLH
+            }
+        });
+
+       /*
+       // старый вариант, сначала грузит, потом показывает. Но нормально работает вариант и выше. Точно?
+       $.get( url, function() { }).done(function(data) {
             let colorbox_width  = that.theMap.display.viewoptions.width || 800;
             let colorbox_height = that.theMap.display.viewoptions.height || 600;
 
@@ -656,6 +675,7 @@ class MapManager {
                 }
             });
         });
+        */
     }
 
     /**

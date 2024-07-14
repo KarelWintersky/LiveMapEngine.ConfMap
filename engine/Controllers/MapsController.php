@@ -72,19 +72,24 @@ class MapsController extends AbstractClass
 
         // может быть перекрыто настройкой из конфига.
         //@todo: обновить в livemap с учетом нового модуля Map
-
         //@todo: Параметры этих контейнеров нужно передавать в конструктор MapControls - ведь он должен отвечать за взаиморасположение и поведение контролов на карте
 
-        // эти параметры зависят от viewmode карты И индивидуальных настроек секций. Индивидуальные настройки секций перекрывают viewmode
+        // Эти параметры зависят от viewmode карты И индивидуальных настроек секций. Индивидуальные настройки секций перекрывают viewmode
         $this->template->assign("sections_present", [
-            'infobox'   =>  false,
+            'infobox'   =>  $this->map->getConfig('display->viewmode', 'folio') === 'infobox',  // либо колорбокс, либо инфобокс
+            'colorbox'  =>  $this->map->getConfig('display->viewmode', 'folio') === 'colorbox', // на самом деле конечно нужно определять секции совокупно
+            'hint'      =>  $this->map->getConfig('display->viewmode', 'folio') === 'hintbox',  // режим показа контента
+
+            // на самом деле следующие два поля надо определять на основании трех предыдущих... или нет?
+
             'regions'   =>  true && ( $this->map->getConfig('display->sections->regions', true) ),
             'backward'  =>  true && ( $this->map->getConfig('display->sections->backward', true)),
-            'title'     =>  false, //@todo: rename to hintbox
-            'colorbox'  =>  true,
         ]);
 
-        //@todo: по-хорошему, надо назвать 'hintbox' то, что сейчас открывается как `$sections_present.title`
+        //@todo: !
+        $this->template->assign("section_position", [
+
+        ]);
 
         $this->template->assign("sections_custom_regions_title",
             $this->map->getConfig("display->sections->regions->title") ?: 'Интересные места на карте'

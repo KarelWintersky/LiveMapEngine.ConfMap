@@ -36,10 +36,8 @@
     <script src="/frontend/leaflet/SmoothWheelZoom.js"></script>
 
     {if $sections_present.colorbox}
-
         <script type="text/javascript" src="/frontend/colorbox/jquery.colorbox-min.js"></script>
         <link href="/frontend/colorbox/colorbox.css" rel="stylesheet">
-
     {/if}
 
     <script data-comment="init">
@@ -86,7 +84,6 @@
     <section id="section-regions" class="section-regions-viewbox invisible" data-leaflet-control-position="{$section.regionbox_control_position}">
         <div style="text-align: {*section.regionbox_textalign*}">
             <button id="actor-regions-toggle" class="action-toggle-div-visibility" data-content="section-regions-content" data-content-is-visible="false">Показать</button>
-            {* @todo: перенести в livemap *}
             <h3>{$sections_custom_regions_title} {if $map_regions_count}<span style="font-weight: normal">(<em >Всего: {$map_regions_count}</em>)</span>{/if}</h3>
             <select id="sort-select" class="invisible">
                 <option value="total" data-ul="data-ordered-alphabet">... все</option>
@@ -143,9 +140,9 @@
     {/if}
 {/if}
 
-{if $sections_present.title}
-    <section id="section-region-title" class="invisible section-region-title-viewbox" {* data-leaflet-control-position=... *}>
-        <span id="section-region-prefix">Selected region: </span><strong id="section-region-title-content" class="section-region-title-content"></strong>
+{if $sections_present.hint}
+    <section id="section-region-hint" class="invisible section-region-hint-viewbox" {* data-leaflet-control-position=... *}>
+        <span id="section-region-prefix">Selected region: </span><strong id="section-region-hint-content" class="section-region-hint-content"></strong>
     </section>
 {/if}
 

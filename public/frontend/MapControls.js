@@ -33,14 +33,15 @@ class MapControls {
      * @param position
      * @returns {boolean}
      */
-    static declareControl_RegionTitle(target = 'section-region-title', position = 'topleft') {
-        if ($(`#${target}`).length == 0) {
+    static declareControl_RegionHint(target = 'section-region-hint', position = 'topright') {
+        let $target = $(`#${target}`);
+        if ($target.length == 0) {
             return false;
         }
 
-        L.Control.Title = L.Control.extend({
+        L.Control.Hint = L.Control.extend({
             options: {
-                position: position || 'topleft'
+                position: $target.data('leaflet-control-position') || 'topright'
             },
             onAdd: function(map) {
                 let div = L.DomUtil.get(target);
@@ -49,7 +50,7 @@ class MapControls {
                 L.DomEvent.disableClickPropagation(div);
                 return div;
             },
-            onRemove: function(map){}
+            onRemove: function(map){ }
         });
         return true;
     }
@@ -63,7 +64,7 @@ class MapControls {
      */
     static declareControl_RegionsBox(target = 'section-regions') {
         let $target = $(`#${target}`);
-        if ($target.length == 0) {
+        if ($target.length < 1) {
             return false;
         }
 
@@ -93,7 +94,7 @@ class MapControls {
      */
     static declareControl_InfoBox(target = 'section-infobox') {
         let $target = $(`#${target}`);
-        if ($target.length == 0) {
+        if ($target.length < 1) {
             return false;
         }
 
@@ -123,7 +124,7 @@ class MapControls {
      */
     static declareControl_Backward(target = 'section-backward') {
         let $target = $(`#${target}`);
-        if ($target.length == 0) {
+        if ($target.length < 1) {
             return false;
         }
 

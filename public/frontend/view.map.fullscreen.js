@@ -162,7 +162,7 @@ $(function() {
     MapControls.controlRegionsBoxPresent    = MapControls.declareControl_RegionsBox();
     MapControls.controlInfoBoxPresent       = MapControls.declareControl_InfoBox();
     MapControls.controlBackwardPresent      = MapControls.declareControl_Backward();
-    MapControls.controlHintBoxPresent       = MapControls.declareControl_RegionTitle(); //@todo: rename to hintbox
+    MapControls.controlHintBoxPresent       = MapControls.declareControl_RegionHint();
 
     // не показываем контрол "назад" если страница загружена в iframe
     if (! MapControls.isLoadedToIFrame()) {
@@ -178,6 +178,11 @@ $(function() {
         if (MapControls.controlRegionsBoxPresent) {
             _mapManager.map.addControl( new L.Control.RegionsBox() );
         }
+    }
+
+    // Если контрол объявлен (а он создается если есть контейнер в DOM, а его наличие определено бэком) - то добавляем контрол на страницу
+    if (MapControls.controlHintBoxPresent) {
+        _mapManager.map.addControl( new L.Control.Hint() );
     }
 
     // анализируем window.location.hash
