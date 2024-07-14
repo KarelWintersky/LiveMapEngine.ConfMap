@@ -674,7 +674,20 @@ class MapManager {
     }
 
     /**
-     * Возвращает информацию (options) о регионе из датасета regionsDataset или false при отсутствии
+     * Возвращает всю информацию о регионе из датасета regionsDataset или false при отсутствии
+     *
+     * @param id_region
+     * @returns {*|boolean}
+     */
+    getRegion(id_region) {
+        return (
+            this.regionsDataset.hasOwnProperty(id_region)
+                ? this.regionsDataset[id_region]
+                : false);
+    }
+
+    /**
+     * Возвращает свойства (options) о регионе из датасета regionsDataset или false при отсутствии
      *
      * @param id_region
      */
@@ -713,7 +726,7 @@ class MapManager {
     /**
      * OnClick фокусировка региона
      *
-     * @todo:
+     * @todo: Похоже, что не учитывает POI. А должен?
      *
      * @param map
      * @param id_region
@@ -730,7 +743,8 @@ class MapManager {
         if (this.IS_DEBUG) console.log( LGS[id_layer].actor );
 
         // сохраняем оригинальный стиль региона
-        let old_style = this.regionsDataset[id_region].options['fillColor'];
+        // let old_style = this.regionsDataset[id_region].options['fillColor'];
+        let old_style = this.getRegionProperties(id_region)['fillColor'];
 
         if (is_visible) {
             bounds = this.regionsDataset[id_region].getBounds();
@@ -766,6 +780,11 @@ class MapManager {
      * @param LGS
      */
     wlhFocusRegion(map, id_region, LGS) {
+        let region = this.getRegion(id_region);
+        if (!region) {
+            return false;
+        }
+
         /* позиционируем */
         let id_layer = this.theMap['regions'][id_region]['layer'];
         let is_visible = LGS[id_layer].visible;
@@ -801,9 +820,7 @@ class MapManager {
             animate: false
         });
 
-        // пан
-        let region = this.regionsDataset[id_region];
-
+        // pan to
         if (region.options.type == 'poi') {
             // poi
             bounds = region._latlng;

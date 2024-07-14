@@ -191,7 +191,9 @@ $(function() {
             // $("a.action-focus-at-region[data-region-id='" + wlh_options.id_region + "']").trigger('click');
 
             if (wlh_options.id_region != null) {
-                _mapManager.wlhFocusRegion(_mapManager.map, wlh_options.id_region, _mapManager.LGS);
+                // _mapManager.wlhFocusRegion(_mapManager.map, wlh_options.id_region, _mapManager.LGS); // должен позиционировать, но не делает этого!
+
+                _mapManager.onClickFocusRegion(_mapManager.map, wlh_options.id_region, _mapManager.LGS); // подсвечивает и позиционирует
 
                 if (_mapManager.infobox_mode === 'infobox') {
                     _mapManager.manageInfoBox('show', id_region);
