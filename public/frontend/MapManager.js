@@ -31,6 +31,13 @@ class MapManager {
     theMap = {};
 
     /**
+     * Список регионов, имеющих контент (то есть выделенных)
+     *
+     * @type {{}}
+     */
+    present_regions = [];
+
+    /**
      * Глобальный объект карты
      *
      * @type {null}
@@ -67,22 +74,31 @@ class MapManager {
     /**
      *
      * @param mapDefinition - определение карты, полученное из JS-запроса `/map:js/ID.js`
+     * @param present_regions - массив регионов, имеющих контент
      * @param options
      * @param is_debug
      */
-    constructor(mapDefinition = {}, options = {}, is_debug = false)
+    constructor(mapDefinition = {}, present_regions = [], options = {}, is_debug = false)
     {
         this.options = {
-            use_canvas: true
+            use_canvas: true,           // используется ли рендер Canvas?
+            checkWLH_onStart: true      // анализировать ли при загрузке страницы window.location.hash и показывать ли инфобокс при необходимости?
         }
+        this.present_regions = present_regions;
 
-        jQuery.extend(this.options, options);
+        this.options = Object.assign(this.options, options);
 
         this.theMap = mapDefinition;
         this.IS_DEBUG = is_debug;
         this.map_alias = this.theMap.map.id;
 
-        this.infobox_mode = this.theMap.display['viewmode'];
+        this.infobox_mode
+            = this.theMap.hasOwnProperty('display') && this.theMap.display.hasOwnProperty('viewmode') && this.theMap.display['viewmode'] !== ''
+            ? this.theMap.display['viewmode'] : 'folio';
+
+        /*this.infobox_mode
+            = JSHelpers.has(this.theMap, 'display.viewmode')
+            ? this.theMap.display['viewmode'] : 'folio';*/
 
         this.LGS = {};
         this.regionsDataset = {};
@@ -95,6 +111,7 @@ class MapManager {
      * @param target
      */
     setBackgroundColor(target) {
+
         $(target).css('background-color', this.theMap['display']['background_color']);
     }
 

@@ -6,12 +6,14 @@ const IS_DEBUG = false;
 const DEBUG_SET_STYLE_WHILE_HOVER = true;
 
 let base_map_bounds;
-let map;
 
 $(function() {
-    let _mapManager = window.mapManager;
+    if (!window.hasOwnProperty('mapManager')) {
+        return false;
+    }
+    let _mapManager = window['mapManager'];
 
-    map = _mapManager.createMap('map'); // also _mapManager.map;
+    _mapManager.createMap('map'); // also _mapManager.map;
     _mapManager.setBackgroundColor(".leaflet-container");
 
     base_map_bounds = _mapManager.getBounds();
@@ -32,10 +34,8 @@ $(function() {
         map_element.on('click', function() {
             // альтернатива - менять window.location.hash
             // а ниже отлавливать его изменения
-
             // infobox или colorbox - зависит от режима отображения региона
 
-            //@todo: что дальше? Универсальный метод открытия описания региона, переименовать hintbox
             //@todo: переименуем в hintbox
 
             if (_mapManager.infobox_mode === 'infobox') {
@@ -166,24 +166,22 @@ $(function() {
 
     // не показываем контрол "назад" если страница загружена в iframe
     if (! MapControls.isLoadedToIFrame()) {
-        // и контрол создан
+        // ...и контрол создан
         if (MapControls.controlBackwardPresent) {
             _mapManager.map.addControl( new L.Control.Backward() );
         }
     }
 
     // показываем список регионов только если он не пуст
-    if (regions_with_content_ids.length) {
-        // и контрол создан
+    if (_mapManager.present_regions.length) {
+        // ... и создан контрол
         if (MapControls.controlRegionsBoxPresent) {
             _mapManager.map.addControl( new L.Control.RegionsBox() );
         }
     }
 
     // анализируем window.location.hash
-    // (_mapManager.options.checkWLH_onStart)
-    //@todo: этот режим должен работать, если в MapManager установлен какой-то флаг. Какой? И как он передается из конфига карты?
-    if (true) {
+    if (_mapManager.options.checkWLH_onStart) {
         let wlh_options = MapManager.WLH_getAction(_mapManager.regionsDataset);
         if (wlh_options) {
             let id_region = wlh_options.id_region;
@@ -231,7 +229,10 @@ $(function() {
 
 $(document).on('click', '#actor-edit', function() {
     // клик на кнопку "редактировать"
-    let _mapManager = window.mapManager;
+    if (!window.hasOwnProperty('mapManager')) {
+        return false;
+    }
+    let _mapManager = window['mapManager'];
 
     let region_id = $(this).data('region-id');
     document.location.href = MapManager.makeURL('edit', _mapManager.map_alias, region_id);
@@ -257,27 +258,34 @@ $(document).on('click', '#actor-edit', function() {
 
 }).on('click', '.action-focus-at-region', function(){
     // клик на ссылке в списке регионов
-
-    let _mapManager = window.mapManager;
+    if (!window.hasOwnProperty('mapManager')) {
+        return false;
+    }
+    let _mapManager = window['mapManager'];
 
     let id_region = $(this).data('region-id');
     // console.log(`current_infobox_region_id = ${MapManager.current_infobox_region_id}`);
 
-    _mapManager.onClickFocusRegion(map, id_region, _mapManager.LGS);
+    _mapManager.onClickFocusRegion(_mapManager.map, id_region, _mapManager.LGS);
     _mapManager.manageInfoBox('show', id_region);
 
     window.location.hash = MapManager.WLH_makeLink(id_region);
     return false;
 
 }).on('click', '#actor-section-infobox-toggle', function(){
-
-    let _mapManager = window.mapManager;
+    if (!window.hasOwnProperty('mapManager')) {
+        return false;
+    }
+    let _mapManager = window['mapManager'];
 
     _mapManager.manageInfoBox('hide', null);
 
 }).escape(function() {
     // ловит ESCAPE
-    let _mapManager = window.mapManager;
+    if (!window.hasOwnProperty('mapManager')) {
+        return false;
+    }
+    let _mapManager = window['mapManager'];
 
     if (_mapManager.infobox_mode === 'infobox') {
         _mapManager.manageInfoBox('hide', null);

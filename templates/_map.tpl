@@ -55,10 +55,9 @@
     <script src="/js/confmap.js" data-comment="the-map-data"></script>
 
     <script data-comment="regions">
-        let regions_with_content_ids = [
+        window.mapManager = new MapManager(window.theMap, [
             {$regions_with_content_ids}
-        ];
-        var mapManager = new MapManager(window.theMap);
+        ]);
     </script>
     <script src="/frontend/view.map.fullscreen.js"></script>
 
@@ -146,7 +145,7 @@
 
 {if $sections_present.title}
     <section id="section-region-title" class="invisible section-region-title-viewbox" {* data-leaflet-control-position=... *}>
-        <span>Selected region: </span><strong id="section-region-title-content" class="section-region-title-content"></strong>
+        <span id="section-region-prefix">Selected region: </span><strong id="section-region-title-content" class="section-region-title-content"></strong>
     </section>
 {/if}
 
