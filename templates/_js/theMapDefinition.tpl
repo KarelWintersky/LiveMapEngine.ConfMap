@@ -36,7 +36,7 @@ window.theMap = {
         "maxbounds"         :   {$maxbounds|json_encode},
 
         "focus": {
-            "animate_duration"  : {$display.focus_animate_duration},
+            "animate_duration"  : {$display.focus_animate_duration},   {* нигде не используется *}
             "highlight_color"   : "{$display.focus_highlight_color}",
             "timeout"           : {$display.focus_timeout},
         },

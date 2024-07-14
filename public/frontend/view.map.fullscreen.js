@@ -1,7 +1,5 @@
-const VERSION = '2024-07-07';
-const focus_animate_duration = window.theMap['display']['focus']['animate_duration'] || 0.7;
-const focus_highlight_color = window.theMap['display']['focus']['highlight_color'] || '#ff0000';
-const focus_timeout = window.theMap['display']['focus']['timeout'] || 1500;
+const VERSION = '2024-07-14';
+
 const IS_DEBUG = false;
 const DEBUG_SET_STYLE_WHILE_HOVER = true;
 
@@ -16,15 +14,15 @@ $(function() {
     _mapManager.createMap('map'); // also _mapManager.map;
     _mapManager.setBackgroundColor(".leaflet-container");
 
-    base_map_bounds = _mapManager.getBounds();
+    _mapManager.getBounds();
 
-    let image = _mapManager.createImageOverlay(base_map_bounds);
+    let image = _mapManager.createImageOverlay(_mapManager.baseMapBounds);
     image.addTo(_mapManager.map);
 
     // строим массив всех регионов
     _mapManager.buildRegionsDataset();
 
-    _mapManager.map.fitBounds(base_map_bounds);
+    _mapManager.map.fitBounds(_mapManager.baseMapBounds);
     _mapManager.map.setZoom( window.theMap['display']['zoom'] );
 
     // биндим к каждому объекту функцию, показывающую информацию
@@ -56,8 +54,6 @@ $(function() {
             } else if (_mapManager.infobox_mode === 'hintbox') {
                 _mapManager.manageHintBox('show', id_region);
             }
-
-
 
         }).on('mouseover', function() {
             // выставляем стили для региона при наведении на него мышки, для маркера типа POI стиль не ставится

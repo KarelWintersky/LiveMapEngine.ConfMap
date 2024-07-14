@@ -2,7 +2,7 @@
  * Попытка запихнуть все методы работы с картой в класс
  */
 class MapManager {
-    static VERSION = '2024-06-22';
+    static VERSION = '2024-07-14';
 
     /**
      * Инстанс инфобокса, null - когда не создан
@@ -82,23 +82,29 @@ class MapManager {
     {
         this.options = {
             use_canvas: true,           // используется ли рендер Canvas?
-            checkWLH_onStart: true      // анализировать ли при загрузке страницы window.location.hash и показывать ли инфобокс при необходимости?
+            checkWLH_onStart: true,       // анализировать ли при загрузке страницы window.location.hash и показывать ли инфобокс при необходимости?
         }
-        this.present_regions = present_regions;
-
         this.options = Object.assign(this.options, options);
+
+        this.present_regions = present_regions;
 
         this.theMap = mapDefinition;
         this.IS_DEBUG = is_debug;
         this.map_alias = this.theMap.map.id;
 
+        this.options = Object.assign(this.options, {
+            focus: {
+                animate_duration: this.theMap.display.focus.animate_duration || 0.7, // не используется нигде, какое-то легаси!
+                highlight_color: this.theMap.display.focus.highlight_color || '#ff0000',
+                timeout: this.theMap.display.focus.timeout || 1500,
+            }
+        });
+
         this.infobox_mode
             = this.theMap.hasOwnProperty('display') && this.theMap.display.hasOwnProperty('viewmode') && this.theMap.display['viewmode'] !== ''
             ? this.theMap.display['viewmode'] : 'folio';
 
-        /*this.infobox_mode
-            = JSHelpers.has(this.theMap, 'display.viewmode')
-            ? this.theMap.display['viewmode'] : 'folio';*/
+        /*this.infobox_mode = JSHelpers.has(this.theMap, 'display.viewmode') ? this.theMap.display['viewmode'] : 'folio';*/
 
         this.LGS = {};
         this.regionsDataset = {};
@@ -226,6 +232,7 @@ class MapManager {
 
     /**
      * Возвращает bounds карты. И вроде бы не используется для именно setBounds()
+     * Кроме возврата, еще и сохраняет значения в this.baseMapBounds
      *
      * @returns {(number[]|*[])[]}
      */
@@ -255,6 +262,14 @@ class MapManager {
         return bounds;
     }
 
+    /**
+     * На деле, похоже, параметр передавать не нужно, его можно взять из _mapManager.baseMapBounds
+     *
+     * Здесь же нам нужно будет определять параметры разных файлов для разных уровней зума. Но это не точно!
+     *
+     * @param base_map_bounds
+     * @returns {null}
+     */
     createImageOverlay(base_map_bounds) {
         let image = null;
 
@@ -644,6 +659,8 @@ class MapManager {
             href: url,
             width: that.theMap.display.viewoptions.width || 800,
             height: that.theMap.display.viewoptions.height || 600,
+            opacity: 0.8,
+
             title: title,
             onComplete: function () {
                 window.location.hash = MapManager.WLH_makeLink(id_region);
@@ -654,28 +671,6 @@ class MapManager {
                 // window.location.hash = MapManager.WLH_makeLink(); // не нужно, потому что иначе оставляет решётку в WLH
             }
         });
-
-       /*
-       // старый вариант, сначала грузит, потом показывает. Но нормально работает вариант и выше. Точно?
-       $.get( url, function() { }).done(function(data) {
-            let colorbox_width  = that.theMap.display.viewoptions.width || 800;
-            let colorbox_height = that.theMap.display.viewoptions.height || 600;
-
-            window.location.hash = MapManager.WLH_makeLink(id_region);
-
-            $.colorbox({
-                html: data,
-                width: colorbox_width,
-                height: colorbox_height,
-                title: title,
-                onClosed: function() {
-                    // что делаем при закрытии колобокса?
-                    history.pushState('', document.title, window.location.pathname);
-                    window.location.hash = MapManager.WLH_makeLink();
-                }
-            });
-        });
-        */
     }
 
     /**
@@ -701,13 +696,14 @@ class MapManager {
      */
     static makeURL(action = 'view', map_alias, id_region, is_iframe = false) {
         let _act = null;
+        let urls = window['REGION_URLS'];
         switch (action) {
             case 'view': {
-                _act = window.REGION_URLS['view'];
+                _act = urls['view'];
                 break;
             }
             case 'edit': {
-                _act = window.REGION_URLS['edit'];
+                _act = urls['edit'];
                 break;
             }
         }
@@ -727,6 +723,8 @@ class MapManager {
         let id_layer = this.theMap['regions'][id_region]['layer'];
         let is_visible = LGS[id_layer].visible;
         let bounds;
+        let focus_highlight_color = this.options.focus.highlight_color;
+        let focus_timeout = this.options.focus.timeout;
 
         if (this.IS_DEBUG) console.log(`onclick_FocusRegion -> layer ${id_layer} is_visible ${is_visible}`);
         if (this.IS_DEBUG) console.log( LGS[id_layer].actor );
@@ -737,17 +735,19 @@ class MapManager {
         if (is_visible) {
             bounds = this.regionsDataset[id_region].getBounds();
 
-            this.regionsDataset[ id_region ].setStyle({ fillColor: focus_highlight_color }); // подсвечиваем (перенести в функцию/метод объекта)
+            this.regionsDataset[ id_region ].setStyle({ fillColor: focus_highlight_color }); //@todo: делать ли это если установлена соответствующая опция? Какая?
 
+            // когда-то было:
             // map.panTo( bounds.getCenter(), { animate: true, duration: 1, noMoveStart: true});
             map.setView( bounds.getCenter(), map._zoom, { animate: true, duration: 1, noMoveStart: true} );
+
         } else {
             map.setZoom( this.theMap['layers'][id_layer]['zoom']+1, {
                 animate: true
             } );
             bounds = this.regionsDataset[id_region].getBounds();
 
-            this.regionsDataset[ id_region ].setStyle({ fillColor: focus_highlight_color }); // подсвечиваем (перенести в функцию/метод объекта)
+            this.regionsDataset[ id_region ].setStyle({ fillColor: focus_highlight_color }); //@todo: делать ли это если установлена соответствующая опция? Какая? (то есть метод с проверкой?)
 
             map.panTo( bounds.getCenter(), { animate: true, duration: 1, noMoveStart: true});
         }
@@ -795,7 +795,7 @@ class MapManager {
             LGS[lg].visible = true;
         });
 
-        map.fitBounds(base_map_bounds);
+        map.fitBounds(this.baseMapBounds);
 
         map.setZoom( window.theMap.display.zoom, {
             animate: false
@@ -804,10 +804,12 @@ class MapManager {
         // пан
         let region = this.regionsDataset[id_region];
 
-        if (region.options.value == 'poi') { // ? value
+        if (region.options.type == 'poi') {
+            // poi
             bounds = region._latlng;
             map.panTo( bounds, { animate: false, duration: 1, noMoveStart: true});
         } else {
+            // polygon
             bounds = region.getBounds();
             map.panTo( bounds.getCenter(), { animate: false, duration: 1, noMoveStart: true});
         }

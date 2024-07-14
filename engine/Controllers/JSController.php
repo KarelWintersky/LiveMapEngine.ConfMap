@@ -292,7 +292,7 @@ class JSController extends AbstractClass
             'zoom_mode'                 =>  $json->display->zoom_mode ?? 'slider',
             'background_color'          =>  $json->display->background_color,
             'custom_css'                =>  $json->display->custom_css ?? [], // файлы кастомных стилей для карты
-            'focus_animate_duration'    =>  $json->display->focus_animate_duration ?? 0.7,
+            'focus_animate_duration'    =>  $json->display->focus_animate_duration ?? 0.7, // НЕ ИСПОЛЬЗУЕТСЯ НИГДЕ!
             'focus_highlight_color'     =>  $json->display->focus_highlight_color ?? '#ff0000',
             'focus_timeout'             =>  $json->display->focus_timeout ?? 1000,
             'viewmode'                  =>  $json->display->viewmode ?? 'colorbox'
