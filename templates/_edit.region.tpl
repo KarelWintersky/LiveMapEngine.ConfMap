@@ -90,6 +90,15 @@
 
         });
     </script>
+    <style>
+        fieldset {
+            margin-top: 0.7em;
+        }
+        legend {
+            color: forestgreen;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 <form action="{Arris\AppRouter::getRouter('update.region.info')}" method="post" id="form-edit-region">
@@ -146,26 +155,22 @@
 
     <fieldset>
         <legend>Население</legend>
-        <table width="100%" class="aligned-center">
+        <table class="aligned-center">
             <tr>
-                <td>Численность (млн)</td>
-                <td>
-                    Национальный состав:
-                </td>
-                <td>
-                    Этнопсихологические особенности:
-                </td>
+                <td width="300">Численность (млн)</td>
+                <td style="text-align: left"><input type="text" name="json:population-count" size="10" value="{$json.population.count|default:0}"></td>
             </tr>
             <tr>
-                <td>
-                    <input type="text" name="json:population-count" size="10" value="{$json.population.count|default:0}">
-                </td>
-                <td>
-                    <textarea cols="40" rows="5" name="json:population-ethnic">{$json.population.ethnic|default:''}</textarea>
-                </td>
-                <td>
-                    <textarea cols="40" rows="5" name="json:population-features">{$json.population.features|default:''}</textarea>
-                </td>
+                <td>Национальный состав:</td>
+                <td><textarea cols="40" rows="5" name="json:population-ethnic">{$json.population.ethnic|default:''}</textarea></td>
+            </tr>
+            <tr>
+                <td>Основные религии:</td>
+                <td><textarea cols="40" rows="5" name="json:population-religion">{$json.population.religion|default:''}</textarea></td>
+            </tr>
+            <tr>
+                <td>Этнопсихологические особенности:</td>
+                <td><textarea cols="40" rows="5" name="json:population-features">{$json.population.features|default:''}</textarea></td>
             </tr>
         </table>
     </fieldset>
@@ -285,9 +290,15 @@
         <textarea name="json:legacy.description" id="editor_legacy_description" data-height="100" data-menubar="">{$json.legacy.description|default:''}</textarea>
     </fieldset>
 
+    <fieldset>
+        <legend>Теги для поиска (разделенные пробелами)</legend>
+        <input type="text" name="json:tags" size="80" value="{$json.tags|default:''}">
+    </fieldset>
 
-
+    <br>
     <hr>
+    <br>
+
     <fieldset>
         <legend>Content Restrictions:</legend>
         <table width="90%" style="text-align: left" border="0">
@@ -322,7 +333,7 @@
         </table>
     </fieldset>
 
-    <hr>
+
 
     <fieldset class="fields_area">
         <legend>Техническое</legend>

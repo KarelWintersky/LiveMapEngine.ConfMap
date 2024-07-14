@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 {if !$is_present}
     {if $is_can_edit}
         <button type="button"
@@ -16,9 +17,82 @@
                 data-url="{$edit_button_url}?map={$map_alias}&id={$region_id}">Редактировать</button>
     {/if}
     <div class="region-content">
+
         <h2>{$region_title}</h2>
         {$region_text}
         <hr>
+
+        <fieldset>
+            <legend>Открыт в {$json->history->year|default:'n/a'} году от начала колонизации:</legend>
+            {if $json->history->text}
+                {$json->history->text|default:''}
+            {/if}
+        </fieldset>
+
+        <fieldset>
+            <legend>Life Support Index</legend>
+            <table class="second_td_padded">
+                <tr>
+                    <td>Класс:</td>
+                    <td>{$json->lsi->index|default:0}</td>
+                </tr>
+                <tr>
+                    <td>Тип:</td>
+                    <td>{$json->lsi->type|default:'n/a'}</td>
+                </tr>
+
+                {if $json->lsi->atmosphere}
+                <tr>
+                    <td>Атмосфера:</td>
+                    <td>{$json->lsi->atmosphere}</td>
+                </tr>
+                {/if}
+                {if $json->lsi->hydrosphere}
+                    <tr>
+                        <td>Гидросфера:</td>
+                        <td>{$json->lsi->hydrosphere}</td>
+                    </tr>
+                {/if}
+                {if $json->lsi->climate}
+                    <tr>
+                        <td>Климат регионов:</td>
+                        <td>{$json->lsi->climate}</td>
+                    </tr>
+                {/if}
+            </table>
+        </fieldset>
+
+
+
+        <fieldset>
+            <legend>Население: </legend>
+            <table class="second_td_padded">
+                {if $json->population->count}
+                    <tr>
+                        <td>Численность (млн): </td>
+                        <td>{$json->population->count}</td>
+                    </tr>
+                {/if}
+                {if $json->population->ethnic}
+                    <tr>
+                        <td>Национальный состав:</td>
+                        <td>{$json->population->ethnic}</td>
+                    </tr>
+                {/if}
+                {if $json->population->religion}
+                    <tr>
+                        <td>Основные религии: </td>
+                        <td>{$json->population->religion}</td>
+                    </tr>
+                {/if}
+                {if $json->population->features}
+                    <tr>
+                        <td>Этнопсихологические <br>особенности: </td>
+                        <td>{$json->population->features}</td>
+                    </tr>
+                {/if}
+            </table>
+        </fieldset>
 
         <fieldset>
             <legend>Экономика</legend>
@@ -106,6 +180,109 @@
             {/if}
         </fieldset>
 
+        {* ? получится ли вложить статьи экспорта и импорта в контейнер "экономика" ? по ширине, конечно! *}
+
+        {if $json->trade->export || $json->trade->import}
+        <fieldset>
+            <legend>Торговля (статьи экспорта и импорта)</legend>
+                <table width="100%" border="1">
+                    <tr>
+                        <td style="padding-left: 0em; text-align: center;font-weight: bold;">Статьи экспорта:</td>
+                        <td style="padding-left: 0em; text-align: center;font-weight: bold;">Статьи импорта:</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left: 1em;">{$json->trade->export}</td>
+                        <td style="padding-left: 1em">{$json->trade->import}</td>
+                    </tr>
+                </table>
+        </fieldset>
+        {/if}
+
+        <fieldset>
+            <legend>Крупные представители капитала:</legend>
+            <table width="100%" >
+                {if $json->economy->assets->natural}
+                    <tr>
+                        <td>Природный капитал:</td>
+                        <td>{$json->economy->assets->natural}</td>
+                    </tr>
+                {/if}
+
+                {if $json->economy->assets->financial}
+                    <tr>
+                        <td>Финансовый капитал:</td>
+                        <td>{$json->economy->assets->financial}</td>
+                    </tr>
+                {/if}
+
+                {if $json->economy->assets->industrial}
+                    <tr>
+                        <td>Реальный капитал:<br>
+                            <small>(промышленный)</small>
+                        </td>
+                        <td>{$json->economy->assets->industrial}</td>
+                    </tr>
+                {/if}
+
+                {if $json->economy->assets->social}
+                    <tr>
+                        <td>Социальный капитал:
+                            <br>
+                            <small>(образование, медицина,<br>
+                                интеллектуальная собственность)</small>
+                        </td>
+                        <td>{$json->economy->assets->social}</td>
+                    </tr>
+                {/if}
+
+                {if $json->economy->assets->oldmoney}
+                    <tr>
+                        <td>Старые семьи:</td>
+                        <td>{$json->economy->assets->oldmoney}</td>
+                    </tr>
+                {/if}
+
+            </table>
+        </fieldset>
+
+        {if $json->other->local_heroes}
+            <fieldset>
+                <legend>Известные личности:</legend>
+                {$json->other->local_heroes}
+            </fieldset>
+        {/if}
+
+        {if $json->legacy->description}
+            <fieldset>
+                <legend>Legacy</legend>
+                {$json->legacy->description}
+            </fieldset>
+        {/if}
+
+        {if $json->tags}
+
+            <fieldset>
+                <legend>Теги</legend>
+                <small>
+                {$json->tags}
+                </small>
+            </fieldset>
+        {/if}
+
+
+
         {* сюда вкладываем отображение всех остальных полей *}
     </div>
+    {* ===== СТИЛИ ===== *}
+    <style>
+        fieldset {
+            margin-top: 0.5em;
+        }
+        fieldset legend {
+            color: dodgerblue;
+        }
+        table.second_td_padded td:nth-child(2) {
+            padding-left: 1em;
+        }
+    </style>
 {/if}

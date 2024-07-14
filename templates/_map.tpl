@@ -7,6 +7,7 @@
     {include file="_common/opengraph.tpl"}
 
     {include file="_common/favicon_defs.tpl"}
+    {*<link rel="icon" href="data:;base64,iVBORw0KGgo=">*}
 
     <link href="https://fonts.googleapis.com/css?family=PT+Serif" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">

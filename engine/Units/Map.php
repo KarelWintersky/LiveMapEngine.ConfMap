@@ -62,4 +62,29 @@ class Map
         return $this->data;
     }
 
+    /**
+     * Устанавливает значение по пути
+     *
+     * @param string $path
+     * @param mixed $data
+     * @param string $separator
+     * @return bool
+     */
+    public function setData(string $path, mixed $data, string $separator = '->'):bool
+    {
+        $keys = \explode($separator, $path);
+        $temp = &$this->data;
+
+        foreach ($keys as $key) {
+            if (!isset($temp->{$key})) {
+                $temp->{$key} = new \stdClass();
+            }
+            $temp = &$temp->{$key};
+        }
+
+        $temp = $data;
+
+        return true;
+    }
+
 }

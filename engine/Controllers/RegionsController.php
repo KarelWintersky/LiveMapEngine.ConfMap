@@ -72,12 +72,10 @@ class RegionsController extends AbstractClass
 
         $json = $region_data['content_json'] ?? '{}';
 
-        $t->assign('json', json_decode($json)); //@TODO: ВАЖНО, В ШАБЛОНЕ ХОДИМ ТАК: {$json->economy->type}, А НЕ ЧЕРЕЗ ТОЧКУ!!!!
-
         /*
         Для упрощения построения круговой диаграммы долей экономики часть расчетов сделаем здесь.
         */
-        $m = new \Confmap\Units\Map();
+        $m = new \Confmap\Units\Map(); //@todo: по-хорошему, нужен класс Collection или как-то типа Data. Или взять с packagist?
         $m->parseJSON($json);
 
         $pcd_natural = (int)$m->getData("economy->shares->natural", 0);
@@ -115,11 +113,26 @@ class RegionsController extends AbstractClass
             ];
         }
 
+        // форматируем население (численность, не население!)
+        $population = $m->getData('population->count', 0);
+        $population
+            = $population >= 1
+            ? number_format($population, 0, '.', ' ')
+            : number_format($population, 3, '.', ' ');
+        $m->setData('population->count', $population);
+
+        // круговая диаграмма
         $t->assign("pie_chart", [
             'present'   =>  $pcd_sum > 0,
             'full'      =>  json_encode($pie_chart_data, JSON_UNESCAPED_UNICODE)
         ]);
         // закончили с данными для круговой диаграммы
+
+
+        // только нужно отдать не $json, а исправленные и модифицированные данные
+        $t->assign('json', $m->getData()); // а тут getData - уже JSON
+        // $t->assign('json', json_decode($json)); // вот тут делали json_decode потому что надо в шаблон отдать JSON из строки
+        //@TODO: ВАЖНО, В ШАБЛОНЕ ХОДИМ ТАК: {$json->economy->type}, А НЕ ЧЕРЕЗ ТОЧКУ!!!!
 
         //
         $t->setTemplate('view.region/view.region.html.tpl');
@@ -229,7 +242,8 @@ class RegionsController extends AbstractClass
             'population'=>  [
                 'count'     =>  self::json('population-count'),
                 'ethnic'    =>  self::json('population-ethnic'),
-                'features'  =>  self::json('population-features')
+                'features'  =>  self::json('population-features'),
+                'religion'  =>  self::json('population-religion')
             ],
             'economy'   =>  [
                 'type'      =>  self::json('economy-type'),
@@ -266,7 +280,8 @@ class RegionsController extends AbstractClass
             ],
             'legacy'            =>  [
                 'description'      => self::json('legacy.description')
-            ]
+            ],
+            'tags'          =>  self::json('tags')
         ];
 
         // пакуем контент в JSON
