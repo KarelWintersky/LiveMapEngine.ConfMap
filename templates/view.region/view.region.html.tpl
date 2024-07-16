@@ -95,6 +95,81 @@
         </fieldset>
 
         <fieldset>
+            <legend>Государственные механизмы</legend>
+            <table>
+                {if $json->statehood->ss}
+                <tr>
+                    <td>Security Status:</td>
+                    <td>
+                        {$json->statehood->ss|default:''}
+                    </td>
+                </tr>
+                {/if}
+                {if $json->statehood->gun_rights}
+                <tr>
+                    <td>Правила ношения оружия:</td>
+                    <td>
+                        {$json->statehood->gun_rights|default:''}
+                    </td>
+                </tr>
+                {/if}
+                {if $json->statehood->confstatus}
+                <tr>
+                    <td>Конфедеративный статус</td>
+                    <td>
+                        {$json->statehood->confstatus|default:''}
+                    </td>
+                </tr>
+                {/if}
+                {if $json->statehood->local_governance}
+                <tr>
+                    <td>Местное управление</td>
+                    <td>
+                        {$json->statehood->local_governance|default:''}
+                    </td>
+                </tr>
+                {/if}
+                {if $json->statehood->terr_guards}
+                <tr>
+                    <td>Территориальная гвардия</td>
+                    <td>
+                        {$json->statehood->terr_guards|default:''}
+                    </td>
+                </tr>
+                {/if}
+                <tr>
+                    <td colspan="2">
+                        <strong>Представители структур Конфедерации:</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>КСБ</td>
+                    <td>
+                        {$json->statehood->agency->css|default:'нет данных'}
+                    </td>
+                </tr>
+                <tr>
+                    <td>ОРК</td>
+                    <td>
+                        {$json->statehood->agency->drc|default:'нет данных'}
+                    </td>
+                </tr>
+                <tr>
+                    <td>ИМБ</td>
+                    <td>
+                        {$json->statehood->agency->psi|default:'нет данных'}
+                    </td>
+                </tr>
+                <tr>
+                    <td>ВКС</td>
+                    <td>
+                        {$json->statehood->agency->starfleet|default:'нет данных'}
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+
+        <fieldset>
             <legend>Экономика</legend>
             Тип: {$json->economy->type}<br> <br>
 
@@ -200,7 +275,7 @@
 
         <fieldset>
             <legend>Крупные представители капитала:</legend>
-            <table width="100%" >
+            <table width="100%" border="1px solid gray">
                 {if $json->economy->assets->natural}
                     <tr>
                         <td>Природный капитал:</td>

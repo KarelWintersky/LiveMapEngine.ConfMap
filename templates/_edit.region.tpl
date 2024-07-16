@@ -278,6 +278,74 @@
     </fieldset>
 
     <fieldset>
+        <legend>Государственные механизмы</legend>
+        <table>
+            <tr>
+                <td>Security Status:</td>
+                <td>
+                    <input type="text" name="json:statehood-ss" size="10" value="{$json.statehood.ss|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td>Правила ношения оружия:</td>
+                <td>
+                    <input type="text" name="json:statehood-gun_rights" size="100" value="{$json.statehood.gun_rights|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td>Конфедеративный статус</td>
+                <td>
+                    {* на самом деле выпадающий список:*}
+                    <input type="text" name="json:statehood-confstatus" size="40" value="{$json.statehood.confstatus|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td>Местное управление</td>
+                <td>
+                    <input type="text" name="json:statehood-local_governance" size="100" value="{$json.statehood.local_governance|default:''}">
+                    {*<textarea name="json:statehood-local_governance" id="editor_statehood_local_governance" data-height="100" data-menubar="">{$json.state.local_governance|default:''}</textarea>*}
+                </td>
+            </tr>
+            <tr>
+                <td>Территориальная гвардия</td>
+                <td>
+                    <input type="text" name="json:statehood-terr_guards" size="100" value="{$json.statehood.terr_guards|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <br>
+                    <strong>Представители структур Конфедерации:</strong>
+                </td>
+            </tr>
+            <tr>
+                <td>КСБ</td>
+                <td>
+                    <input type="text" name="json:statehood-agency-css" size="100" value="{$json.statehood.agency.css|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td>ОРК</td>
+                <td>
+                    <input type="text" name="json:statehood-agency-drc" size="100" value="{$json.statehood.agency.drc|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td>ИМБ</td>
+                <td>
+                    <input type="text" name="json:statehood-agency-psi" size="100" value="{$json.statehood.agency.psi|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td>ВКС</td>
+                <td>
+                    <input type="text" name="json:statehood-agency-starfleet" size="100" value="{$json.statehood.agency.starfleet|default:''}">
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+
+    <fieldset>
         <legend>Прочее</legend>
         <label>
             Известные личности: <br>

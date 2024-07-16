@@ -267,12 +267,14 @@ class RegionsController extends AbstractClass
             ],
             'statehood' =>  [
                 'ss'        =>  self::json('statehood-ss'),
-                'gunrights' =>  self::json('statehood-gun-rights'),
-                'governance'=>  self::json('statehood-governance'),
-                'army'      =>  self::json('statehood-army'),
-                'css'       =>  self::json('statehood-css'),
-                'drc'       =>  self::json('statehood-drc'),
-                'psi'       =>  self::json('statehood-psi')
+                'gunrights' =>  self::json('statehood-gun_rights'),
+                'conf_status'   =>  self::json('statehood-confstatus'),
+                'local_governance'  =>  self::json('statehood-local_governance'),
+                'terr_guards'   =>  self::json('statehood-terr_guards'),
+                'css'       =>  self::json('statehood-agency-css'),
+                'drc'       =>  self::json('statehood-agency-drc'),
+                'psi'       =>  self::json('statehood-agency-psi'),
+                'starfleet' =>  self::json('statehood-agency-starfleet')
             ],
             // 'infrastructure'    =>  [], //
             'other'     =>  [
