@@ -17,7 +17,7 @@ PHP_VERSIONS=$(ps -e -o stat,command | grep -E '^Ss\s+php-fpm' | grep -E '[0-9]+
 
 case "$1" in
     configure)
-        echo "\n ${ANSI_YELLOW} Running LIVEMAP post-install tasks... ${ANSI_RESET} \n"
+        echo "\n ${ANSI_YELLOW} Running CONFMAP post-install tasks... ${ANSI_RESET} \n"
 
         echo "Checking Application config... "
         if [ -e "${PATH_CONFIG}/common.conf" ]; then

@@ -1,4 +1,4 @@
-## Круговые диаграммы на HTML+CSS
+## Круговые диаграммы на HTML+CSS +
 
 Это для отображения соотношения типов капитала в окне информации по региону:
 
@@ -14,7 +14,7 @@ https://stackoverflow.com/questions/10028182/how-to-make-a-pie-chart-in-css
 И мне больше всего нравится вариант на канвасе!
 
 
-## FileManager changes
+## FileManager changes + 
 
 https://github.com/trippo/ResponsiveFilemanager
 
@@ -59,11 +59,11 @@ dt_timestamp - это таймштамп файла, из которого им�
 
 ## Кастомизация шаблонов
 
-"Интересные места на карте" - нужно перенести в json-конфиг карты, в "display_defaults"
++ "Интересные места на карте" - нужно перенести в json-конфиг карты, в "display_defaults"
 
-Наверное, в отдельный блок "sections"
++/- Наверное, в отдельный блок "sections"
 
-display_defaults->sections->regions->title
++/- display_defaults->sections->regions->title
 
 ## Кастомизация-кастомизация
 
@@ -80,10 +80,5 @@ display_defaults->sections->regions->title
 ## edit_templates
 
 Эту папку надо переименовать и переложить шаблоны в `templates.edit`
-
-## PHP 8+ и файлменеджер
-
-GET http://confmap.local/frontend/favicons/apple-touch-icon.png 404
-GET http://confmap.local/frontend/favicons/favicon-16x16.png 404 
 
 
