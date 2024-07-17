@@ -1,10 +1,10 @@
 <?php
 
 use Arris\DelightAuth\Auth\Auth;
-use Arris\DelightAuth\Auth\InvalidEmailException;
-use Arris\DelightAuth\Auth\InvalidPasswordException;
-use Arris\DelightAuth\Auth\TooManyRequestsException;
-use Arris\DelightAuth\Auth\UserAlreadyExistsException;
+use Arris\DelightAuth\Auth\Exceptions\InvalidEmailException;
+use Arris\DelightAuth\Auth\Exceptions\InvalidPasswordException;
+use Arris\DelightAuth\Auth\Exceptions\TooManyRequestsException;
+use Arris\DelightAuth\Auth\Exceptions\UserAlreadyExistsException;
 use Dotenv\Dotenv;
 
 define("__ROOT__", dirname(__DIR__));

@@ -1,9 +1,10 @@
 <?php
 
-namespace LiveMapEngine;
+namespace LiveMapEngine\Map;
 
 use Arris\Database\DBWrapper;
 use Arris\Entity\Result;
+use LiveMapEngine\Helpers;
 use PDO;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -607,16 +608,6 @@ ORDER BY edit_date {$query_limit};
 
         return $this->state;
     }
-
-
-    /*
-    *  =============== PROTECTED METHODS ===============
-    */
-
-
-
-
-
 
 
     /**

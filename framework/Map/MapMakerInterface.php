@@ -1,6 +1,6 @@
 <?php
 
-namespace LiveMapEngine;
+namespace LiveMapEngine\Map;
 
 use Arris\Entity\Result;
 use Psr\Log\LoggerInterface;

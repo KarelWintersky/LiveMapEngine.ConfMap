@@ -4,12 +4,12 @@ namespace Confmap\Controllers;
 
 use Arris\AppLogger;
 use Arris\AppRouter;
-use Arris\DelightAuth\Auth\AttemptCancelledException;
-use Arris\DelightAuth\Auth\AuthError;
-use Arris\DelightAuth\Auth\EmailNotVerifiedException;
-use Arris\DelightAuth\Auth\InvalidEmailException;
-use Arris\DelightAuth\Auth\InvalidPasswordException;
-use Arris\DelightAuth\Auth\TooManyRequestsException;
+use Arris\DelightAuth\Auth\Exceptions\AttemptCancelledException;
+use Arris\DelightAuth\Auth\Exceptions\AuthError;
+use Arris\DelightAuth\Auth\Exceptions\EmailNotVerifiedException;
+use Arris\DelightAuth\Auth\Exceptions\InvalidEmailException;
+use Arris\DelightAuth\Auth\Exceptions\InvalidPasswordException;
+use Arris\DelightAuth\Auth\Exceptions\TooManyRequestsException;
 use Confmap\App;
 use Confmap\Exceptions\AccessDeniedException;
 use Psr\Log\LoggerInterface;
@@ -29,7 +29,7 @@ class AuthController extends \Confmap\AbstractClass
      *
      * @return void
      */
-    public function view_form_login()
+    public function view_form_login(): void
     {
         $this->template->setTemplate("auth/login.tpl");
     }
@@ -39,7 +39,7 @@ class AuthController extends \Confmap\AbstractClass
      *
      * @return void
      */
-    public function callback_login()
+    public function callback_login(): void
     {
         $expire = _env( 'AUTH.EXPIRE_TIME', 86400, 'int');
 
@@ -77,10 +77,10 @@ class AuthController extends \Confmap\AbstractClass
      * @return void
      * @throws AuthError
      */
-    public function callback_logout()
+    public function callback_logout(): void
     {
         if (!App::$acl->isLoggedIn()) {
-            die('Hacking attempt!'); //@todo: logging
+            die('Hacking attempt!');
         }
 
         $u_id = App::$acl->auth->getUserId();

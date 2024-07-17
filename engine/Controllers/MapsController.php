@@ -6,19 +6,26 @@ use Arris\Path;
 use Confmap\AbstractClass;
 use Confmap\App;
 use Confmap\Units\Map;
-use LiveMapEngine\MapMaker;
+use LiveMapEngine\Map\MapMaker;
 use Psr\Log\LoggerInterface;
 
 class MapsController extends AbstractClass
 {
     public MapMaker $map;
 
+    /**
+     * @param $options
+     * @param LoggerInterface|null $logger
+     */
     public function __construct($options = [], LoggerInterface $logger = null)
     {
         parent::__construct($options, $logger);
     }
 
-    public function view_map_fullscreen()
+    /**
+     * @return void
+     */
+    public function view_map_fullscreen(): void
     {
         $map_id = App::$id_map;
 
@@ -27,8 +34,9 @@ class MapsController extends AbstractClass
             'path_config'   =>  Path::create( config('path.storage') )->join($map_id),
             'json_parser'   =>  [Map::class, 'parseJSONFile']
         ]);
+        // добавить метод addParser() ?
 
-        //@todo: вообще, загружаемый конфиг можно было бы кэшировать, храня дату обновления файла и данные.
+        // Вообще, загружаемый конфиг можно было бы кэшировать, храня дату обновления файла и данные.
         // Проверять дату файла, если она не соответствует закешированной - загружать с диска.
         // НО: это привязка к редису, нужно предусмотреть fallback + операция загрузки карты нетяжелая
 
@@ -44,7 +52,7 @@ class MapsController extends AbstractClass
         $custom_css_paths = [];
         foreach ($this->map->getConfig("display->custom_css", []) as $file) {
             $fn
-                = (new Path( $this->map->path_storage))
+                = (new Path($this->map->path_storage))
                 ->join($this->map_alias)
                 ->join('styles')
                 ->join($file)

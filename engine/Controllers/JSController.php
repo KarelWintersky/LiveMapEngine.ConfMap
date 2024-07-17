@@ -10,8 +10,8 @@ use Confmap\AbstractClass;
 use Confmap\App;
 use Confmap\Units\Map;
 use LiveMapEngine\Helpers;
-use LiveMapEngine\MapMakerInterface;
-use LiveMapEngine\MapMaker;
+use LiveMapEngine\Map\MapMaker;
+use LiveMapEngine\Map\MapMakerInterface;
 use LiveMapEngine\SVGParser;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -36,7 +36,7 @@ class JSController extends AbstractClass
      * 
      * @todo: перенести в framework, как и шаблон к нему
      */
-    public function view_js_map_definition()
+    public function view_js_map_definition(): void
     {
         $map_id = App::$id_map;
 
@@ -426,13 +426,17 @@ class JSController extends AbstractClass
         $this->template->setRenderType(Template::CONTENT_TYPE_JS);
     }
 
+    /**
+     * Тестовый метод. Планирую функционал переноса генерации JS-файла во фреймворк
+     *
+     * @throws \SmartyException
+     */
     public function test()
     {
         // нам нужно отдать во фреймворк инстанс шаблонизатора, а получить - срендеренный текст.
         // инстанс класса Template может не поддерживать chaining
 
         $t = new Template();
-
         $t
             ->setTemplateDir( '' /* путь к файлам фреймворка */)
             ->setCompileDir( '/dev/shm/')
@@ -441,12 +445,7 @@ class JSController extends AbstractClass
             ->setTemplate( '', /* путь к файлу шаблона */);
         $t->assign("data", []);
 
-        // как вариант,
-
-
         $t->setRenderType(Template::CONTENT_TYPE_JS);
-
-
     }
 
 }

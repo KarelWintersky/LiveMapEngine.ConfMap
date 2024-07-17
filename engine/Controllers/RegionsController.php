@@ -10,7 +10,8 @@ use Confmap\AbstractClass;
 use Confmap\App;
 use Confmap\Exceptions\AccessDeniedException;
 use Confmap\Units\Map;
-use LiveMapEngine\MapMaker;
+use LiveMapEngine\DataCollection;
+use LiveMapEngine\Map\MapMaker;
 use Psr\Log\LoggerInterface;
 
 class RegionsController extends AbstractClass
@@ -41,9 +42,9 @@ class RegionsController extends AbstractClass
      * @throws \JsonException
      * @throws \SmartyException
      */
-    public function view_region_info()
+    public function view_region_info(): void
     {
-        $id_region = $_GET['id']    ?? null;
+        $id_region = $_GET['id'] ?? null;
 
         if ($this->map->loadConfig()->is_error) {
             throw new \RuntimeException($this->map->state->getMessage());
@@ -56,10 +57,7 @@ class RegionsController extends AbstractClass
             ->setTemplateDir( config('smarty.path.template'))
             ->setCompileDir( config('smarty.path.cache'))
             ->setForceCompile( config('smarty.force_compile'))
-            // ->registerPlugin(Template::PLUGIN_MODIFIER, 'json_decode', 'json_decode', false)
-            // ->registerPlugin(Template::PLUGIN_MODIFIER, 'json_encode', 'json_encode', false)
             ->registerPlugin(Template::PLUGIN_MODIFIER, 'dd', 'dd', false)
-            // ->registerPlugin(Template::PLUGIN_MODIFIER, 'implode', 'implode', false)
             ->registerClass("Arris\AppRouter", "Arris\AppRouter");
 
         $t->assign('is_present', $region_data['is_present']);
@@ -70,18 +68,21 @@ class RegionsController extends AbstractClass
         $t->assign('is_can_edit', $region_data['can_edit']);
         $t->assign('edit_button_url', AppRouter::getRouter('update.region.info'));
 
-        $json = $region_data['content_json'] ?? '{}';
+        $t->assign("view_mode", $this->map->getConfig('display->viewmode')); // тип просмотра для шаблона
+
+        $content_json = $region_data['content_json'] ?? '{}';
 
         /*
         Для упрощения построения круговой диаграммы долей экономики часть расчетов сделаем здесь.
         */
-        $m = new \Confmap\Units\Map(); //@todo: по-хорошему, нужен класс Collection или как-то типа Data. Или взять с packagist?
-        $m->parseJSON($json);
+        $json = new DataCollection($content_json);
+        $json->setSeparator('->');
+        $json->parse();
 
-        $pcd_natural = (int)$m->getData("economy->shares->natural", 0);
-        $pcd_financial = (int)$m->getData("economy->shares->financial", 0);
-        $pcd_industrial = (int)$m->getData("economy->shares->industrial", 0);
-        $pcd_social = (int)$m->getData("economy->shares->social", 0);
+        $pcd_natural = (int)$json->getData("economy->shares->natural", 0);
+        $pcd_financial = (int)$json->getData("economy->shares->financial", 0);
+        $pcd_industrial = (int)$json->getData("economy->shares->industrial", 0);
+        $pcd_social = (int)$json->getData("economy->shares->social", 0);
         $pcd_sum = $pcd_natural + $pcd_financial + $pcd_industrial + $pcd_social;
 
         $pie_chart_data = [];
@@ -114,12 +115,12 @@ class RegionsController extends AbstractClass
         }
 
         // форматируем население (численность, не население!)
-        $population = $m->getData('population->count', 0);
+        $population = (int)$json->getData('population->count', 0);
         $population
             = $population >= 1
             ? number_format($population, 0, '.', ' ')
             : number_format($population, 3, '.', ' ');
-        $m->setData('population->count', $population);
+        $json->setData('population->count', $population);
 
         // круговая диаграмма
         $t->assign("pie_chart", [
@@ -127,10 +128,10 @@ class RegionsController extends AbstractClass
             'full'      =>  json_encode($pie_chart_data, JSON_UNESCAPED_UNICODE)
         ]);
         // закончили с данными для круговой диаграммы
-
-
         // только нужно отдать не $json, а исправленные и модифицированные данные
-        $t->assign('json', $m->getData()); // а тут getData - уже JSON
+
+        $t->assign('json', $json->getData());
+
         // $t->assign('json', json_decode($json)); // вот тут делали json_decode потому что надо в шаблон отдать JSON из строки
         //@TODO: ВАЖНО, В ШАБЛОНЕ ХОДИМ ТАК: {$json->economy->type}, А НЕ ЧЕРЕЗ ТОЧКУ!!!!
 

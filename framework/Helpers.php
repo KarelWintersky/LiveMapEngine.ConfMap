@@ -47,6 +47,8 @@ class Helpers
     }
 
     /**
+     * https://gist.github.com/nyamsprod/10adbef7926dbc449e01eaa58ead5feb
+     *
      * @param $object
      * @param string $path
      * @param string $separator
@@ -74,7 +76,7 @@ class Helpers
             return true;
         }
 
-        return property_exists_recursive($object, \implode('->', $properties));
+        return Helpers::property_exists_recursive($object, \implode('->', $properties));
     }
 
     /**
