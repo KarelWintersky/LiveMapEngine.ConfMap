@@ -178,8 +178,6 @@
             </table>
         </fieldset>
 
-        {* ? получится ли вложить статьи экспорта и импорта в контейнер "экономика" - только для colorbox, в infobox не влезет! *}
-
         {if $view_mode == 'infobox'}
             <fieldset>
                 <legend>Экономика</legend>
@@ -272,19 +270,19 @@
                     <legend>Торговля (статьи экспорта и импорта)</legend>
                     <table width="100%" border="0">
                         <tr>
-                            <td width="{$first_dt_width}" style="padding-left: 0em; text-align: center;font-weight: bold;">
+                            <td width="{$first_dt_width}" style="padding-left: 0em; text-align: left;font-weight: bold;">
                                 Статьи экспорта:
                             </td>
                             <td style="padding-left: 0em;">
-                                {$json->trade->export|default:'<ul>?</ul>'}
+                                {$json->trade->export|default:'<ul>нет данных</ul>'}
                             </td>
                         </tr>
                         <tr>
-                            <td style="padding-left: 0em; text-align: center;font-weight: bold;">
+                            <td style="padding-left: 0em; text-align: left;font-weight: bold;">
                                 Статьи импорта:
                             </td>
                             <td style="padding-left: 0em;">
-                                {$json->trade->import|default:'<ul>?</ul>'}
+                                {$json->trade->import|default:'<ul>нет данных</ul>'}
                             </td>
                         </tr>
                     </table>
@@ -296,7 +294,7 @@
             {* попробуем вложить статьи экспорта/импорта и круговую диаграмму в один контейнер *}
             <fieldset>
                 <legend>Тип экономики, экспорт и импорт</legend>
-                <table border="0" width="100%">
+                <table border="1" width="100%">
                     <tr>
                         <th width="400" style="text-align: center">Тип экономики</th>
                         <td colspan="2">
@@ -398,11 +396,7 @@
                         </td>
                     </tr>
                 </table>
-
-
             </fieldset>
-
-
         {/if}
 
         <fieldset>
