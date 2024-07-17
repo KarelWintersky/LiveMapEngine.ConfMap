@@ -3,11 +3,11 @@ Upstream-Name: confmap
 Source: <url://example.com>
 
 Files: *
-Copyright: 2021 Karel Wintersky <karel.wintersky@gmail.com>
+Copyright: 2021 Karel Wintersky <karel@wintersky.ru>
 License: GPL-3.0+
 
 Files: debian/*
-Copyright: 2021 Karel Wintersky <karel.wintersky@gmail.com>
+Copyright: 2021 Karel Wintersky <karel@wintersky.ru>
 License: GPL-3.0+
 
 Files: vendor/*

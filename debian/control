@@ -1,11 +1,11 @@
 Source: confmap
 Section: unknown
 Priority: optional
-Maintainer: Karel Wintersky <karel.wintersky@gmail.com>
+Maintainer: Karel Wintersky <karel@wintersky.ru>
 Build-Depends: debhelper (>= 9)
 Standards-Version: 3.9.8
 
 Package: confmap
 Architecture: all
-Depends: mysql-server | default-mysql-server, nginx, php-common, php-cli, php-curl, php-fpm, php-gd, php-json, php-mbstring, php-pdo, php-xml
+Depends: php-common, php-cli, php-curl, php-fpm (>= 8.2), php-gd, php-json, php-mbstring, php-pdo, php-xml, php-redis
 Description: Confmap based on Livemap Engine

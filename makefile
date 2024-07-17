@@ -12,7 +12,7 @@ dchr:		##@development Publish release
 	@dch --controlmaint --release --distribution unstable
 
 dchv:		##@development Append release
-	@export DEBEMAIL="karel.wintersky@gmail.com" && \
+	@export DEBEMAIL="karel@wintersky.ru" && \
 	export DEBFULLNAME="Karel Wintersky" && \
 	echo "$(YELLOW)------------------ Previous version header: ------------------$(GREEN)" && \
 	head -n 3 debian/changelog && \
@@ -43,7 +43,6 @@ setup_env:	##@localhost Setup environment at localhost
 install: 	##@system Install package. Don't run it manually!!!
 	@echo Installing...
 	install -d $(PATH_PROJECT)
-#	cp -r admin.cron $(PATH_PROJECT)
 	cp -r admin.tools $(PATH_PROJECT)
 	cp -r engine $(PATH_PROJECT)
 	cp -r framework $(PATH_PROJECT)

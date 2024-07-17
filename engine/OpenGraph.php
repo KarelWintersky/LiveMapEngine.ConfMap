@@ -4,19 +4,20 @@ namespace Confmap;
 
 class OpenGraph
 {
-    private static function getDefault()
+    public static $og_default;
+    private static function getDefault(): array
     {
-        return [
-            'url'           =>  "{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['HTTP_HOST']}/",
-            'type'          =>  'website',
-            'title'         =>  "STORYMAPS - Карты и истории",
-            'description'   =>  "STORYMAPS - Карты и истории",
-            'image'         =>  "{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['HTTP_HOST']}/frontend/og_image.png",
-            'logo'          =>  "{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['HTTP_HOST']}/frontend/og_image.png",
-            'site_name'     =>  "STORYMAPS - Карты и истории",
+        return self::$og_default = [
+                'url'           =>  "{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['HTTP_HOST']}/",
+                'type'          =>  'website',
+                'title'         =>  "Звездный атлас Конфедерации Человечества",
+                'description'   =>  "Звездный атлас Конфедерации Человечества",
+                'image'         =>  "{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['HTTP_HOST']}/frontend/images/og_image.png",
+                'logo'          =>  "{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['HTTP_HOST']}/frontend/images/og_image.png",
+                'site_name'     =>  "Звездный атлас Конфедерации Человечества",
 
-            'domain'        =>  $_SERVER['HTTP_HOST'],
-        ];
+                'domain'        =>  $_SERVER['HTTP_HOST'],
+            ];
     }
 
     /**
@@ -26,42 +27,9 @@ class OpenGraph
      * @param \stdClass|null $map
      * @return array
      */
-    public static function makeForMap(string $map_alias = null, \stdClass $map = null)
+    public static function makeForMap(?string $map_alias = null, \stdClass $map = null): array
     {
-        $OG_DEFAULT = self::getDefault();
-
-        if (empty($map_alias) || is_null($map)) {
-            return $OG_DEFAULT;
-        }
-
-        $OG = [
-            'url'           =>  "{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}",
-            'type'          =>  'website',
-            'domain'        =>  $_SERVER['HTTP_HOST']
-        ];
-        $OG['title'] = $OG['site_name']
-            = !empty($map->title)
-            ? "STORYMAPS &mdash; " . $map->title
-            : $OG_DEFAULT['title'];
-
-        $OG['description']
-            = "STORYMAPS &mdash; " . ($map->description ?? $map->title);
-
-        if (!empty($map->files->og_image)) {
-            $og_file = "{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['HTTP_HOST']}/storage/{$map_alias}/{$map->files->og_image}";
-        } elseif (!empty($map->files->image)) {
-            $og_file = "{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['HTTP_HOST']}/storage/{$map_alias}/{$map->files->image}";
-        } else {
-            $og_file = $OG_DEFAULT['image'];
-        }
-        $OG['image'] = $OG['logo'] = $og_file;
-
-        return $OG;
-    }
-
-    public static function makeForProject()
-    {
-
+        return self::getDefault();
     }
 
 }

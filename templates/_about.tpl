@@ -7,78 +7,98 @@
     {include file="_common/favicon_defs.tpl"}
     {include file="_common/opengraph.tpl"}
 
-    <script src="/js/confmap.js" data-comment="the-map-data"></script>
+    {*<script src="/js/confmap.js" data-comment="the-map-data"></script>*}
     <style>
-        /* pt-sans-regular - cyrillic_latin */
         @font-face {
-            font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-            font-family: 'PT Sans';
+            font-display: swap;
+            font-family: 'Lato';
             font-style: normal;
             font-weight: 400;
-            src: url('/frontend/fonts/pt-sans-v17-cyrillic_latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+            src: url('/frontend/fonts/lato-v24-latin-regular.woff2') format('woff2');
         }
-
-        /* pt-sans-italic - cyrillic_latin */
-        @font-face {
-            font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-            font-family: 'PT Sans';
-            font-style: italic;
-            font-weight: 400;
-            src: url('/frontend/fonts/pt-sans-v17-cyrillic_latin-italic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-        }
-
-        /* pt-sans-700 - cyrillic_latin */
-        @font-face {
-            font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-            font-family: 'PT Sans';
-            font-style: normal;
-            font-weight: 700;
-            src: url('/frontend/fonts/pt-sans-v17-cyrillic_latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-        }
-
-        /* pt-sans-700italic - cyrillic_latin */
-        @font-face {
-            font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-            font-family: 'PT Sans';
-            font-style: italic;
-            font-weight: 700;
-            src: url('/frontend/fonts/pt-sans-v17-cyrillic_latin-700italic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-        }
-
-
         body {
-            font-family: 'PT Sans', serif;
+            font-family: 'Lato', serif;
+            background-color: #7ab5d3;
         }
-        fieldset {
+        .float-right {
             float: right;
         }
         h2, h4 {
             text-align: center;
 
         }
+        .centered-block {
+            width: 50%;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: oldlace;
+            padding: 20px;
+            text-align: justify;
+        }
 
     </style>
 </head>
 <body>
-<fieldset>
-    <legend>Auth</legend>
+<div class="float-right">
     {if $_config.auth.is_logged_in}
-    <strong>{$_config.auth.username} ({$_config.auth.email})<strong> <br>
-            <a href="{Arris\AppRouter::getRouter('view.form.logout')}">Logout</a>
+            <a href="{Arris\AppRouter::getRouter('view.form.logout')}">
+                <img src="/frontend/images/logout.svg" width="64" alt="logout">
+            </a>
             {else}
-            <a href="{Arris\AppRouter::getRouter('view.form.login')}">Вход</a>
+            <a href="{Arris\AppRouter::getRouter('view.form.login')}">
+                <img src="/frontend/images/login.svg" width="64" alt="login">
+            </a>
             {/if}
-</fieldset>
-
-
-<h2>Карта Конфедерации Человечества</h2>
-<h4>второй сезон</h4>
-
-<div>
-    Тут какой-то текст
 </div>
 
+<div class="centered-block">
+    {if $_config.auth.is_logged_in}
+        <div style="text-align: right;">
+            Logged as: {$_config.auth.username} ({$_config.auth.email})
+            <br>
+        </div>
+        <hr>
+    {/if}
+
+    <h2>Конфедерация Человечества</h2>
+    <h4>(второй сезон)</h4>
+    <hr>
+
+    <p>Добро пожаловать на нашу веб-страницу, посвященную звездной карте Конфедерации Человечества!</p>
+
+    <p>На этой карте показаны звездные системы, которые были открыты исследовательскими кораблями Службы Геологической Разведки,
+        а потом колонизированы звездными кораблями, снаряженными Советом Колонизации.
+    </p>
+    <p>
+        Наша карта представляет собой динамическую 2D-модель звездного кластера и позволяет вам исследовать звезды, планеты и другие
+        объекты колонизированного космоса с невероятной детализацией.
+    </p>
+
+    <p>
+        Наша звездная карта - это дань упорному труду и отваге исследователей и колонистов, которые расширяют границы человеческого
+        присутствия во Вселенной. Это важный инструмент для любого, кто интересуется историей Колонизации,
+        исследованием космоса или просто хочет узнать больше о нашем месте в этой необъятной, удивительной вселенной.
+    </p>
+
+    <p>
+        Присоединяйтесь к нам в этом увлекательном путешествии.<br><br><br>
+    </p>
+    <h3 style="text-align: center;">
+
+        <a href="/" style=" text-decoration: none;border-bottom: 1px dotted #0d88c1">
+        Добро пожаловать в Конфедерацию Человечества!
+        </a>
+    </h3>
+    <br><br><br>
+
+    <div style="float: right; font-size: smaller; font-style: italic">
+        Мне было лень выдумывать, я попросил нейросеть и чуть-чуть подправил результат.
+    </div>
+    <br>
+
+</div>
 
 </body>
 </html>
+
 {* -eof- *}

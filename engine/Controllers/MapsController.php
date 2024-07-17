@@ -5,6 +5,7 @@ namespace Confmap\Controllers;
 use Arris\Path;
 use Confmap\AbstractClass;
 use Confmap\App;
+use Confmap\OpenGraph;
 use Confmap\Units\Map;
 use LiveMapEngine\Map\MapMaker;
 use Psr\Log\LoggerInterface;
@@ -113,6 +114,9 @@ class MapsController extends AbstractClass
             'regionbox_control_position'    =>  'topleft',
             'regionbox_textalign'           =>  'left'
         ]);
+
+        $this->template->assign("og", OpenGraph::makeForMap());
+        $this->template->assign("html_title", OpenGraph::$og_default['title']);
 
         $this->template->setTemplate("_map.tpl");
     }

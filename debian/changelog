@@ -1,11 +1,23 @@
+confmap (0.8.0) stable; urgency=medium
+
+  * Production ready?
+  * changed my email everywhere
+  * added favicons
+  * added some icons
+  * added OpenGraph data
+  * added `_about`
+  * removed fontawesome and useless fonts 
+
+ -- Karel Wintersky <karel@wintersky.ru>  Thu, 18 Jul 2024 02:11:41 +0300
+
 confmap (0.7.0) stable; urgency=medium
 
   * [R] First public release
 
- -- Karel Wintersky <karel.wintersky@gmail.com>  Tue, 16 Jul 2024 08:42:02 +0300
+ -- Karel Wintersky <karel@wintersky.ru>  Tue, 16 Jul 2024 08:42:02 +0300
 
 confmap (0.0.1) unstable; urgency=medium
 
   * Initial release, based on [Livemap Release 2.0 Storymaps]
 
- -- Karel Wintersky <karel.wintersky@gmail.com>  Fri, 07 Jun 2024 21:06:37 +0300
+ -- Karel Wintersky <karel@wintersky.ru>  Fri, 07 Jun 2024 21:06:37 +0300

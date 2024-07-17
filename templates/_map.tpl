@@ -7,11 +7,6 @@
     {include file="_common/opengraph.tpl"}
 
     {include file="_common/favicon_defs.tpl"}
-    {*<link rel="icon" href="data:;base64,iVBORw0KGgo=">*}
-
-    <link href="https://fonts.googleapis.com/css?family=PT+Serif" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
 
     <link href="/frontend/leaflet/leaflet.css" rel="stylesheet">
     <link href="/frontend/view.map.fullscreen.css" rel="stylesheet">
@@ -22,10 +17,9 @@
 
     {/foreach}
 
-
     <script src="/frontend/jquery/jquery-3.2.1_min.js"></script>
     <script src="/frontend/leaflet/leaflet.js"></script>
-    <script src="/frontend/scripts.js"></script>
+    <script src="/frontend/common.js"></script>
     <script src="/frontend/MapManager.js"></script>
     <script src="/frontend/MapControls.js"></script>
 
