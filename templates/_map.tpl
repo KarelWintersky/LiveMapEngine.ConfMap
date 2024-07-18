@@ -25,9 +25,11 @@
 
     <script src="/frontend/leaflet/L.Control.Zoomslider.js"></script>
     <link href="/frontend/leaflet/L.Control.Zoomslider.css" rel="stylesheet">
-
+    {*
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
     <script src="/frontend/leaflet/L.Icon.FontAwesome.js"></script>
     <link href="/frontend/leaflet/L.Icon.FontAwesome.css" rel="stylesheet">
+    *}
     <script src="/frontend/leaflet/SmoothWheelZoom.js"></script>
 
     {if $sections_present.colorbox}

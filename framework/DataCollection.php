@@ -27,6 +27,11 @@ class DataCollection
     private mixed $data;
 
     /**
+     * @var bool
+     */
+    private bool $data_is_parsed = false;
+
+    /**
      * @var string
      */
     private string $separator;
@@ -97,12 +102,18 @@ class DataCollection
             'associative'   =>  $this->is_associative
         ]);
 
+        $this->data_is_parsed = true;
+
         return $this->data;
     }
 
     public function getData(string $path = '', mixed $default = null, ?string $separator = null):mixed
     {
         $separator = is_null($separator) ? $this->separator : $separator;
+
+        if (!$this->data_is_parsed) {
+            return $default;
+        }
 
         return
             $this->is_associative
@@ -114,6 +125,10 @@ class DataCollection
     public function setData(string $path = '', mixed $value = null, ?string $separator = null): bool
     {
         $separator = is_null($separator) ? $this->separator : $separator;
+
+        if (!$this->data_is_parsed) {
+            return false;
+        }
 
         return
             $this->is_associative
@@ -177,6 +192,10 @@ class DataCollection
             return $dataset;
         }
 
+        if (! $dataset instanceof \stdClass) {
+            return $default;
+        }
+
         $keys = \explode($separator, $path);
         $data = clone $dataset;
 
@@ -214,7 +233,10 @@ class DataCollection
     private static function setDataToObject(&$dataset, string $path, mixed $data, string $separator = '->'):bool
     {
         if (empty($path)) {
-            return $dataset;
+            return false;
+        }
+        if (! $dataset instanceof \stdClass) {
+            return false;
         }
 
         $keys = \explode($separator, $path);
