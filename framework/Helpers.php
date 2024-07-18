@@ -130,6 +130,17 @@ class Helpers
         return $regions_list;
     }
 
+    /**
+     * @param string $val
+     * @return float
+     */
+    public static function floatvalue(string $val): float
+    {
+        $val = \str_replace(",",".",$val);
+        $val = \preg_replace('/\.(?=.*\.)/', '', $val);
+        return \floatval($val);
+    }
+
 
 
 

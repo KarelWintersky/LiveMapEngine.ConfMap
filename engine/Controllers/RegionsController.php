@@ -11,6 +11,7 @@ use Confmap\App;
 use Confmap\Exceptions\AccessDeniedException;
 use Confmap\Units\Map;
 use LiveMapEngine\DataCollection;
+use LiveMapEngine\Helpers;
 use LiveMapEngine\Map\MapMaker;
 use Psr\Log\LoggerInterface;
 
@@ -115,7 +116,8 @@ class RegionsController extends AbstractClass
         }
 
         // форматируем население (численность, не население!)
-        $population = (int)$json->getData('population->count', 0);
+        //@todo: неправильно отображается если меньше 1!!!
+        $population = (float)$json->getData('population->count', 0);
         $population
             = $population >= 1
             ? number_format($population, 0, '.', ' ')
@@ -228,6 +230,7 @@ class RegionsController extends AbstractClass
         ];
 
         // Каждое кастомное поле нужно описать здесь и передать в будущую JSON-структуру
+
         $json = [
             'lsi'       =>  [
                 'index'     =>  self::json('lsi-index'),
@@ -238,10 +241,10 @@ class RegionsController extends AbstractClass
             ],
             'history'   =>  [
                 'year'      =>  self::json('history-year'),
-                'text'      =>  self::json('history-text')
+                'text'      =>  self::json('history-text'),
             ],
             'population'=>  [
-                'count'     =>  self::json('population-count'),
+                'count'     =>  Helpers::floatvalue(self::json('population-count')),
                 'ethnic'    =>  self::json('population-ethnic'),
                 'features'  =>  self::json('population-features'),
                 'religion'  =>  self::json('population-religion')
@@ -272,10 +275,12 @@ class RegionsController extends AbstractClass
                 'conf_status'   =>  self::json('statehood-confstatus'),
                 'local_governance'  =>  self::json('statehood-local_governance'),
                 'terr_guards'   =>  self::json('statehood-terr_guards'),
-                'css'       =>  self::json('statehood-agency-css'),
-                'drc'       =>  self::json('statehood-agency-drc'),
-                'psi'       =>  self::json('statehood-agency-psi'),
-                'starfleet' =>  self::json('statehood-agency-starfleet')
+                'agency'    =>  [
+                    'css'       =>  self::json('statehood-agency-css'),
+                    'drc'       =>  self::json('statehood-agency-drc'),
+                    'psi'       =>  self::json('statehood-agency-psi'),
+                    'starfleet' =>  self::json('statehood-agency-starfleet')
+                ],
             ],
             // 'infrastructure'    =>  [], //
             'other'     =>  [

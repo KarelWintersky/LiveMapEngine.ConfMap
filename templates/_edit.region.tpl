@@ -24,7 +24,7 @@
 
         let saving_in_progress = false;
 
-        $(document).ready(function(){
+        $(document).ready(function() {
             _editRegion.createInstance('editor_summary');
             _editRegion.createInstance('editor_history');
             _editRegion.createInstance('editor_trade_export');
@@ -88,7 +88,20 @@
                 return false;
             });
 
+            // Синхронное поведение input-range и текстового поля
+            let lsi_slider_range = document.getElementById("lsi_slider_range");
+            let lsi_slider_text = document.getElementById("lsi_slider_text");
+            lsi_slider_text.value = lsi_slider_range.value;
+
+            lsi_slider_range.oninput = function() {
+                lsi_slider_text.value = this.value;
+            }
+            lsi_slider_text.onchange = function () {
+                lsi_slider_range.value = lsi_slider_text.value;
+            }
+
         });
+
     </script>
     <style>
         fieldset {
@@ -126,7 +139,8 @@
     <fieldset>
         <legend>Индекс жизнеобеспечения (Life Support Index)</legend>
         <label>
-            КЖП: <input type="text" name="json:lsi-index" size="10" placeholder="0..12" value="{$json.lsi.index|default:'0'}">
+            КЖП: <input type="text" id="lsi_slider_text" name="json:lsi-index" size="10" placeholder="0..12" value="{$json.lsi.index|default:'0'}"><br>
+            <input id="lsi_slider_range" type="range" min="0" max="12" name="json:lsi-index-range" value="{$json.lsi.index|default:'0'}">
         </label>
         <label>
             Тип: <input type="text" name="json:lsi-type" size="40" placeholder="Тип планеты, тип атмосферы и аквасферы" value="{$json.lsi.type|default:''}">
