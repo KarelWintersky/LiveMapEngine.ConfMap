@@ -88,18 +88,30 @@
                 return false;
             });
 
-            // Синхронное поведение input-range и текстового поля
-            let lsi_slider_range = document.getElementById("lsi_slider_range");
-            let lsi_slider_text = document.getElementById("lsi_slider_text");
-            lsi_slider_text.value = lsi_slider_range.value;
+            //// Синхронное поведение input-range и текстового поля @todo: class groupRanged ?
+            {
+                /**
+                 * Обработчик изменения элемента группы
+                 */
+                function groupRangedInputOnChange() {
+                    let group = this.getAttribute('data-ranged');
+                    let type = this.type === 'range' ? 'text' : 'range';
+                    document.querySelector(`input[type="${ type }"][data-ranged="${ group }"]`).value = this.value;
+                }
 
-            lsi_slider_range.oninput = function() {
-                lsi_slider_text.value = this.value;
-            }
-            lsi_slider_text.onchange = function () {
-                lsi_slider_range.value = lsi_slider_text.value;
-            }
+                // на текстовом поле: изменяем, вводим, вставляем из буфера обмена
+                document.querySelectorAll('input[type="text"][data-ranged]').forEach(function(input) {
+                    input.addEventListener('change', groupRangedInputOnChange);
+                    input.addEventListener('keyup', groupRangedInputOnChange);
+                    input.addEventListener('paste', groupRangedInputOnChange);
+                });
 
+                // на поле range: меняем, двигаем мышкой
+                document.querySelectorAll('input[type="range"][data-ranged]').forEach(function(input) {
+                    input.addEventListener('change', groupRangedInputOnChange);
+                    input.addEventListener('mousemove', groupRangedInputOnChange);
+                });
+            }
         });
 
     </script>
@@ -114,6 +126,7 @@
     </style>
 </head>
 <body>
+
 <form action="{Arris\AppRouter::getRouter('update.region.info')}" method="post" id="form-edit-region">
     <input type="hidden" name="edit:id:map"     value="{$id_map}">
     <input type="hidden" name="edit:id:region"  value="{$id_region}">
@@ -139,8 +152,8 @@
     <fieldset>
         <legend>Индекс жизнеобеспечения (Life Support Index)</legend>
         <label>
-            КЖП: <input type="text" id="lsi_slider_text" name="json:lsi-index" size="10" placeholder="0..12" value="{$json.lsi.index|default:'0'}"><br>
-            <input id="lsi_slider_range" type="range" min="0" max="12" name="json:lsi-index-range" value="{$json.lsi.index|default:'0'}">
+            КЖП: <input type="text" data-ranged="lsi_slider" name="json:lsi-index" size="10" placeholder="0..12" value="{$json.lsi.index|default:'0'}"><br>
+            <input data-ranged="lsi_slider" type="range" min="0" max="12" name="json:lsi-index-range" value="{$json.lsi.index|default:'0'}">
         </label>
         <label>
             Тип: <input type="text" name="json:lsi-type" size="40" placeholder="Тип планеты, тип атмосферы и аквасферы" value="{$json.lsi.type|default:''}">
@@ -297,7 +310,12 @@
             <tr>
                 <td>Security Status:</td>
                 <td>
-                    <input type="text" name="json:statehood-ss" size="10" value="{$json.statehood.ss|default:''}">
+                    <div style="display: flex; align-items: center">
+                        <input type="text" data-ranged="statehood_ss" name="json:statehood-ss" size="10" placeholder="0..1" value="{$json.statehood.ss|default:'0'}">
+                        &nbsp;&nbsp;
+                        <input data-ranged="statehood_ss" type="range" min="0" max="1" step="0.1" name="json:statehood-ss" value="{$json.statehood.ss|default:'0'}">
+                    </div>
+                    {*<input type="text" name="json:statehood-ss" size="10" value="{$json.statehood.ss|default:''}">*}
                 </td>
             </tr>
             <tr>
