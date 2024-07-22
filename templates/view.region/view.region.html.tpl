@@ -478,11 +478,57 @@
         <fieldset>
             <legend>Законы и нормы</legend>
             <table>
+                {if $json->laws->passport}
+                    <tr>
+                        <td title="Отношение властей к документам граждан (или их отсутствию)">Паспортный режим:</td>
+                        <td>
+                            {$json->laws->passport|default:''}
+                        </td>
+                    </tr>
+                {/if}
+
+                {if $json->laws->visa}
+                    <tr>
+                        <td title="Отношение властей к пришельцам с других планет">Визовый режим:</td>
+                        <td>
+                            {$json->laws->visa|default:''}
+                        </td>
+                    </tr>
+                {/if}
+
                 {if $json->laws->gun_rights}
                     <tr>
-                        <td>Правила ношения оружия:</td>
+                        <td title="Оружие у гражданского населения, законы и ограничения">Правила ношения оружия:</td>
                         <td>
                             {$json->laws->gun_rights|default:''}
+                        </td>
+                    </tr>
+                {/if}
+
+                {if $json->laws->private_property}
+                    <tr>
+                        <td title="Принцип 'мой дом - моя крепость', защита частной собственности любыми способами">Частная собственность:</td>
+                        <td>
+                            {$json->laws->private_property|default:''}
+                        </td>
+                    </tr>
+                {/if}
+
+                {if $json->laws->gencard->info}
+                    <tr>
+                        <td title="Используется ли, публичная ли это информация, впечатывается ли в паспорт?">Генкарта: общее:</td>
+                        <td>
+                            {$json->laws->gencard->info|default:''}
+                        </td>
+                    </tr>
+                {/if}
+
+
+                {if $json->laws->gencard->restrictions}
+                    <tr>
+                        <td title="Генкарта: социальные ограничения">Генкарта: ограничения:</td>
+                        <td>
+                            {$json->laws->gencard->restrictions|default:''}
                         </td>
                     </tr>
                 {/if}

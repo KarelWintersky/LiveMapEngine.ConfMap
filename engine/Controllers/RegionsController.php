@@ -279,8 +279,6 @@ class RegionsController extends AbstractClass
                 'dependency'    =>  self::json('statehood-dependency'),
                 'radius'        =>  self::json('statehood-radius'),
 
-
-
                 'local_governance'  =>  self::json('statehood-local_governance'),
                 'terr_guards'   =>  self::json('statehood-terr_guards'),
                 'agency'    =>  [
@@ -291,7 +289,14 @@ class RegionsController extends AbstractClass
                 ],
             ],
             'laws'  => [
-                'gun_rights'     =>  self::json('laws-gun_rights'),
+                'passport'          =>  self::json('laws-passport'),
+                'visa'              =>  self::json('laws-visa'),
+                'gun_rights'        =>  self::json('gun_rights'),
+                'private_property'  =>  self::json('private_property'),
+                'gencard'   =>  [
+                    'info'          =>  self::json('laws-gencard-info'),
+                    'restrictions'  =>  self::json('laws-gencard-restrictions'),
+                ],
             ],
             'culture'   =>  [
                 'currency'      =>  self::json('culture-currency'),

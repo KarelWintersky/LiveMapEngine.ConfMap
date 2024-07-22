@@ -315,11 +315,66 @@
 
     <fieldset>
         <legend>Законы и нормы</legend>
-        <table>
+        <table border="0" style="border-color: blue">
             <tr>
-                <td width="200">Правила <br>ношения<br> оружия:</td>
+                <td width="300">Паспортный режим</td>
                 <td>
-                    <input type="text" name="json:laws-gun_rights" size="100" value="{$json.laws.gun_rights|default:''}">
+                    <input type="text"
+                           name="json:laws-passport"
+                           size="100"
+                           placeholder="Отношение властей к документам граждан (или их отсутствию)"
+                           value="{$json.laws.passport|default:''}"
+                    >
+                </td>
+            </tr>
+            <tr>
+                <td>Визовой режим</td>
+                <td>
+                    <input type="text"
+                           name="json:laws-visa"
+                           size="100"
+                           placeholder="Отношение властей к пришельцам с других планет"
+                           value="{$json.laws.visa|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td>Правила ношения оружия</td>
+                <td>
+                    <input type="text"
+                           name="json:laws-gun_rights"
+                           size="100"
+                           placeholder="Оружие у гражданского населения, законы и ограничения"
+                           value="{$json.laws.gun_rights|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td>Примат частной собственности</td>
+                <td>
+                    <input type="text"
+                           name="json:laws-private_property"
+                           size="100"
+                           placeholder="Принцип 'мой дом - моя крепость', защита частной собственности любыми способами"
+                           value="{$json.laws.private_property|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td>Генкарта: общее</td>
+                <td>
+                    <input type="text"
+                           name="json:laws-gencard-info"
+                           size="100"
+                           placeholder="Используется ли, публичная ли это информация, впечатывается ли в паспорт?"
+                           value="{$json.laws.gencard.info|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td>Генкарта: ограничения</td>
+                <td>
+                    <input type="text"
+                           name="json:laws-gencard-restrictions"
+                           size="100"
+                           placeholder="Генкарта: социальные ограничения"
+                           value="{$json.laws.gencard.restrictions|default:''}">
                 </td>
             </tr>
 
