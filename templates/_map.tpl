@@ -11,26 +11,23 @@
     <link href="/frontend/leaflet/leaflet.css" rel="stylesheet">
     <link href="/frontend/view.map.fullscreen.css" rel="stylesheet">
 
-    {foreach $custom_css_paths as $file}
-
-    <link href="{$file}" rel="stylesheet" data-comment="custom CSS for this map">
-
-    {/foreach}
+    {foreach $custom_css_paths as $file} <link href="{$file}" rel="stylesheet" data-comment="custom CSS for this map"> {/foreach}
 
     <script src="/frontend/jquery/jquery-3.2.1_min.js"></script>
     <script src="/frontend/leaflet/leaflet.js"></script>
     <script src="/frontend/common.js"></script>
-    <script src="/frontend/MapManager.js"></script>
-    <script src="/frontend/MapControls.js"></script>
+    <script src="/frontend/livemap/MapManager.js"></script>
+    <script src="/frontend/livemap/MapControls.js"></script>
 
     <script src="/frontend/leaflet/L.Control.Zoomslider.js"></script>
     <link href="/frontend/leaflet/L.Control.Zoomslider.css" rel="stylesheet">
-    {*
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
-    <script src="/frontend/leaflet/L.Icon.FontAwesome.js"></script>
-    <link href="/frontend/leaflet/L.Icon.FontAwesome.css" rel="stylesheet">
-    *}
     <script src="/frontend/leaflet/SmoothWheelZoom.js"></script>
+
+    {if $custom_js.fontawesome}
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+        <script src="/frontend/leaflet/L.Icon.FontAwesome.js"></script>
+        <link href="/frontend/leaflet/L.Icon.FontAwesome.css" rel="stylesheet">
+    {/if}
 
     {if $sections_present.colorbox}
         <script type="text/javascript" src="/frontend/colorbox/jquery.colorbox-min.js"></script>

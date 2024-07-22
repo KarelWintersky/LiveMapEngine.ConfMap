@@ -118,6 +118,10 @@ class MapsController extends AbstractClass
         $this->template->assign("og", OpenGraph::makeForMap());
         $this->template->assign("html_title", OpenGraph::$og_default['title']);
 
+        $this->template->assign("custom_js", [
+            'fontawesome'   =>  false
+        ]);
+
         $this->template->setTemplate("_map.tpl");
     }
 

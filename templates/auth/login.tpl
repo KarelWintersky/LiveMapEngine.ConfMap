@@ -4,7 +4,7 @@
     <title>{$title}</title>
 
     <script src="/frontend/jquery/jquery-3.2.1_min.js"></script>
-    <script src="/frontend/NotifyMessages.js"></script>
+    <script src="/frontend/livemap/NotifyMessages.js"></script>
     <style>
         .content-center {
             display: flex;
