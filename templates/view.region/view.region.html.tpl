@@ -27,12 +27,30 @@
         {if $json->history->year && $json->history->text}
             <fieldset>
                 <legend>История</legend>
-                {if $json->history->year}
-                    <h4>Открыт в {$json->history->year} году от начала колонизации</h4>
-                {/if}
-                {if $json->history->text}
-                    {$json->history->text|default:''}
-                {/if}
+                <table>
+                    {if $json->history->year}
+                    <tr>
+                        <td width="{$first_dt_width}">Открыт</td>
+                        <td style="color: #035bc4; font-weight: bold;">
+                            {$json->history->year->found|default:0} год
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Начата колонизация</td>
+                        <td style="color: #035bc4; font-weight: bold;">
+                            {$json->history->year->colonization|default:0}  год
+                        </td>
+
+                    </tr>
+                    {/if}
+                    {if $json->history->text}
+                    <tr>
+                        <td colspan="2">
+                            {$json->history->text|default:''}
+                        </td>
+                    </tr>
+                    {/if}
+                </table>
             </fieldset>
         {/if}
 
@@ -40,29 +58,29 @@
             <legend>Life Support Index</legend>
             <table class="second_td_padded">
                 <tr>
-                    <th width="{$first_dt_width}">Класс:</th>
+                    <td width="{$first_dt_width}">Класс:</td>
                     <td>{$json->lsi->index|default:0}</td>
                 </tr>
                 <tr>
-                    <th>Тип:</th>
+                    <td>Тип:</td>
                     <td>{$json->lsi->type|default:'n/a'}</td>
                 </tr>
 
                 {if $json->lsi->atmosphere}
                 <tr>
-                    <th>Атмосфера:</th>
+                    <td>Атмосфера:</td>
                     <td>{$json->lsi->atmosphere}</td>
                 </tr>
                 {/if}
                 {if $json->lsi->hydrosphere}
                     <tr>
-                        <th>Гидросфера:</th>
+                        <td>Гидросфера:</td>
                         <td>{$json->lsi->hydrosphere}</td>
                     </tr>
                 {/if}
                 {if $json->lsi->climate}
                     <tr>
-                        <th>Климат регионов:</th>
+                        <td>Климат регионов:</td>
                         <td>{$json->lsi->climate}</td>
                     </tr>
                 {/if}
@@ -104,8 +122,26 @@
         </fieldset>
 
         <fieldset>
-            <legend>Государственные механизмы</legend>
+            <legend>Государственный статус</legend>
             <table>
+                {if $json->statehood->type}
+                    <tr>
+                        <td>Тип и подчинение</td>
+                        <td>
+                            {$json->statehood->type}
+                            {if $json->statehood->dependency}
+                                ({$json->statehood->dependency})
+                            {/if}
+
+                        </td>
+                    </tr>
+                    {if $json->statehood->radius}
+                        <tr>
+                            <td>Радиус</td>
+                            <td>{$json->statehood->radius}</td>
+                        </tr>
+                    {/if}
+                {/if}
                 {if $json->statehood->ss}
                 <tr>
                     <td>Security Status:</td>
@@ -113,15 +149,9 @@
                         {$json->statehood->ss|default:''}
                     </td>
                 </tr>
+
                 {/if}
-                {if $json->statehood->gun_rights}
-                <tr>
-                    <td>Правила ношения оружия:</td>
-                    <td>
-                        {$json->statehood->gun_rights|default:''}
-                    </td>
-                </tr>
-                {/if}
+
                 {if $json->statehood->confstatus}
                 <tr>
                     <td>Конфедеративный статус</td>
@@ -440,6 +470,20 @@
                     <tr>
                         <td width="{$first_dt_width}">Старые семьи:</td>
                         <td>{$json->economy->assets->oldmoney}</td>
+                    </tr>
+                {/if}
+            </table>
+        </fieldset>
+
+        <fieldset>
+            <legend>Законы и нормы</legend>
+            <table>
+                {if $json->laws->gun_rights}
+                    <tr>
+                        <td>Правила ношения оружия:</td>
+                        <td>
+                            {$json->laws->gun_rights|default:''}
+                        </td>
                     </tr>
                 {/if}
             </table>

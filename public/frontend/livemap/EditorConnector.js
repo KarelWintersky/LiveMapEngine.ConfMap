@@ -4,7 +4,7 @@
 
 Скрипты для подключения tinyMCE
 */
-class EditRegion {
+class EditorConnector {
     V7_TEXTAREA_ADDITIONAL_HEIGHT = 120; // на самом деле где-то 117 для одного ряда кнопок, но пускай будет размер ПРИМЕРНЫЙ
 
     /**
@@ -14,11 +14,11 @@ class EditRegion {
         height: 300,
         toolbar: {
             simple: [
-                "bold italic underline strikethrough | fontsizeselect | bullist numlist | responsivefilemanager | image charmap | link unlink anchor | | pastetext removeformat | preview"
+                "bold italic underline strikethrough | fontsizeselect | bullist numlist | responsivefilemanager | image charmap | link unlink anchor | | pastetext removeformat | code preview"
             ],
             advanced: [
                 "undo redo | bold italic underline subscript superscript strikethrough | fontsizeselect styleselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | ",
-                "responsivefilemanager image | template table charmap | link unlink anchor | pastetext removeformat | preview"
+                "responsivefilemanager image | template table charmap | link unlink anchor | pastetext removeformat | code preview"
             ]
         },
         contextmenu: "link image responsivefilemanager | inserttable cell row column deletetable | charmap",
@@ -108,7 +108,14 @@ class EditRegion {
     };
 
 
-    constructor() {
+    /**
+     *
+     * @param options - default options
+     */
+    constructor(options = {}) {
+        if (options.hasOwnProperty('menubar')) {
+            EditorConnector.tinymce_defaults.menubar = options.menubar;
+        }
     }
 
     /**
@@ -120,12 +127,12 @@ class EditRegion {
      */
     calculateHeight($target, selected_toolbar = 'simple') {
         if (tinyMCE.majorVersion < 5) {
-            return $target.data('height') || EditRegion.tinymce_defaults.height || 300;
+            return $target.data('height') || EditorConnector.tinymce_defaults.height || 300;
         } else {
             // Для версии 7 высота контейнера считается не как высота textArea, а высота всего редактора.
             // Поэтому добавляем еще ~120 пикселей с учетом одного ряда кнопок.
             //@todo: нужно учитывать количество строк в тулбаре
-            let h = $target.data('height') || EditRegion.tinymce_defaults.height || 300; // тут нужны эксперименты!
+            let h = $target.data('height') || EditorConnector.tinymce_defaults.height || 300; // тут нужны эксперименты!
             h += this.V7_TEXTAREA_ADDITIONAL_HEIGHT;
             return h;
         }
@@ -139,9 +146,9 @@ class EditRegion {
     makePluginsList() {
         return []
             .concat(
-                EditRegion.tinymce_defaults.plugins[ 0 ]
+                EditorConnector.tinymce_defaults.plugins[ 0 ]
             ).concat(
-                EditRegion.tinymce_defaults.plugins[ tinyMCE.majorVersion ]
+                EditorConnector.tinymce_defaults.plugins[ tinyMCE.majorVersion ]
             );
     }
 
@@ -154,8 +161,8 @@ class EditRegion {
      * @param options
      */
     createInstance(target, options = { }) {
-        let tinymce_defaults = EditRegion.tinymce_defaults;
-        let tinymce_common_options = EditRegion.tinymce_common_options;
+        let tinymce_defaults = EditorConnector.tinymce_defaults;
+        let tinymce_common_options = EditorConnector.tinymce_common_options;
 
         let $target = $('#' + target);
 

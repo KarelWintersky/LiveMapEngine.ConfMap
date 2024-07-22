@@ -15,17 +15,21 @@
     <script type="text/javascript" src="/frontend/html5shiv.js"></script>
     <script type="text/javascript" src="/frontend/jquery/jquery-3.2.1_min.js"></script>
     <script type="text/javascript" src="/frontend/tinymce-7.2.0/tinymce.min.js"></script>
-    <script type="text/javascript" src="/frontend/edit.region.js"></script>
+    <script type="text/javascript" src="/frontend/livemap/EditorConnector.js"></script>
     <script type="text/javascript" id="define">
         window.editor_config = {
             success_edit_timeout: 1000,
         };
-        let _editRegion = new EditRegion();
+        /*
+            Переопределить опции можно в создании инстанса, например:
+            _editRegion.createInstance('editor_summary', { menubar: true });
+         */
+        let _editRegion = new EditorConnector({ menubar: false });
 
         let saving_in_progress = false;
 
         $(document).ready(function() {
-            _editRegion.createInstance('editor_summary');
+            _editRegion.createInstance('editor_summary', { menubar: true });
             _editRegion.createInstance('editor_history');
             _editRegion.createInstance('editor_trade_export');
             _editRegion.createInstance('editor_trade_import');
@@ -36,6 +40,9 @@
             _editRegion.createInstance('editor_assets_oldmoney');
             _editRegion.createInstance('editor_other_local_heroes');
             _editRegion.createInstance('editor_legacy_description');
+
+            _editRegion.createInstance('editor_culture_holydays');
+            _editRegion.createInstance('editor_culture_showplaces');
 
             setTimeout(function(){
                 $('input#title').focus()
@@ -88,8 +95,26 @@
                 return false;
             });
 
+
+
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            if (true) {
+                let selectElements = document.querySelectorAll('.action-update-select');
+                selectElements.forEach(function(select) {
+                    let selectedOption = select.dataset['selected'];
+                    select.querySelectorAll('option').forEach(function(option) {
+                        if (option.value === selectedOption || (!selectedOption && option.value === "")) {
+                            option.selected = true;
+                        }
+                    });
+                });
+            }
+
             //// Синхронное поведение input-range и текстового поля @todo: class groupRanged ?
-            {
+            if (true) {
                 /**
                  * Обработчик изменения элемента группы
                  */
@@ -112,6 +137,7 @@
                     input.addEventListener('mousemove', groupRangedInputOnChange);
                 });
             }
+
         });
 
     </script>
@@ -126,6 +152,9 @@
     </style>
 </head>
 <body>
+<small>
+    <strong>Важно:</strong> во всех случаях мы отмечаем значимые или известные на уровне Конфедерации явления (экспорт, праздники итд)
+</small>
 
 <form action="{Arris\AppRouter::getRouter('update.region.info')}" method="post" id="form-edit-region">
     <input type="hidden" name="edit:id:map"     value="{$id_map}">
@@ -172,8 +201,12 @@
     <fieldset>
         <legend>История:</legend>
         <label>
-            Год колонизации: <input type="text" name="json:history-year" value="{$json.history.year|default:0}">
+            Год открытия: <input type="text" name="json:history-year-found" value="{$json.history.year.found|default:0}">
         </label>
+        <label>
+            Начало колонизации: <input type="text" name="json:history-year-colonization" value="{$json.history.year.colonization|default:0}">
+        </label>
+        <br><br>
         <label class="label_textarea label_fullwidth">
             Краткая история колонизации:
             <textarea name="json:history-text" id="editor_history" data-height="100" data-menubar="">{$json.history.text|default:''}</textarea>
@@ -201,6 +234,98 @@
             </tr>
         </table>
     </fieldset>
+
+    <fieldset>
+        <legend>Государственный статус</legend>
+        <table>
+            <tr>
+                <td>Тип и подчинение</td>
+                <td>
+                    <select name="json:statehood-type" class="action-update-select" data-selected="{$json.statehood.type|default:''}">
+                        <option value="">...</option>
+                        <option value="автономия">автономия</option>
+                        <option value="колония">колония</option>
+                        <option value="протекторат">протекторат</option>
+                        <option value="особый">особый</option>
+                        <option value="переходный">переходный</option>
+                        <option value="криминальный">криминальный</option>
+                        <option value="столица">столица</option>
+                    </select>
+                    , подчинение: <input type="text" name="json:statehood-dependency" size="40" value="{$json.statehood.dependency|default:''}">
+                    , Радиус: <input type="text" name="json:statehood-radius" size="40" value="{$json.statehood.radius|default:'1'}">
+                </td>
+            </tr>
+
+            <tr>
+                <td>Security Status:</td>
+                <td>
+                    <div style="display: flex; align-items: center">
+                        <input type="text" data-ranged="statehood_ss" name="json:statehood-ss" size="10" placeholder="0..1" value="{$json.statehood.ss|default:'0'}">
+                        &nbsp;&nbsp;
+                        <input data-ranged="statehood_ss" type="range" min="0" max="1" step="0.1" name="json:statehood-ss" value="{$json.statehood.ss|default:'0'}">
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Местное управление</td>
+                <td>
+                    <input type="text" name="json:statehood-local_governance" size="100" value="{$json.statehood.local_governance|default:''}">
+                    {*<textarea name="json:statehood-local_governance" id="editor_statehood_local_governance" data-height="100" data-menubar="">{$json.state.local_governance|default:''}</textarea>*}
+                </td>
+            </tr>
+            <tr>
+                <td>Территориальная гвардия</td>
+                <td>
+                    <input type="text" name="json:statehood-terr_guards" size="100" value="{$json.statehood.terr_guards|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <br>
+                    <strong>Представители структур Конфедерации:</strong>
+                </td>
+            </tr>
+            <tr>
+                <td>КСБ</td>
+                <td>
+                    <input type="text" name="json:statehood-agency-css" size="100" value="{$json.statehood.agency.css|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td>ОРК</td>
+                <td>
+                    <input type="text" name="json:statehood-agency-drc" size="100" value="{$json.statehood.agency.drc|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td>ИМБ</td>
+                <td>
+                    <input type="text" name="json:statehood-agency-psi" size="100" value="{$json.statehood.agency.psi|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td>ВКС</td>
+                <td>
+                    <input type="text" name="json:statehood-agency-starfleet" size="100" value="{$json.statehood.agency.starfleet|default:''}">
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+
+    <fieldset>
+        <legend>Законы и нормы</legend>
+        <table>
+            <tr>
+                <td width="200">Правила <br>ношения<br> оружия:</td>
+                <td>
+                    <input type="text" name="json:laws-gun_rights" size="100" value="{$json.laws.gun_rights|default:''}">
+                </td>
+            </tr>
+
+        </table>
+    </fieldset>
+
 
     <fieldset>
         <legend>Экономика</legend>
@@ -305,75 +430,30 @@
     </fieldset>
 
     <fieldset>
-        <legend>Государственные механизмы</legend>
+        <legend>Культура</legend>
         <table>
             <tr>
-                <td>Security Status:</td>
+                <td>Местная валюта</td>
                 <td>
-                    <div style="display: flex; align-items: center">
-                        <input type="text" data-ranged="statehood_ss" name="json:statehood-ss" size="10" placeholder="0..1" value="{$json.statehood.ss|default:'0'}">
-                        &nbsp;&nbsp;
-                        <input data-ranged="statehood_ss" type="range" min="0" max="1" step="0.1" name="json:statehood-ss" value="{$json.statehood.ss|default:'0'}">
-                    </div>
-                    {*<input type="text" name="json:statehood-ss" size="10" value="{$json.statehood.ss|default:''}">*}
+                    <input type="text" name="json:culture-currency" size="40" value="{$json.culture.currency|default:''}">
                 </td>
             </tr>
             <tr>
-                <td>Правила ношения оружия:</td>
                 <td>
-                    <input type="text" name="json:statehood-gun_rights" size="100" value="{$json.statehood.gun_rights|default:''}">
+                    Праздники <br>
+                </td>
+                <td>
+                    <textarea name="json:culture-holydays" id="editor_culture_holydays" data-height="100">{$json.culture.holydays|default:''}</textarea>
                 </td>
             </tr>
             <tr>
-                <td>Конфедеративный статус</td>
+                <td>Достопримечательности</td>
                 <td>
-                    {* на самом деле выпадающий список:*}
-                    <input type="text" name="json:statehood-confstatus" size="40" value="{$json.statehood.confstatus|default:''}">
+                    <textarea name="json:culture-showplaces" id="editor_culture_showplaces" data-height="100">{$json.culture.showplaces|default:''}</textarea>
                 </td>
             </tr>
-            <tr>
-                <td>Местное управление</td>
-                <td>
-                    <input type="text" name="json:statehood-local_governance" size="100" value="{$json.statehood.local_governance|default:''}">
-                    {*<textarea name="json:statehood-local_governance" id="editor_statehood_local_governance" data-height="100" data-menubar="">{$json.state.local_governance|default:''}</textarea>*}
-                </td>
-            </tr>
-            <tr>
-                <td>Территориальная гвардия</td>
-                <td>
-                    <input type="text" name="json:statehood-terr_guards" size="100" value="{$json.statehood.terr_guards|default:''}">
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <br>
-                    <strong>Представители структур Конфедерации:</strong>
-                </td>
-            </tr>
-            <tr>
-                <td>КСБ</td>
-                <td>
-                    <input type="text" name="json:statehood-agency-css" size="100" value="{$json.statehood.agency.css|default:''}">
-                </td>
-            </tr>
-            <tr>
-                <td>ОРК</td>
-                <td>
-                    <input type="text" name="json:statehood-agency-drc" size="100" value="{$json.statehood.agency.drc|default:''}">
-                </td>
-            </tr>
-            <tr>
-                <td>ИМБ</td>
-                <td>
-                    <input type="text" name="json:statehood-agency-psi" size="100" value="{$json.statehood.agency.psi|default:''}">
-                </td>
-            </tr>
-            <tr>
-                <td>ВКС</td>
-                <td>
-                    <input type="text" name="json:statehood-agency-starfleet" size="100" value="{$json.statehood.agency.starfleet|default:''}">
-                </td>
-            </tr>
+
+
         </table>
     </fieldset>
 

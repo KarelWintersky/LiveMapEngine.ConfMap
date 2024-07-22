@@ -240,8 +240,11 @@ class RegionsController extends AbstractClass
                 'climate'   =>  self::json('lsi-climate')
             ],
             'history'   =>  [
-                'year'      =>  self::json('history-year'),
-                'text'      =>  self::json('history-text'),
+                'year'  =>  [
+                    'found'         =>  self::json('history-year-found'),
+                    'colonization'  =>  self::json('history-year-colonization')
+                ],
+                'text'          =>  self::json('history-text'),
             ],
             'population'=>  [
                 'count'     =>  Helpers::floatvalue(self::json('population-count')),
@@ -270,9 +273,14 @@ class RegionsController extends AbstractClass
                 'import'    =>  self::json('trade-import'),
             ],
             'statehood' =>  [
-                'ss'        =>  self::json('statehood-ss'),
-                'gunrights' =>  self::json('statehood-gun_rights'),
-                'conf_status'   =>  self::json('statehood-confstatus'),
+                'ss'            =>  self::json('statehood-ss'),
+
+                'type'          =>  self::json('statehood-type'),
+                'dependency'    =>  self::json('statehood-dependency'),
+                'radius'        =>  self::json('statehood-radius'),
+
+
+
                 'local_governance'  =>  self::json('statehood-local_governance'),
                 'terr_guards'   =>  self::json('statehood-terr_guards'),
                 'agency'    =>  [
@@ -281,6 +289,14 @@ class RegionsController extends AbstractClass
                     'psi'       =>  self::json('statehood-agency-psi'),
                     'starfleet' =>  self::json('statehood-agency-starfleet')
                 ],
+            ],
+            'laws'  => [
+                'gun_rights'     =>  self::json('laws-gun_rights'),
+            ],
+            'culture'   =>  [
+                'currency'      =>  self::json('culture-currency'),
+                'holydays'      =>  self::json('culture-holydays'),
+                'showplaces'    =>  self::json('culture-showplaces')
             ],
             // 'infrastructure'    =>  [], //
             'other'     =>  [
