@@ -174,9 +174,9 @@ class RegionsController extends AbstractClass
         // Конвертируем значение поля content_json в JSON-структуру и передаем её в шаблон
         // Если associative: true - то доступ через точку, иначе через стрелочку
         $this->template->assign("json", json_decode($region_data['content_json'] ?? '', true));
+
         // и больше никаких действий здесь не требуется!
         // магия сохранения будет в коллбэке!
-
 
         $this->template->assign([
             'id_region'         =>  $id_region,
@@ -197,6 +197,10 @@ class RegionsController extends AbstractClass
             'is_exludelists'    =>  $region_data['is_exludelists'] ?? 'N',
             'is_publicity'      =>  $region_data['is_publicity'] ?? 'ANYONE',
         ]);
+
+        // Устанавливаем нативный флаг для Smarty->escape_html = true. Автоэскейп актуален только для формы редактирования
+        // (чтобы в инпутах можно было редактировать строки с кавычками)
+        $this->template->setSmartyNativeOption("escape_html", true);
 
         //@todo: магия передачи пути к каталогу изображений карты через куки
         setcookie( getenv('AUTH.COOKIES.FILEMANAGER_STORAGE_PATH'), App::$id_map, 0, '/');
@@ -291,8 +295,8 @@ class RegionsController extends AbstractClass
             'laws'  => [
                 'passport'          =>  self::json('laws-passport'),
                 'visa'              =>  self::json('laws-visa'),
-                'gun_rights'        =>  self::json('gun_rights'),
-                'private_property'  =>  self::json('private_property'),
+                'gun_rights'        =>  self::json('laws-gun_rights'),
+                'private_property'  =>  self::json('laws-private_property'),
                 'gencard'   =>  [
                     'info'          =>  self::json('laws-gencard-info'),
                     'restrictions'  =>  self::json('laws-gencard-restrictions'),

@@ -1,3 +1,11 @@
+confmap (0.8.9) stable; urgency=medium
+
+  * - делаем автоматический escape (htmlentity) символов для формы редактирования (в инпутах могут встречаться кавычки)
+  * - обновляем postinst (теперь мы не делаем симлинк впустую)
+  * - исправляем опечатку в `law-gun_rights` и `laws-private_property`
+
+ -- Karel Wintersky <karel@wintersky.ru>  Tue, 23 Jul 2024 16:23:06 +0300
+
 confmap (0.8.8) stable; urgency=medium
 
   * оптимизируем загрузку JS-скриптов
