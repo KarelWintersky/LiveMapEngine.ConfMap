@@ -18,7 +18,7 @@
     <script type="text/javascript" src="/frontend/livemap/EditorConnector.js"></script>
     <script type="text/javascript" id="define">
         window.editor_config = {
-            success_edit_timeout: 1000,
+            success_edit_timeout: 500,
         };
         /*
             Переопределить опции можно в создании инстанса, например:
@@ -45,7 +45,7 @@
             _editRegion.createInstance('editor_culture_showplaces');
 
             setTimeout(function(){
-                $('input#title').focus()
+                document.getElementById('title').focus();
             }, 300);
 
             $("#actor-back").on('click', function(){
@@ -72,7 +72,6 @@
                         $("#ajax-process").show();
 
                         // disable buttons
-                        // $("#actor-submit").prop('disabled', true);
                         $(".action-submit").prop('disabled', true);
                         $("#actor-back").prop('disabled', true);
                     },
@@ -94,53 +93,22 @@
                 });
                 return false;
             });
-
-
-
         });
-
-        document.addEventListener('DOMContentLoaded', function() {
-
-            if (true) {
-                let selectElements = document.querySelectorAll('.action-update-select');
-                selectElements.forEach(function(select) {
-                    let selectedOption = select.dataset['selected'];
-                    select.querySelectorAll('option').forEach(function(option) {
-                        if (option.value === selectedOption || (!selectedOption && option.value === "")) {
-                            option.selected = true;
-                        }
-                    });
-                });
-            }
-
-            //// Синхронное поведение input-range и текстового поля @todo: class groupRanged ?
-            if (true) {
-                /**
-                 * Обработчик изменения элемента группы
-                 */
-                function groupRangedInputOnChange() {
-                    let group = this.getAttribute('data-ranged');
-                    let type = this.type === 'range' ? 'text' : 'range';
-                    document.querySelector(`input[type="${ type }"][data-ranged="${ group }"]`).value = this.value;
-                }
-
-                // на текстовом поле: изменяем, вводим, вставляем из буфера обмена
-                document.querySelectorAll('input[type="text"][data-ranged]').forEach(function(input) {
-                    input.addEventListener('change', groupRangedInputOnChange);
-                    input.addEventListener('keyup', groupRangedInputOnChange);
-                    input.addEventListener('paste', groupRangedInputOnChange);
-                });
-
-                // на поле range: меняем, двигаем мышкой
-                document.querySelectorAll('input[type="range"][data-ranged]').forEach(function(input) {
-                    input.addEventListener('change', groupRangedInputOnChange);
-                    input.addEventListener('mousemove', groupRangedInputOnChange);
-                });
-            }
-
-        });
-
     </script>
+
+    <script src="/frontend/livemap/RangeInputGroup.js"></script>
+    <script src="/frontend/livemap/SelectUpdater.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            new RangeInputGroup('lsi_slider');
+            new RangeInputGroup('statehood_ss');
+
+            let selectUpdater = new SelectUpdater('.action-update-select');
+            selectUpdater.update();
+        });
+    </script>
+
     <style>
         fieldset {
             margin-top: 0.7em;
@@ -251,8 +219,8 @@
                         <option value="криминальный">криминальный</option>
                         <option value="столица">столица</option>
                     </select>
-                    , подчинение: <input type="text" name="json:statehood-dependency" size="40" value="{$json.statehood.dependency|default:''}">
-                    , Радиус: <input type="text" name="json:statehood-radius" size="40" value="{$json.statehood.radius|default:'1'}">
+                    | Подчинение: <input type="text" name="json:statehood-dependency" size="40" value="{$json.statehood.dependency|default:''}">
+                    | Радиус: <input type="text" name="json:statehood-radius" size="40" value="{$json.statehood.radius|default:'1'}">
                 </td>
             </tr>
 

@@ -1,5 +1,11 @@
+/**
+ * Notify-сообщения
+ * Требуют jQuery
+ */
 class NotifyMessages {
-    static VERSION = '2024-06-14';
+    static VERSION = '2024-07-23';
+
+    // $ = window.jQuery
 
     static display(messages) {
         console.log('Notify messages:', messages);
