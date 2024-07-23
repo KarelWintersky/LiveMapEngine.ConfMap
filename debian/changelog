@@ -1,3 +1,16 @@
+confmap (0.8.8) stable; urgency=medium
+
+  * оптимизируем загрузку JS-скриптов
+  * добавляем спаренный `input=range` + `input=text`
+  * обновляем зависимости: "karelwintersky/arris.router" до 1.99.*
+  * обновляем зависимости: "karelwintersky/arris.database" до 1.*
+  * обновляем зависимости: "karelwintersky/arris.logger" до 1.99.*
+  * убираем зависимость `ext-imagick`
+  * многочисленные стилевые фиксы
+  * добавляем обработку групп culture, laws и других
+
+ -- Karel Wintersky <karel@wintersky.ru>  Tue, 23 Jul 2024 03:15:08 +0300
+
 confmap (0.8.0) stable; urgency=medium
 
   * Production ready?
