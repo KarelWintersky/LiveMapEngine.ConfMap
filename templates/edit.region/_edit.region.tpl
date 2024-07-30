@@ -20,10 +20,7 @@
         window.editor_config = {
             success_edit_timeout: 500,
         };
-        /*
-            Переопределить опции можно в создании инстанса, например:
-            _editRegion.createInstance('editor_summary', { menubar: true });
-         */
+
         let _editRegion = new EditorConnector({ menubar: false });
 
         let saving_in_progress = false;
@@ -40,6 +37,8 @@
             _editRegion.createInstance('editor_assets_oldmoney');
             _editRegion.createInstance('editor_other_local_heroes');
             _editRegion.createInstance('editor_legacy_description');
+            _editRegion.createInstance('editor_statehood_administration_principle');
+            _editRegion.createInstance('editor_system_chart', { });
 
             _editRegion.createInstance('editor_culture_holydays');
             _editRegion.createInstance('editor_culture_showplaces');
@@ -142,63 +141,31 @@
         </label>
     </fieldset>
 
-    {* ======================================================================================= *}
-    {* Теперь попробуем сделать множественные кастомные поля и хранение в JSON *}
-    {* ======================================================================================= *}
-
     <fieldset>
-        <legend>Индекс жизнеобеспечения (Life Support Index)</legend>
+        <legend>Системная лоция</legend>
         <label>
-            КЖП: <input type="text" data-ranged="lsi_slider" name="json:lsi-index" size="10" placeholder="0..12" value="{$json.lsi.index|default:'0'}"><br>
-            <input data-ranged="lsi_slider" type="range" min="0" max="12" name="json:lsi-index-range" value="{$json.lsi.index|default:'0'}">
-        </label>
-        <label>
-            Тип: <input type="text" name="json:lsi-type" size="40" placeholder="Тип планеты, тип атмосферы и аквасферы" value="{$json.lsi.type|default:''}">
-        </label>
-        <label>
-            Атмосфера: <input type="text" name="json:lsi-atmosphere" size="40" placeholder="Атмосфера, % состав" value="{$json.lsi.atmosphere|default:''}">
-        </label>
-        <label>
-            Гидросфера: <input type="text" name="json:lsi-hydrosphere" size="40" placeholder="Гидросфера, %" value="{$json.lsi.hydrosphere|default:''}">
-        </label>
-        <label>
-            Климат заселенных регионов: <input type="text" name="json:lsi-climate" size="40" placeholder="Климат заселенных регионов" value="{$json.lsi.climate|default:''}">
+            <textarea name="json:system_chart" id="editor_system_chart" cols="10" data-height="100">{$json.system_chart}</textarea>
         </label>
     </fieldset>
 
     <fieldset>
-        <legend>История:</legend>
-        <label>
-            Год открытия: <input type="text" name="json:history-year-found" value="{$json.history.year.found|default:0}">
-        </label>
-        <label>
-            Начало колонизации: <input type="text" name="json:history-year-colonization" value="{$json.history.year.colonization|default:0}">
-        </label>
-        <br><br>
-        <label class="label_textarea label_fullwidth">
-            Краткая история колонизации:
-            <textarea name="json:history-text" id="editor_history" data-height="100" data-menubar="">{$json.history.text|default:''}</textarea>
-        </label>
-    </fieldset>
-
-    <fieldset>
-        <legend>Население</legend>
-        <table class="aligned-center">
+        <legend>Интегральные индексы</legend>
+        <table border="0">
             <tr>
-                <td width="300">Численность (млн)</td>
-                <td style="text-align: left"><input type="text" name="json:population-count" size="10" value="{$json.population.count|default:0}"></td>
-            </tr>
-            <tr>
-                <td>Национальный состав:</td>
-                <td><textarea cols="40" rows="5" name="json:population-ethnic">{$json.population.ethnic|default:''}</textarea></td>
-            </tr>
-            <tr>
-                <td>Основные религии:</td>
-                <td><textarea cols="40" rows="5" name="json:population-religion">{$json.population.religion|default:''}</textarea></td>
-            </tr>
-            <tr>
-                <td>Этнопсихологические особенности:</td>
-                <td><textarea cols="40" rows="5" name="json:population-features">{$json.population.features|default:''}</textarea></td>
+                <td>
+                    <label>
+                        Класс жизнепригодности: <input type="text" data-ranged="lsi_slider" name="json:lsi-index" size="10" placeholder="0..12" value="{$json.lsi.index|default:'0'}"><br>
+                        <input data-ranged="lsi_slider" type="range" min="0" max="12" name="json:lsi-index-range" value="{$json.lsi.index|default:'0'}">
+                    </label>
+                </td>
+                <td>
+                    <label>
+                        Security Status:
+                        <input type="text" data-ranged="statehood_ss" name="json:statehood-ss" size="10" placeholder="0..1" value="{$json.statehood.ss|default:'0'}">
+                        <br>
+                        <input data-ranged="statehood_ss" type="range" min="0" max="1" step="0.1" name="json:statehood-ss" value="{$json.statehood.ss|default:'0'}">
+                    </label>
+                </td>
             </tr>
         </table>
     </fieldset>
@@ -223,23 +190,19 @@
                     | Радиус: <input type="text" name="json:statehood-radius" size="40" value="{$json.statehood.radius|default:'1'}">
                 </td>
             </tr>
-
             <tr>
-                <td>Security Status:</td>
                 <td>
-                    <div style="display: flex; align-items: center">
-                        <input type="text" data-ranged="statehood_ss" name="json:statehood-ss" size="10" placeholder="0..1" value="{$json.statehood.ss|default:'0'}">
-                        &nbsp;&nbsp;
-                        <input data-ranged="statehood_ss" type="range" min="0" max="1" step="0.1" name="json:statehood-ss" value="{$json.statehood.ss|default:'0'}">
-                    </div>
+                    Принцип государственного управления:
+                </td>
+                <td>
+                    <textarea name="json:statehood:administration_principle" id="editor_statehood_administration_principle" data-height="100" data-menubar="">{$json.statehood.administration_principle|default:''}</textarea>
                 </td>
             </tr>
 
             <tr>
-                <td>Местное управление</td>
+                <td>Местное управление<br> (todo: удалить после переноса данных)</td>
                 <td>
                     <input type="text" name="json:statehood-local_governance" size="100" value="{$json.statehood.local_governance|default:''}">
-                    {*<textarea name="json:statehood-local_governance" id="editor_statehood_local_governance" data-height="100" data-menubar="">{$json.state.local_governance|default:''}</textarea>*}
                 </td>
             </tr>
             <tr>
@@ -348,6 +311,79 @@
 
         </table>
     </fieldset>
+
+
+    <fieldset>
+        <legend>История:</legend>
+        <label>
+            Год открытия: <input type="text" name="json:history-year-found" value="{$json.history.year.found|default:0}">
+        </label>
+        <label>
+            Начало колонизации: <input type="text" name="json:history-year-colonization" value="{$json.history.year.colonization|default:0}">
+        </label>
+        <br><br>
+        <label class="label_textarea label_fullwidth">
+            Краткая история колонизации:
+            <textarea name="json:history-text" id="editor_history" data-height="100" data-menubar="">{$json.history.text|default:''}</textarea>
+        </label>
+    </fieldset>
+
+    <fieldset>
+        <legend>Биосфера</legend>
+        <table>
+            <tr>
+                <td>
+                    Тип:
+                </td>
+                <td>
+                    <input type="text" name="json:lsi-type" size="40" placeholder="Тип планеты, тип атмосферы и аквасферы" value="{$json.lsi.type|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td>Атмосфера:</td>
+                <td>
+                    <input type="text" name="json:lsi-atmosphere" size="40" placeholder="Атмосфера, % состав" value="{$json.lsi.atmosphere|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td>Гидросфера:&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <input type="text" name="json:lsi-hydrosphere" size="40" placeholder="Гидросфера, %" value="{$json.lsi.hydrosphere|default:''}">
+                </td>
+            </tr>
+            <tr>
+                <td>Климат:</td>
+                <td>
+                    <input type="text" name="json:lsi-climate" size="40" placeholder="Климат заселенных регионов" value="{$json.lsi.climate|default:''}">
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+
+    <fieldset>
+        <legend>Население</legend>
+        <table class="aligned-center">
+            <tr>
+                <td width="300">Численность (млн)</td>
+                <td style="text-align: left"><input type="text" name="json:population-count" size="10" value="{$json.population.count|default:0}"></td>
+            </tr>
+            <tr>
+                <td>Национальный состав:</td>
+                <td><textarea cols="40" rows="5" name="json:population-ethnic">{$json.population.ethnic|default:''}</textarea></td>
+            </tr>
+            <tr>
+                <td>Основные религии:</td>
+                <td><textarea cols="40" rows="5" name="json:population-religion">{$json.population.religion|default:''}</textarea></td>
+            </tr>
+            <tr>
+                <td>Этнопсихологические особенности:</td>
+                <td><textarea cols="40" rows="5" name="json:population-features">{$json.population.features|default:''}</textarea></td>
+            </tr>
+        </table>
+    </fieldset>
+
+
+
 
 
     <fieldset>
@@ -484,13 +520,13 @@
         <legend>Прочее</legend>
         <label>
             Известные личности: <br>
-            <textarea name="json:other.local_heroes" id="editor_other_local_heroes" data-height="100" data-menubar="">{$json.other.local_heroes|default:''}</textarea>
+            <textarea name="json:other-local_heroes" id="editor_other_local_heroes" data-height="100" data-menubar="">{$json.other.local_heroes|default:''}</textarea>
         </label>
-    </fieldset>
-
-    <fieldset>
-        <legend>Legacy-описание</legend>
-        <textarea name="json:legacy.description" id="editor_legacy_description" data-height="100" data-menubar="">{$json.legacy.description|default:''}</textarea>
+        <br>
+        <label>
+            Legacy-описание:
+            <textarea name="json:legacy-description" id="editor_legacy_description" data-height="100" data-menubar="">{$json.legacy.description|default:''}</textarea>
+        </label>
     </fieldset>
 
     <fieldset>
@@ -536,7 +572,9 @@
         </table>
     </fieldset>
 
-
+    <br>
+    <hr>
+    <br>
 
     <fieldset class="fields_area">
         <legend>Техническое</legend>
@@ -579,6 +617,5 @@
 <small style="float: left">Logged as <strong>{$is_logged_user}</strong> from <strong>{$is_logged_user_ip}</strong></small>
 <small style="float: right"><em>{$copyright}</em></small>
 </body>
-
 
 </html>

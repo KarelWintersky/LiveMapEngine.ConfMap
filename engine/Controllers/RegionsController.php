@@ -165,7 +165,7 @@ class RegionsController extends AbstractClass
 
         $this->template->assign("html_callback", AppRouter::getRouter('view.frontpage'));
         $this->template->assign("form_actor", AppRouter::getRouter('update.region.info'));
-        $this->template->setTemplate("_edit.region.tpl");
+        $this->template->setTemplate("edit.region/_edit.region.tpl");
 
         $content_fields = [ 'title', 'content', 'content_restricted', 'content_json' ];
 
@@ -240,6 +240,8 @@ class RegionsController extends AbstractClass
         // Каждое кастомное поле нужно описать здесь и передать в будущую JSON-структуру
 
         $json = [
+            'version'   =>  '20240723', // @todo: версия latest ОБРАТНО НЕСОВМЕСТИМЫХ изменений структуры, например переименования полей (ГГГГММДД)
+                                        // она нужна для скриптов миграции данных из версии в версию.
             'lsi'       =>  [
                 'index'     =>  self::json('lsi-index'),
                 'type'      =>  self::json('lsi-type'),
@@ -287,6 +289,8 @@ class RegionsController extends AbstractClass
                 'dependency'    =>  self::json('statehood-dependency'),
                 'radius'        =>  self::json('statehood-radius'),
 
+                'administration_principle'  => self::json('statehood:administration_principle'),
+
                 'local_governance'  =>  self::json('statehood-local_governance'),
                 'terr_guards'   =>  self::json('statehood-terr_guards'),
                 'agency'    =>  [
@@ -313,12 +317,13 @@ class RegionsController extends AbstractClass
             ],
             // 'infrastructure'    =>  [], //
             'other'     =>  [
-                'local_heroes'  =>  self::json('heroes')
+                'local_heroes'  =>  self::json('other-local_heroes')
             ],
             'legacy'            =>  [
-                'description'      => self::json('legacy.description')
+                'description'      => self::json('legacy-description')
             ],
-            'tags'          =>  self::json('tags')
+            'tags'          =>  self::json('tags'),
+            'system_chart'      =>  self::json('system_chart'),
         ];
 
         // пакуем контент в JSON

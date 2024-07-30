@@ -1,4 +1,15 @@
 <!DOCTYPE html>
+    <style>
+        fieldset {
+            margin-top: 0.5em;
+        }
+        fieldset legend {
+            color: dodgerblue;
+        }
+        table.second_td_padded td:nth-child(2) {
+            padding-left: 1em;
+        }
+    </style>
 {if !$is_present}
     {if $is_can_edit}
         <button type="button"
@@ -564,15 +575,5 @@
         {* сюда вкладываем отображение всех остальных полей *}
     </div>
     {* ===== СТИЛИ ===== *}
-    <style>
-        fieldset {
-            margin-top: 0.5em;
-        }
-        fieldset legend {
-            color: dodgerblue;
-        }
-        table.second_td_padded td:nth-child(2) {
-            padding-left: 1em;
-        }
-    </style>
+
 {/if}

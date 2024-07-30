@@ -66,13 +66,17 @@ class EditorConnector {
     static tinymce_common_options = {
         language: 'ru',
 
+        // https://www.tiny.cloud/docs/tinymce/latest/content-formatting/
         formats: {
             strikethrough: {
                 inline: 'del'
             },
             underline: {
                 inline: 'span',
-                'classes': 'underline',
+                styles: {
+                    'text-decoration': 'underline'
+                },
+                // classes: [ 'underline' ],
                 exact: true
             }
         },
@@ -109,8 +113,11 @@ class EditorConnector {
 
 
     /**
+     * Переопределить опции можно в создании инстанса, например:
      *
-     * @param options - default options
+     * _editRegion.createInstance('editor_summary', { menubar: true });
+     *
+     * @param options - опции по-умолчанию
      */
     constructor(options = {}) {
         if (options.hasOwnProperty('menubar')) {
