@@ -116,7 +116,6 @@ class RegionsController extends AbstractClass
         }
 
         // форматируем население (численность, не население!)
-        //@todo: неправильно отображается если меньше 1!!!
         $population = (float)$json->getData('population->count', 0);
         $population
             = $population >= 1
@@ -171,6 +170,8 @@ class RegionsController extends AbstractClass
         $content_fields = [ 'title', 'content', 'content_restricted', 'content_json' ];
 
         $region_data = $this->map->getMapRegionData($id_region, $content_fields, 'OWNER', false);
+
+        //@todo: в других подобных местах надо фильтровать контент по доступности. Но не тут!
 
         $this->template->assign("content", $region_data['content']);
         $this->template->assign("content_title", ($region_data['is_present'] == 1) ? htmlspecialchars($region_data['title'],  ENT_QUOTES | ENT_HTML5) : '');
@@ -241,8 +242,10 @@ class RegionsController extends AbstractClass
         // Каждое кастомное поле нужно описать здесь и передать в будущую JSON-структуру
 
         $json = [
-            'version'   =>  '20240723', // @todo: версия latest ОБРАТНО НЕСОВМЕСТИМЫХ изменений структуры, например переименования полей (ГГГГММДД)
-                                        // она нужна для скриптов миграции данных из версии в версию.
+            // @todo: версия latest ОБРАТНО НЕСОВМЕСТИМЫХ изменений структуры, например переименования полей (ГГГГММДД)
+            // она нужна для скриптов миграции данных из версии в версию.
+            'version'   =>  '20240723',
+
             'lsi'       =>  [
                 'index'     =>  self::json('lsi-index'),
                 'type'      =>  self::json('lsi-type'),
