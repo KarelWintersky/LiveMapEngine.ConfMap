@@ -149,6 +149,12 @@ class RegionsController extends AbstractClass
      д*/
     public function view_region_edit_form()
     {
+        $id_region = $_GET['id']    ?? null;
+
+        if (is_null($id_region)) {
+            throw new AccessDeniedException("Неправильно передан ID региона, доступ запрещён");
+        }
+
         if ($this->map->loadConfig()->is_error) {
             throw new \RuntimeException($this->map->state->getMessage());
         }
@@ -161,11 +167,9 @@ class RegionsController extends AbstractClass
         $this->template->assign("form_actor", AppRouter::getRouter('update.region.info'));
         $this->template->setTemplate("_edit.region.tpl");
 
-        $id_region = $_GET['id']    ?? null;
-
         $content_fields = [ 'title', 'content', 'content_restricted', 'content_json' ];
 
-        $region_data = $this->map->getMapRegionData($id_region, $content_fields);
+        $region_data = $this->map->getMapRegionData($id_region, $content_fields, 'OWNER', false);
 
         $this->template->assign("content", $region_data['content']);
         $this->template->assign("content_title", ($region_data['is_present'] == 1) ? htmlspecialchars($region_data['title'],  ENT_QUOTES | ENT_HTML5) : '');

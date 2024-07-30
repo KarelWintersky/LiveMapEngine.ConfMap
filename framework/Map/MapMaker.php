@@ -70,7 +70,7 @@ class MapMaker implements MapMakerInterface
     public array $config_files;
 
     /**
-     * @var callable
+     * @var ?callable
      */
     public mixed $json_parser;
 
@@ -151,19 +151,24 @@ class MapMaker implements MapMakerInterface
         $this->state = new Result();
 
         $this->dbTables->map_data_regions
-            = array_key_exists('map_data_regions', $options)
-            ? $options['map_data_regions']
+            = array_key_exists('sql.map_data_regions', $options)
+            ? $options['sql.map_data_regions']
             : 'map_data_regions';
 
         $this->dbTables->users
-            = array_key_exists('users', $options)
-            ? $options['users']
+            = array_key_exists('sql.users', $options)
+            ? $options['sql.users']
             : 'users';
 
         $this->path_config
             = array_key_exists('path_config', $options)
             ? $options['path_config']
             : '';
+
+        $this->path_storage
+            = array_key_exists('path_storage', $options)
+            ? $options['path_storage']
+            : dirname($options['path_config'], 1);
 
         $this->config_files
             = array_key_exists('config_files', $options)
@@ -174,11 +179,6 @@ class MapMaker implements MapMakerInterface
             = array_key_exists('json_parser', $options)
             ? $options['json_parser']
             : 'json_decode';
-
-        $this->path_storage
-            = array_key_exists('path_storage', $options)
-            ? $options['path_storage']
-            : dirname($options['path_config'], 1);
     }
 
     /**
@@ -350,15 +350,25 @@ class MapMaker implements MapMakerInterface
      *
      * @param $id_region
      * @param array $requested_content_fields
+     * @param string $role
+     * @param bool $replace_limited_content
      * @return array
      */
-    public function getMapRegionData($id_region, array $requested_content_fields = ['title', 'content', 'content_restricted']):array
+    public function getMapRegionData(
+        $id_region,
+        array $requested_content_fields = ['title', 'content', 'content_restricted'],
+        string $role = 'ANYONE',
+        bool $replace_limited_content = true
+    ):array
     {
         $role_can_edit = $this->simpleCheckCanEdit();
 
         $common_fields = self::regions_common_fields;
 
-        $sql_select_fields = \implode(', ',  \array_unique(\array_merge($common_fields, $requested_content_fields) ));
+        // $sql_select_fields = \implode(', ',  \array_unique(\array_merge($common_fields, $requested_content_fields) ));
+        // это лишнее, извлечь все поля проще, не так уж там их и много... Разве что делать селективную выборку при установленной
+        // в конструкторе класса опции "selective_select TRUE"
+        $sql_select_fields = '*';
 
         $query = "
             SELECT {$sql_select_fields}
@@ -384,12 +394,25 @@ class MapMaker implements MapMakerInterface
             ]);
 
             // Делает "доступ ограничен" для всех, кому не хватает права доступа на просмотр контента
-            if (!Helpers::isRoleGreater('ANYONE', $row['is_publicity'])) {
+            // вообще, скорее всего это должно делаться не здесь. Вся фильтрация - отдельно, методы атомарны!
+
+            // и вообще, если контент ограничен - он может быть ограничен по-разному!
+
+            // Короче, не здесь это надо делать. К тому же, если поле открыли на редактирование - там точно есть права доступа.
+            if (
+                $replace_limited_content &&
+                $sql_select_fields != '*' &&
+                !Helpers::isRoleGreater($role, $row['is_publicity'])
+            ) {
                 foreach ($requested_content_fields as $field) {
                     /*
                      * Проблема: а как узнать, к какому слою относится регион? Если бы мы хранили регионы в БД - то можно было бы...
+                     * Если бы мы знали, к какому слою относится регион - можно было бы задать кастомные настройки строки "доступ ограничен"
+                     * для каждого слоя!
+                     *
+                     * Но сейчас мы храним регионы в файле, поэтому вариант только один.
                      */
-                    $info[ $field ] = $row['content_restricted'] ?: "Доступ ограничен";  // "Доступ ограничен" - на самом деле должно быть записано в JSON-конфиге карты/слоя
+                    $info[ $field ] = $row['content_restricted'] ?: "Доступ ограничен";
                 }
             }
 
