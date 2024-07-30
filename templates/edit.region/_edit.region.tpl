@@ -26,7 +26,7 @@
         let saving_in_progress = false;
 
         $(document).ready(function() {
-            _editRegion.createInstance('editor_summary', { menubar: true });
+            _editRegion.createInstance('editor_summary', { menubar: true, height: 300 });
             _editRegion.createInstance('editor_history');
             _editRegion.createInstance('editor_trade_export');
             _editRegion.createInstance('editor_trade_import');
@@ -37,8 +37,8 @@
             _editRegion.createInstance('editor_assets_oldmoney');
             _editRegion.createInstance('editor_other_local_heroes');
             _editRegion.createInstance('editor_legacy_description');
-            _editRegion.createInstance('editor_statehood_administration_principle');
-            _editRegion.createInstance('editor_system_chart', { });
+            _editRegion.createInstance('editor_statehood_administration_principle', { height: 300 });
+            _editRegion.createInstance('editor_system_chart', { /*toolbar: false, width: 600, height: 300*/ });
 
             _editRegion.createInstance('editor_other_unverified_data');
 

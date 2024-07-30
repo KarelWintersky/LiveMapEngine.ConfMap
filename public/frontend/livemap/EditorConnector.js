@@ -14,7 +14,7 @@ class EditorConnector {
         height: 300,
         toolbar: {
             simple: [
-                "bold italic underline strikethrough | fontsizeselect | bullist numlist | responsivefilemanager | image charmap | link unlink anchor | | pastetext removeformat | code preview"
+                "bold italic underline strikethrough | fontsizeselect | bullist numlist | responsivefilemanager | image charmap accordion | link unlink anchor | | pastetext removeformat restoredraft | code preview",
             ],
             advanced: [
                 "undo redo | bold italic underline subscript superscript strikethrough | fontsizeselect styleselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | ",
@@ -23,6 +23,8 @@ class EditorConnector {
         },
         contextmenu: "link image responsivefilemanager | inserttable cell row column deletetable | charmap",
         menubar: "file edit insert view format table tools",
+        statusbar: true,
+        placeholder: "",
         // Еще, _кажется_, для версии 4.2.4 используется кастомная сборка с рядом встроенных плагинов, а 7* - чистая, с плагинами отдельно
         // https://www.tiny.cloud/docs/tinymce/6/plugins/
         plugins: {
@@ -55,7 +57,9 @@ class EditorConnector {
                 "template",         // есть в 7*, отдельно, помечен как deprecated
             ],
             7: [
-                "emoticons"
+                "emoticons",
+                "accordion",
+                "autosave"
             ]
         },
     };
@@ -185,6 +189,16 @@ class EditorConnector {
             ? options.contextmenu
             : tinymce_defaults.contextmenu;
 
+        let statusbar
+            = options.hasOwnProperty('statusbar')
+            ? options.statusbar
+            : tinymce_defaults.statusbar;
+
+        let placeholder
+            = options.hasOwnProperty('placeholder')
+            ? options.placeholder
+            : tinymce_defaults.placeholder;
+
         let plugins = this.makePluginsList();
 
         let menubar
@@ -211,9 +225,20 @@ class EditorConnector {
             menubar: menubar,
             toolbar: toolbar,
             contextmenu: contextmenu,
+            statusbar: statusbar,
             plugins: plugins,
             height: height,
+            placeholder: placeholder,
+            readonly: false,
         }, tinymce_common_options);
+
+        // теперь надо обработать опции width, min_width,
+        // https://www.tiny.cloud/docs/tinymce/6/editor-size-options/#width
+        ['width', 'min_width', 'max_width', 'height', 'min_height', 'max_height', 'readonly' ].forEach(key => {
+            if (options.hasOwnProperty(key)) {
+                instance_options[key] = options[key];
+            }
+        });
 
         if (tinyMCE.majorVersion < 5) {
             Object.assign(instance_options, {
@@ -237,3 +262,12 @@ class EditorConnector {
 
 
 }
+
+/**
+ * @todo
+ *
+ * https://www.tiny.cloud/docs/tinymce/latest/use-tinymce-distraction-free/
+ * Имеет смысл сделать для livemap основного?
+ *
+ * https://www.tiny.cloud/docs/tinymce/latest/accordion/
+ */

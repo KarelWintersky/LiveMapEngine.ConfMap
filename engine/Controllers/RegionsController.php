@@ -133,11 +133,12 @@ class RegionsController extends AbstractClass
         // только нужно отдать не $json, а исправленные и модифицированные данные
 
         $t->assign('json', $json->getData());
+        /**
+         * @TODO: ВАЖНО, В ШАБЛОНЕ ХОДИМ ТАК: {$json->economy->type}, А НЕ ЧЕРЕЗ ТОЧКУ!!!!
+         * Если мы хотим ходить через точку - надо сначала сказать
+         * $json->setIsAssociative();
+         */
 
-        // $t->assign('json', json_decode($json)); // вот тут делали json_decode потому что надо в шаблон отдать JSON из строки
-        //@TODO: ВАЖНО, В ШАБЛОНЕ ХОДИМ ТАК: {$json->economy->type}, А НЕ ЧЕРЕЗ ТОЧКУ!!!!
-
-        //
         $t->setTemplate('view.region/view.region.html.tpl');
 
         $content = $t->render(false);
