@@ -40,6 +40,8 @@
             _editRegion.createInstance('editor_statehood_administration_principle');
             _editRegion.createInstance('editor_system_chart', { });
 
+            _editRegion.createInstance('editor_other_unverified_data');
+
             _editRegion.createInstance('editor_culture_holydays');
             _editRegion.createInstance('editor_culture_showplaces');
 
@@ -518,15 +520,35 @@
 
     <fieldset>
         <legend>Прочее</legend>
-        <label>
-            Известные личности: <br>
-            <textarea name="json:other-local_heroes" id="editor_other_local_heroes" data-height="100" data-menubar="">{$json.other.local_heroes|default:''}</textarea>
-        </label>
-        <br>
-        <label>
-            Legacy-описание:
-            <textarea name="json:legacy-description" id="editor_legacy_description" data-height="100" data-menubar="">{$json.legacy.description|default:''}</textarea>
-        </label>
+
+        <table>
+            <tr>
+                <td>Известные личности:</td>
+                <td>
+                    <label>
+                        <textarea name="json:other-local_heroes" id="editor_other_local_heroes" data-height="100" data-menubar="">{$json.other.local_heroes|default:''}</textarea>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Непроверенные данные и слухи:
+                </td>
+                <td>
+                    <label>
+                        <textarea name="json:other-unverified_data" id="editor_other_unverified_data" data-height="100" data-menubar="">{$json.other.unverified_data|default:''}</textarea>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>Legacy data:</td>
+                <td>
+                    <label>
+                        <textarea name="json:other-legacy" id="editor_legacy_description" data-height="100" data-menubar="">{$json.other.legacy|default:''}</textarea>
+                    </label>
+                </td>
+            </tr>
+        </table>
     </fieldset>
 
     <fieldset>

@@ -317,13 +317,13 @@ class RegionsController extends AbstractClass
             ],
             // 'infrastructure'    =>  [], //
             'other'     =>  [
-                'local_heroes'  =>  self::json('other-local_heroes')
+                'unverified'    =>  self::json('other-unverified_data'),
+                'local_heroes'  =>  self::json('other-local_heroes'),
+                'legacy'        => self::json('legacy'),
             ],
-            'legacy'            =>  [
-                'description'      => self::json('legacy-description')
-            ],
+            'system_chart'  =>  self::json('system_chart'),
             'tags'          =>  self::json('tags'),
-            'system_chart'      =>  self::json('system_chart'),
+
         ];
 
         // пакуем контент в JSON
