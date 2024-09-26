@@ -3,7 +3,7 @@ PROJECT = confmap
 PATH_PROJECT = $(DESTDIR)/var/www/$(PROJECT)
 PATH_PUBLIC = $(PATH_PROJECT)/public
 MANTICONF_DIR = manticonf
-MANTICONF_PROJECT = livemap
+MANTICONF_PROJECT = confmap
 
 help:
 	@perl -e '$(HELP_ACTION)' $(MAKEFILE_LIST)
@@ -73,4 +73,4 @@ HELP_ACTION = \
 	for (@{$$help{$$_}}) { $$sep = " " x (32 - length $$_->[0]); print "  ${YELLOW}$$_->[0]${RESET}$$sep${GREEN}$$_->[1]${RESET}\n"; }; \
 	print "\n"; }
 
-# -eof-
+# -eof- #

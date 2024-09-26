@@ -69,7 +69,7 @@
     <table class="second_td_padded">
         {if $json->population->count}
             <tr>
-                <td width="{$first_dt_width}">Численность (млн): </td>
+                <td width="{$first_dt_width}">Численность: </td>
                 <td>{$json->population->count|default:'нет данных'}</td>
             </tr>
         {else}

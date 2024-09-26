@@ -136,7 +136,7 @@
         }
         legend {
             color: forestgreen;
-            font-weight: bold;
+            font-weight: normal;
         }
     </style>
 </head>
@@ -179,9 +179,9 @@
     *}
     <fieldset class="common" id="fieldset-extra-content">
         <legend>
-            <label style="user-select: none">
-                <input id="actor-toggle-extra-content" type="checkbox" name="is_display_extra_content" {if $is_display_extra_content}checked{/if}>&nbsp;
-                Показывать расширенную информацию?
+            <label style="user-select: none; padding-right: initial">
+                <input id="actor-toggle-extra-content" type="checkbox" name="is_display_extra_content" {if $is_display_extra_content}checked{/if}>
+                Показывать расширенную информацию?&nbsp;
             </label>
         </legend>
 
@@ -229,26 +229,26 @@
         </div>
     </fieldset>
 
-    <fieldset class="common">
+    {*<fieldset class="common">
         <legend>Техническое</legend>
-        {*<div class="field">
+        <div class="field">
             <label for="edit-reason">Комментарий редактора:
                 <input type="text" name="edit:region:comment" size="90" value="" id="edit-reason" autocomplete="off"/> <br><br>
             </label>
-        </div>*}
-    </fieldset>
+        </div>
+    </fieldset>*}
     <div class="clear"></div>
 
     <fieldset style="border: none">
         <div class="label_fullwidth">
-            <button type="button" id="actor-back" style="float:left; color: blue" data-href="{Arris\AppRouter::getRouter('view.frontpage')}">Назад на карту</button>
+            <button type="button" id="actor-back" style="float:left; color: darkred" data-href="{Arris\AppRouter::getRouter('view.frontpage')}">Назад на карту</button>
 
             <span id="ajax-process" style="display: none">
                 Сохраняю... &nbsp;
                 <img src="/frontend/images/spinner_saving.svg" height="18" alt="ready"/>
             </span>
             <span id="ajax-result" style="display: none;">Сохранение успешно! Через несколько секунд возвращаемся на карту.</span>
-            <button type="submit" class="action-submit" style="color: green; float: right">Сохранить</button>
+            <button type="submit" class="action-submit" style="color: forestgreen; float: right">Сохранить</button>
         </div>
     </fieldset>
 </form>

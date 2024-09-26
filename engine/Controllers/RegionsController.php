@@ -119,9 +119,17 @@ class RegionsController extends AbstractClass
         // форматируем население (численность, не население!)
         // используем casting как closure
         $population = $json->getData(path: 'population->count', casting: function($population) {
-            return $population >= 1
+            /*return $population >= 1
                 ? number_format($population, 0, '.', ' ')
-                : number_format($population, 3, '.', ' ');
+                : number_format($population, 3, '.', ' ');*/
+            if ($population >= 1) {
+                // миллионы
+                return number_format($population, 0, '.', ' ') . ' млн.';
+            } else {
+                // меньше миллиона, тысячи
+                return number_format($population * 1000, 0, '.', ' ') . ' тыс.';
+            }
+
         });
 
         $json->setData('population->count', $population);
@@ -233,22 +241,42 @@ class RegionsController extends AbstractClass
             throw new AccessDeniedException("Обновление региона недоступно, недостаточный уровень допуска");
         }
 
+        $request = new DataCollection();
+        $request->import($_REQUEST); // separator пустой, данные - асс.массив, данные не парсим
+
         $data = [
-            'id_map'            =>  $_REQUEST['edit:id:map'],
+            'id_map'            =>  $request->getData('edit:id:map'),
+            // в общем проекте LiveMap значение берется из ID текущего пользователя:
+            // 'edit_whois'        =>  App::$acl->currentUser->id,
+            // В редакторе карты КОНФЕДЕРАЦИИ значение равно 0 (т.к. редактор один)
             'edit_whois'        =>  0,
             'edit_ipv4'         =>  ip2long(\Arris\Helpers\Server::getIP()),
-            'id_region'         =>  $_REQUEST['edit:id:region'],
-            'title'             =>  $_REQUEST['edit:region:title'],
-            'content'           =>  $_REQUEST['edit:region:content'],
-            'content_restricted'=>  $_REQUEST['edit:region:content_restricted'],
-            'edit_comment'      =>  $_REQUEST['edit:region:comment'],
-            'is_excludelists'   =>  $_REQUEST['edit:is:excludelists'],
-            'is_publicity'      =>  $_REQUEST['edit:is:publicity'],
-            'is_display_extra_content'
-                                =>  array_key_exists('is_display_extra_content', $_REQUEST) && strtolower($_REQUEST['is_display_extra_content']) == 'on' ? 1 : 0
+            /*
+            'edit_ipv4'         =>  $request->getData(null, default: \Arris\Helpers\Server::getIP(), casting: function ($ip) {
+                return ip2long($ip);
+            }),
+            */
+            'id_region'         =>  $request->getData('edit:id:region'),
+            'title'             =>  $request->getData('edit:region:title'),
+            'content'           =>  $request->getData('edit:region:content'),
+            'content_restricted'=>  $request->getData('edit:region:content_restricted'),
+            'edit_comment'      =>  $request->getData('edit:region:comment'),
+            'is_excludelists'   =>  $request->getData('edit:is:excludelists'),
+            'is_publicity'      =>  $request->getData('edit:is:publicity'),
+            'is_display_extra_content'  => $request->getData('is_display_extra_content', default: 'no', casting: function ($data){
+                // фишка в том, что с фронта установленный чекбокс приходит строкой `on` (по умолчанию, если не задан input val)
+                // значение по-умолчанию задано 'no' (чекбокс снят, на бэк ничего не отправляется)
+                // и проверяем, что передано. Либо 'on' (1), либо 'no' (0)
+                return (strtolower($data) == 'on') ? 1 : 0;
+            })
+            /* Заменяет более короткий, но менее красивый код:
+            * $data = array_key_exists('is_display_extra_content', $_REQUEST) && strtolower($_REQUEST['is_display_extra_content']) == 'on' ? 1 : 0
+            */
         ];
 
         // Каждое кастомное поле нужно описать здесь и передать в будущую JSON-структуру
+
+        // $request->setDefault('');
 
         $json = [
             // @todo: версия latest ОБРАТНО НЕСОВМЕСТИМЫХ изменений структуры, например переименования полей (ГГГГММДД)
@@ -337,6 +365,9 @@ class RegionsController extends AbstractClass
             'system_chart'  =>  self::json('system_chart'),
             'tags'          =>  self::json('tags'),
 
+            // но можно и так:
+            // хотя не нужно
+            // 'tags'          =>  $request->getData('json:tags')
         ];
 
         // пакуем контент в JSON
@@ -374,3 +405,5 @@ class RegionsController extends AbstractClass
     }
 
 }
+
+# -eof- #

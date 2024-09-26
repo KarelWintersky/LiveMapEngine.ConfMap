@@ -96,3 +96,5 @@ class AuthController extends \Confmap\AbstractClass
     }
 
 }
+
+# -eof- #
