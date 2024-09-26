@@ -118,18 +118,16 @@ class RegionsController extends AbstractClass
 
         // форматируем население (численность, не население!)
         // используем casting как closure
-        $population = $json->getData(path: 'population->count', casting: function($population) {
-            /*return $population >= 1
-                ? number_format($population, 0, '.', ' ')
-                : number_format($population, 3, '.', ' ');*/
+        $population = $json->getData(path: 'population->count', default: 0, casting: function($population) {
             if ($population >= 1) {
                 // миллионы
                 return number_format($population, 0, '.', ' ') . ' млн.';
-            } else {
+            } elseif ($population > 0) {
                 // меньше миллиона, тысячи
                 return number_format($population * 1000, 0, '.', ' ') . ' тыс.';
+            } else {
+                return 0;
             }
-
         });
 
         $json->setData('population->count', $population);

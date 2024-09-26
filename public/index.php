@@ -114,3 +114,5 @@ logSiteUsage( AppLogger::scope('site_usage') );
 if (App::$template->isRedirect()) {
     App::$template->makeRedirect();
 }
+
+# -eof- #
