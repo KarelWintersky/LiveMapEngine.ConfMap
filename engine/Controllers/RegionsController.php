@@ -51,7 +51,7 @@ class RegionsController extends AbstractClass
             throw new \RuntimeException($this->map->state->getMessage());
         }
 
-        $region_data = $this->map->getMapRegionData($id_region, [ 'title', 'content', 'content_restricted', 'content_json']);
+        $region_data = $this->map->getMapRegionData($id_region, [ 'title', 'content', 'content_restricted', 'content_extra']);
 
         $t = new Template();
         $t
@@ -68,22 +68,23 @@ class RegionsController extends AbstractClass
         $t->assign('region_text', $region_data['content']);
         $t->assign('is_can_edit', $region_data['can_edit']);
         $t->assign('edit_button_url', AppRouter::getRouter('update.region.info'));
+        $t->assign('is_display_extra_content', $region_data['is_display_extra_content']);
 
         $t->assign("view_mode", $this->map->getConfig('display->viewmode')); // тип просмотра для шаблона
 
-        $content_json = $region_data['content_json'] ?? '{}';
+        $content_extra = $region_data['content_extra'] ?? '{}';
 
         /*
         Для упрощения построения круговой диаграммы долей экономики часть расчетов сделаем здесь.
         */
-        $json = new DataCollection($content_json);
+        $json = new DataCollection($content_extra);
         $json->setSeparator('->');
         $json->parse();
 
-        $pcd_natural = (int)$json->getData("economy->shares->natural", 0);
-        $pcd_financial = (int)$json->getData("economy->shares->financial", 0);
-        $pcd_industrial = (int)$json->getData("economy->shares->industrial", 0);
-        $pcd_social = (int)$json->getData("economy->shares->social", 0);
+        $pcd_natural = $json->getData("economy->shares->natural", 0, casting: 'int');
+        $pcd_financial = $json->getData("economy->shares->financial", 0, casting: 'int');
+        $pcd_industrial = $json->getData("economy->shares->industrial", 0, casting: 'int');
+        $pcd_social = $json->getData("economy->shares->social", 0, casting: 'int');
         $pcd_sum = $pcd_natural + $pcd_financial + $pcd_industrial + $pcd_social;
 
         $pie_chart_data = [];
@@ -116,11 +117,13 @@ class RegionsController extends AbstractClass
         }
 
         // форматируем население (численность, не население!)
-        $population = (float)$json->getData('population->count', 0);
-        $population
-            = $population >= 1
-            ? number_format($population, 0, '.', ' ')
-            : number_format($population, 3, '.', ' ');
+        // используем casting как closure
+        $population = $json->getData(path: 'population->count', casting: function($population) {
+            return $population >= 1
+                ? number_format($population, 0, '.', ' ')
+                : number_format($population, 3, '.', ' ');
+        });
+
         $json->setData('population->count', $population);
 
         // круговая диаграмма
@@ -129,16 +132,16 @@ class RegionsController extends AbstractClass
             'full'      =>  json_encode($pie_chart_data, JSON_UNESCAPED_UNICODE)
         ]);
         // закончили с данными для круговой диаграммы
-        // только нужно отдать не $json, а исправленные и модифицированные данные
 
-        $t->assign('json', $json->getData());
+        // только нужно отдать не $json, а исправленные и модифицированные данные
+        $t->assign('json', $json->getData()); // extra data
         /**
          * @TODO: ВАЖНО, В ШАБЛОНЕ ХОДИМ ТАК: {$json->economy->type}, А НЕ ЧЕРЕЗ ТОЧКУ!!!!
          * Если мы хотим ходить через точку - надо сначала сказать
          * $json->setIsAssociative();
          */
 
-        $t->setTemplate('view.region/view.region.html.tpl');
+        $t->setTemplate('view.region/view.region.tpl');
 
         $content = $t->render(false);
 
@@ -167,7 +170,7 @@ class RegionsController extends AbstractClass
         $this->template->assign("form_actor", AppRouter::getRouter('update.region.info'));
         $this->template->setTemplate("edit.region/_edit.region.tpl");
 
-        $content_fields = [ 'title', 'content', 'content_restricted', 'content_json' ];
+        $content_fields = [ 'title', 'content', 'content_restricted', 'content_extra' ];
 
         $region_data = $this->map->getMapRegionData($id_region, $content_fields, 'OWNER', false);
 
@@ -177,9 +180,9 @@ class RegionsController extends AbstractClass
         $this->template->assign("content_title", ($region_data['is_present'] == 1) ? htmlspecialchars($region_data['title'],  ENT_QUOTES | ENT_HTML5) : '');
         $this->template->assign("content_restricted", htmlspecialchars($region_data['content_restricted'] ?? '', ENT_QUOTES | ENT_HTML5));
 
-        // Конвертируем значение поля content_json в JSON-структуру и передаем её в шаблон
+        // Конвертируем значение поля content_extra в JSON-структуру и передаем её в шаблон
         // Если associative: true - то доступ через точку, иначе через стрелочку
-        $this->template->assign("json", json_decode($region_data['content_json'] ?? '', true));
+        $this->template->assign("json", json_decode($region_data['content_extra'] ?? '', true));
 
         // и больше никаких действий здесь не требуется!
         // магия сохранения будет в коллбэке!
@@ -202,6 +205,10 @@ class RegionsController extends AbstractClass
 
             'is_exludelists'    =>  $region_data['is_exludelists'] ?? 'N',
             'is_publicity'      =>  $region_data['is_publicity'] ?? 'ANYONE',
+
+            // использовать экстра-контент
+            "is_display_extra_content"
+                                =>  $region_data["is_display_extra_content"]
         ]);
 
         // Устанавливаем нативный флаг для Smarty->escape_html = true. Автоэскейп актуален только для формы редактирования
@@ -236,7 +243,9 @@ class RegionsController extends AbstractClass
             'content_restricted'=>  $_REQUEST['edit:region:content_restricted'],
             'edit_comment'      =>  $_REQUEST['edit:region:comment'],
             'is_excludelists'   =>  $_REQUEST['edit:is:excludelists'],
-            'is_publicity'      =>  $_REQUEST['edit:is:publicity']
+            'is_publicity'      =>  $_REQUEST['edit:is:publicity'],
+            'is_display_extra_content'
+                                =>  array_key_exists('is_display_extra_content', $_REQUEST) && strtolower($_REQUEST['is_display_extra_content']) == 'on' ? 1 : 0
         ];
 
         // Каждое кастомное поле нужно описать здесь и передать в будущую JSON-структуру
@@ -323,7 +332,7 @@ class RegionsController extends AbstractClass
             'other'     =>  [
                 'unverified'    =>  self::json('other-unverified_data'),
                 'local_heroes'  =>  self::json('other-local_heroes'),
-                'legacy'        => self::json('legacy'),
+                'legacy'        => self::json('other-legacy'),
             ],
             'system_chart'  =>  self::json('system_chart'),
             'tags'          =>  self::json('tags'),
@@ -331,7 +340,7 @@ class RegionsController extends AbstractClass
         ];
 
         // пакуем контент в JSON
-        $data['content_json'] = json_encode($json, self::JSON_ENCODE_FLAGS);
+        $data['content_extra'] = json_encode($json, self::JSON_ENCODE_FLAGS);
 
         $result = $this->map->storeMapRegionData($data);
 

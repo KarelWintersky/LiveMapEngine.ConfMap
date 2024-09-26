@@ -143,6 +143,27 @@
         </label>
     </fieldset>
 
+    {*
+    можно сказать так:
+
+    <fieldset>
+        <legend>
+            <label style="user-select: none">
+                <input type="checkbox" name="is_display_extra_content" {if $is_display_extra_content}checked{/if}>&nbsp;
+                Показывать расширенную информацию?
+            </label>
+        </legend>
+        ... все остальные поля ввода экстра-информации, разворачиваются спойлером если установлен чекбокс
+    </fieldset>
+    Но это нужно писать много интерактивности. Я напишу проще:
+    *}
+    <fieldset>
+        <label style="user-select: none">
+            <input type="checkbox" name="is_display_extra_content" {if $is_display_extra_content}checked{/if}>&nbsp;
+            Показывать расширенную информацию?
+        </label>
+    </fieldset>
+
     <fieldset>
         <legend>Системная лоция</legend>
         <label>

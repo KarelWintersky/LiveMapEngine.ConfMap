@@ -82,3 +82,6 @@ dt_timestamp - это таймштамп файла, из которого им�
 Эту папку надо переименовать и переложить шаблоны в `templates.edit`
 
 
+## User select on click
+
+https://developer.mozilla.org/en-US/docs/Web/CSS/user-select

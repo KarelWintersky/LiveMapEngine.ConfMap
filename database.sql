@@ -22,7 +22,7 @@ CREATE TABLE `map_data_regions` (
     `is_excludelists` enum('A','F','N') CHARACTER SET latin1 NOT NULL DEFAULT 'N' COMMENT 'exclude from lists',
     `is_publicity` enum('ANYONE','VISITOR','EDITOR','OWNER','ROOT') CHARACTER SET latin1 NOT NULL DEFAULT 'ANYONE' COMMENT 'visibility of region',
     -- экстра-контент
-    `content_json` longtext COMMENT 'JSON-структура с прочим контентом',
+    `content_extra` longtext COMMENT 'JSON-структура с прочим контентом',
 
     PRIMARY KEY (`id`,`edit_date`),
     KEY `id_region` (`id_region`),

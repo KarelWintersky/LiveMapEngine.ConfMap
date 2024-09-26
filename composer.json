@@ -32,7 +32,7 @@
     "vlucas/phpdotenv": "^3.3",
     "karelwintersky/arris": "^2.12.0",
     "karelwintersky/arris.helpers": "^0.6.0",
-    "karelwintersky/arris.router": "^1.99",
+    "karelwintersky/arris.router": "^1.100",
     "karelwintersky/arris.logger": "^1.0",
     "karelwintersky/arris.delight-php-auth": "^0.99",
     "karelwintersky/arris.template": "^0.17.0",
@@ -52,7 +52,6 @@
     "slim/psr7": "^1.6"
   },
   "require-dev": {
-    "roave/security-advisories": "dev-latest",
     "rector/rector": "*"
   }
 }

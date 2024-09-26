@@ -98,7 +98,7 @@ class DataCollection
         }
 
         $this->data = \call_user_func_array($this->parser, [
-            'json'          => $this->source,
+            'json'          =>  $this->source,
             'associative'   =>  $this->is_associative
         ]);
 
@@ -107,7 +107,18 @@ class DataCollection
         return $this->data;
     }
 
-    public function getData(string $path = '', mixed $default = null, ?string $separator = null):mixed
+    /**
+     * @param string $path
+     * @param mixed|null $default - значение по-умолчанию, если не найдено в структуре или данные не распарсены
+     * @param string|null $separator - смысл передавать сепаратор здесь непонятен. Наверное, я что-то имел в виду при написании, но забыл что.
+     * @param mixed|null $casting - приведение к типу. Если не null и
+     * - строка ['bool', 'int', 'float', 'string', 'array', 'object', 'null'] - приводим к соотв. типу.
+     * - callable (closure) - вызываем соотв. функцию, передавая ей значение и возвращаем результат.
+     * - null - результат возвращается как есть, без приведения типа (обычно, как строка)
+     *
+     * @return mixed
+     */
+    public function getData(string $path = '', mixed $default = null, ?string $separator = null, mixed $casting = null):mixed
     {
         $separator = is_null($separator) ? $this->separator : $separator;
 
@@ -115,11 +126,20 @@ class DataCollection
             return $default;
         }
 
-        return
+        $result =
             $this->is_associative
             ? self::getDataFromArray($this->data, $path, $default, $separator)
             : self::getDataFromObject($this->data, $path, $default, $separator);
 
+        if (!is_null($casting)) {
+            if (is_callable($casting)) {
+                $result = call_user_func($casting, $result);
+            } else {
+                settype($result, $casting);
+            }
+        }
+
+        return $result;
     }
 
     public function setData(string $path = '', mixed $value = null, ?string $separator = null): bool
