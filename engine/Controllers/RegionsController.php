@@ -74,9 +74,7 @@ class RegionsController extends AbstractClass
 
         $content_extra = $region_data['content_extra'] ?? '{}';
 
-        /*
-        Для упрощения построения круговой диаграммы долей экономики часть расчетов сделаем здесь.
-        */
+        // Для упрощения построения круговой диаграммы долей экономики часть расчетов сделаем здесь.
         $json = new DataCollection($content_extra);
         $json->setSeparator('->');
         $json->parse();
@@ -119,18 +117,20 @@ class RegionsController extends AbstractClass
         // форматируем население (численность, не население!)
         // используем casting как closure
         $population = $json->getData(path: 'population->count', default: 0, casting: function($population) {
-            if ($population >= 1) {
-                // миллионы
-                return number_format($population, 0, '.', ' ') . ' млн.';
-            } elseif ($population > 0) {
-                // меньше миллиона, тысячи
-                return number_format($population * 1000, 0, '.', ' ') . ' тыс.';
-            } else {
-                return 0;
-            }
+            return match (true) {
+                $population >= 1000 =>  "~" . number_format($population / 1000, 0, '.', ' ') . ' млрд.',
+                $population >= 1    =>  "~" . number_format($population, 0, '.', ' ') . ' млн.',
+                $population > 0     =>  "~" . number_format($population * 1000, 0, '.', ' ') . ' тыс.',
+                default             =>  0
+            };
         });
 
         $json->setData('population->count', $population);
+
+        /*$json->setData('pie_chart', [
+            'present'   =>  $pcd_sum > 0,
+            'full'      =>  json_encode($pie_chart_data, JSON_UNESCAPED_UNICODE)
+        ]);*/
 
         // круговая диаграмма
         $t->assign("pie_chart", [
@@ -140,12 +140,10 @@ class RegionsController extends AbstractClass
         // закончили с данными для круговой диаграммы
 
         // только нужно отдать не $json, а исправленные и модифицированные данные
-        $t->assign('json', $json->getData()); // extra data
-        /**
-         * @TODO: ВАЖНО, В ШАБЛОНЕ ХОДИМ ТАК: {$json->economy->type}, А НЕ ЧЕРЕЗ ТОЧКУ!!!!
-         * Если мы хотим ходить через точку - надо сначала сказать
-         * $json->setIsAssociative();
-         */
+        // @TODO: ВАЖНО, В ШАБЛОНЕ ХОДИМ ТАК: {$json->economy->type}, А НЕ ЧЕРЕЗ ТОЧКУ!!!!
+        // Если мы хотим ходить через точку - надо сначала сказать $json->setIsAssociative();
+
+        $t->assign('content_extra', $json->getData()); // extra data
 
         $t->setTemplate('view.region/view.region.tpl');
 
@@ -327,6 +325,7 @@ class RegionsController extends AbstractClass
                 'type'          =>  self::json('statehood-type'),
                 'dependency'    =>  self::json('statehood-dependency'),
                 'radius'        =>  self::json('statehood-radius'),
+                'sector'        =>  self::json('statehood-sector'),
 
                 'administration_principle'  => self::json('statehood:administration_principle'),
 
@@ -340,6 +339,7 @@ class RegionsController extends AbstractClass
                 ],
             ],
             'laws'  => [
+                'language'          =>  self::json('laws-language'),
                 'passport'          =>  self::json('laws-passport'),
                 'visa'              =>  self::json('laws-visa'),
                 'gun_rights'        =>  self::json('laws-gun_rights'),

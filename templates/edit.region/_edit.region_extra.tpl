@@ -31,9 +31,24 @@
     <legend>Государственный статус</legend>
     <table>
         <tr>
+            <td>Сектор</td>
+            <td>
+                <select name="json:statehood-sector" class="action-onload-update-select" data-selected="{$json.statehood.sector|default:''}">
+                    <option value="">...</option>
+                    <option value="Сириус">Сириус</option>
+                    <option value="Рингтейла">Рингтейла</option>
+                    <option value="Фомальгаута">Фомальгаута</option>
+                    <option value="Веги">Веги</option>
+                    <option value="Найтвиша">Найтвиша</option>
+                    <option value="Ориона">Ориона</option>
+                    <option value="Внеземелье">Дальнее внеземелье</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
             <td>Тип и подчинение</td>
             <td>
-                <select name="json:statehood-type" class="action-update-select" data-selected="{$json.statehood.type|default:''}">
+                <select name="json:statehood-type" class="action-onload-update-select" data-selected="{$json.statehood.type|default:''}">
                     <option value="">...</option>
                     <option value="автономия">автономия</option>
                     <option value="колония">колония</option>
@@ -107,7 +122,18 @@
     <legend>Законы и нормы</legend>
     <table border="0" style="border-color: blue">
         <tr>
-            <td width="300">Паспортный режим</td>
+            <td width="300">Государственный язык</td>
+            <td>
+                <input type="text"
+                       name="json:laws-language"
+                       size="100"
+                       placeholder="Государственный язык"
+                       value="{$json.laws.language|default:''}"
+                >
+            </td>
+        </tr>
+        <tr>
+            <td>Паспортный режим</td>
             <td>
                 <input type="text"
                        name="json:laws-passport"

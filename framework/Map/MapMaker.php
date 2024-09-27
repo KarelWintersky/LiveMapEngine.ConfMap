@@ -256,7 +256,7 @@ class MapMaker implements MapMakerInterface
         // Если отсутствует - передается пустой массив.
         // Если строка - делаем из него массив с единственным значением
         // Если массив - никак ен модифицируем
-        $custom_css = $this->getConfig("display->custom_css", '');
+        $custom_css = $this->getConfig("display->custom_css", ''); //@todo DataCollection
         if (is_string($custom_css)) {
             $this->mapConfig->display->custom_css = empty($custom_css) ? [] : [ $custom_css ];
         }
@@ -363,8 +363,7 @@ class MapMaker implements MapMakerInterface
     {
         $role_can_edit = $this->simpleCheckCanEdit();
 
-        $common_fields = self::regions_common_fields;
-
+        // $common_fields = self::regions_common_fields;
         // $sql_select_fields = \implode(', ',  \array_unique(\array_merge($common_fields, $requested_content_fields) ));
         // это лишнее, извлечь все поля проще, не так уж там их и много... Разве что делать селективную выборку при установленной
         // в конструкторе класса опции "selective_select TRUE"

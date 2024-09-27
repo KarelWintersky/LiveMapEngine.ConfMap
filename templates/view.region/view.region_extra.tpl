@@ -1,29 +1,29 @@
 {* сюда вкладываем отображение всех остальных полей *}
 <hr>
 
-{if $json->history->year && $json->history->text}
+{if $content_extra->history->year && $content_extra->history->text}
     <fieldset>
         <legend>История</legend>
         <table>
-            {if $json->history->year}
+            {if $content_extra->history->year}
                 <tr>
                     <td width="{$first_dt_width}">Открыт</td>
                     <td style="color: #035bc4; font-weight: bold;">
-                        {$json->history->year->found|default:0} год
+                        {$content_extra->history->year->found|default:0} год
                     </td>
                 </tr>
                 <tr>
                     <td>Начата колонизация</td>
                     <td style="color: #035bc4; font-weight: bold;">
-                        {$json->history->year->colonization|default:0}  год
+                        {$content_extra->history->year->colonization|default:0}  год
                     </td>
 
                 </tr>
             {/if}
-            {if $json->history->text}
+            {if $content_extra->history->text}
                 <tr>
                     <td colspan="2">
-                        {$json->history->text|default:''}
+                        {$content_extra->history->text|default:''}
                     </td>
                 </tr>
             {/if}
@@ -36,29 +36,29 @@
     <table class="second_td_padded">
         <tr>
             <td width="{$first_dt_width}">Класс:</td>
-            <td>{$json->lsi->index|default:0}</td>
+            <td>{$content_extra->lsi->index|default:0}</td>
         </tr>
         <tr>
             <td>Тип:</td>
-            <td>{$json->lsi->type|default:'n/a'}</td>
+            <td>{$content_extra->lsi->type|default:'n/a'}</td>
         </tr>
 
-        {if $json->lsi->atmosphere}
+        {if $content_extra->lsi->atmosphere}
             <tr>
                 <td>Атмосфера:</td>
-                <td>{$json->lsi->atmosphere}</td>
+                <td>{$content_extra->lsi->atmosphere}</td>
             </tr>
         {/if}
-        {if $json->lsi->hydrosphere}
+        {if $content_extra->lsi->hydrosphere}
             <tr>
                 <td>Гидросфера:</td>
-                <td>{$json->lsi->hydrosphere}</td>
+                <td>{$content_extra->lsi->hydrosphere}</td>
             </tr>
         {/if}
-        {if $json->lsi->climate}
+        {if $content_extra->lsi->climate}
             <tr>
                 <td>Климат регионов:</td>
-                <td>{$json->lsi->climate}</td>
+                <td>{$content_extra->lsi->climate}</td>
             </tr>
         {/if}
     </table>
@@ -67,32 +67,32 @@
 <fieldset>
     <legend>Население: </legend>
     <table class="second_td_padded">
-        {if $json->population->count}
+        {if $content_extra->population->count}
             <tr>
                 <td width="{$first_dt_width}">Численность: </td>
-                <td>{$json->population->count|default:'нет данных'}</td>
+                <td>{$content_extra->population->count|default:'нет данных'}</td>
             </tr>
         {else}
             <tr>
                 <td colspan="2">Нет данных о численности</td>
             </tr>
         {/if}
-        {if $json->population->ethnic}
+        {if $content_extra->population->ethnic}
             <tr>
                 <td>Национальный состав:</td>
-                <td>{$json->population->ethnic}</td>
+                <td>{$content_extra->population->ethnic}</td>
             </tr>
         {/if}
-        {if $json->population->religion}
+        {if $content_extra->population->religion}
             <tr>
                 <td>Основные религии: </td>
-                <td>{$json->population->religion}</td>
+                <td>{$content_extra->population->religion}</td>
             </tr>
         {/if}
-        {if $json->population->features}
+        {if $content_extra->population->features}
             <tr>
                 <td>Этнопсихологические <br>особенности: </td>
-                <td>{$json->population->features}</td>
+                <td>{$content_extra->population->features}</td>
             </tr>
         {/if}
     </table>
@@ -101,55 +101,55 @@
 <fieldset>
     <legend>Государственный статус</legend>
     <table>
-        {if $json->statehood->type}
+        {if $content_extra->statehood->type}
             <tr>
                 <td>Тип и подчинение</td>
                 <td>
-                    {$json->statehood->type}
-                    {if $json->statehood->dependency}
-                        ({$json->statehood->dependency})
+                    {$content_extra->statehood->type}
+                    {if $content_extra->statehood->dependency}
+                        ({$content_extra->statehood->dependency})
                     {/if}
 
                 </td>
             </tr>
-            {if $json->statehood->radius}
+            {if $content_extra->statehood->radius}
                 <tr>
                     <td>Радиус</td>
-                    <td>{$json->statehood->radius}</td>
+                    <td>{$content_extra->statehood->radius}</td>
                 </tr>
             {/if}
         {/if}
-        {if $json->statehood->ss}
+        {if $content_extra->statehood->ss}
             <tr>
                 <td>Security Status:</td>
                 <td>
-                    {$json->statehood->ss|default:''}
+                    {$content_extra->statehood->ss|default:''}
                 </td>
             </tr>
 
         {/if}
 
-        {if $json->statehood->confstatus}
+        {if $content_extra->statehood->confstatus}
             <tr>
                 <td>Конфедеративный статус</td>
                 <td>
-                    {$json->statehood->confstatus|default:''}
+                    {$content_extra->statehood->confstatus|default:''}
                 </td>
             </tr>
         {/if}
-        {if $json->statehood->local_governance}
+        {if $content_extra->statehood->local_governance}
             <tr>
                 <td>Местное управление</td>
                 <td>
-                    {$json->statehood->local_governance|default:''}
+                    {$content_extra->statehood->local_governance|default:''}
                 </td>
             </tr>
         {/if}
-        {if $json->statehood->terr_guards}
+        {if $content_extra->statehood->terr_guards}
             <tr>
                 <td>Территориальная гвардия</td>
                 <td>
-                    {$json->statehood->terr_guards|default:''}
+                    {$content_extra->statehood->terr_guards|default:''}
                 </td>
             </tr>
         {/if}
@@ -161,25 +161,25 @@
         <tr>
             <td width="{$first_dt_width}">КСБ</td>
             <td>
-                {$json->statehood->agency->css|default:'нет данных'}
+                {$content_extra->statehood->agency->css|default:'нет данных'}
             </td>
         </tr>
         <tr>
             <td>ОРК</td>
             <td>
-                {$json->statehood->agency->drc|default:'нет данных'}
+                {$content_extra->statehood->agency->drc|default:'нет данных'}
             </td>
         </tr>
         <tr>
             <td>ИМБ</td>
             <td>
-                {$json->statehood->agency->psi|default:'нет данных'}
+                {$content_extra->statehood->agency->psi|default:'нет данных'}
             </td>
         </tr>
         <tr>
             <td>ВКС</td>
             <td>
-                {$json->statehood->agency->starfleet|default:'нет данных'}
+                {$content_extra->statehood->agency->starfleet|default:'нет данных'}
             </td>
         </tr>
     </table>
@@ -188,7 +188,7 @@
 {if $view_mode == 'infobox'}
     <fieldset>
         <legend>Экономика</legend>
-        <strong>Тип:</strong> {$json->economy->type}<br> <br>
+        <strong>Тип:</strong> {$content_extra->economy->type}<br> <br>
 
         {if $pie_chart.present}
             <canvas id="economy_pie_chart" width="400" height="200"></canvas>
@@ -272,7 +272,7 @@
         {/if}
     </fieldset>
 
-    {if $json->trade->export || $json->trade->import}
+    {if $content_extra->trade->export || $content_extra->trade->import}
         <fieldset>
             <legend>Торговля (статьи экспорта и импорта)</legend>
             <table width="100%" border="0">
@@ -281,7 +281,7 @@
                         Статьи экспорта:
                     </td>
                     <td style="padding-left: 0em;">
-                        {$json->trade->export|default:'<ul>нет данных</ul>'}
+                        {$content_extra->trade->export|default:'<ul>нет данных</ul>'}
                     </td>
                 </tr>
                 <tr>
@@ -289,7 +289,7 @@
                         Статьи импорта:
                     </td>
                     <td style="padding-left: 0em;">
-                        {$json->trade->import|default:'<ul>нет данных</ul>'}
+                        {$content_extra->trade->import|default:'<ul>нет данных</ul>'}
                     </td>
                 </tr>
             </table>
@@ -308,7 +308,7 @@
                 </td>
             </tr>
             <tr>
-                <th style="text-align: center">{$json->economy->type}</th>
+                <th style="text-align: center">{$content_extra->economy->type}</th>
                 <th width="50%" style="text-align: center">Статьи экспорта</th>
                 <th width="50%" style="text-align: center">Статьи импорта</th>
             </tr>
@@ -396,10 +396,10 @@
                     {/if}
                 </td>
                 <td valign="top">
-                    {$json->trade->export}
+                    {$content_extra->trade->export}
                 </td>
                 <td valign="top">
-                    {$json->trade->import}
+                    {$content_extra->trade->import}
                 </td>
             </tr>
         </table>
@@ -409,44 +409,44 @@
 <fieldset>
     <legend>Крупные представители капитала:</legend>
     <table width="100%" border="1px solid gray">
-        {if $json->economy->assets->natural}
+        {if $content_extra->economy->assets->natural}
             <tr>
                 <td width="{$first_dt_width}">Природный капитал:</td>
-                <td>{$json->economy->assets->natural}</td>
+                <td>{$content_extra->economy->assets->natural}</td>
             </tr>
         {/if}
 
-        {if $json->economy->assets->financial}
+        {if $content_extra->economy->assets->financial}
             <tr>
                 <td width="{$first_dt_width}">Финансовый капитал:</td>
-                <td>{$json->economy->assets->financial}</td>
+                <td>{$content_extra->economy->assets->financial}</td>
             </tr>
         {/if}
 
-        {if $json->economy->assets->industrial}
+        {if $content_extra->economy->assets->industrial}
             <tr>
                 <td width="{$first_dt_width}">Реальный капитал:<br>
                     <small>(промышленный)</small>
                 </td>
-                <td>{$json->economy->assets->industrial}</td>
+                <td>{$content_extra->economy->assets->industrial}</td>
             </tr>
         {/if}
 
-        {if $json->economy->assets->social}
+        {if $content_extra->economy->assets->social}
             <tr>
                 <td width="{$first_dt_width}">Социальный капитал:
                     <br>
                     <small>(образование, медицина,<br>
                         интеллектуальная собственность)</small>
                 </td>
-                <td>{$json->economy->assets->social}</td>
+                <td>{$content_extra->economy->assets->social}</td>
             </tr>
         {/if}
 
-        {if $json->economy->assets->oldmoney}
+        {if $content_extra->economy->assets->oldmoney}
             <tr>
                 <td width="{$first_dt_width}">Старые семьи:</td>
-                <td>{$json->economy->assets->oldmoney}</td>
+                <td>{$content_extra->economy->assets->oldmoney}</td>
             </tr>
         {/if}
     </table>
@@ -455,83 +455,83 @@
 <fieldset>
     <legend>Законы и нормы</legend>
     <table>
-        {if $json->laws->passport}
+        {if $content_extra->laws->passport}
             <tr>
                 <td title="Отношение властей к документам граждан (или их отсутствию)">Паспортный режим:</td>
                 <td>
-                    {$json->laws->passport|default:''}
+                    {$content_extra->laws->passport|default:''}
                 </td>
             </tr>
         {/if}
 
-        {if $json->laws->visa}
+        {if $content_extra->laws->visa}
             <tr>
                 <td title="Отношение властей к пришельцам с других планет">Визовый режим:</td>
                 <td>
-                    {$json->laws->visa|default:''}
+                    {$content_extra->laws->visa|default:''}
                 </td>
             </tr>
         {/if}
 
-        {if $json->laws->gun_rights}
+        {if $content_extra->laws->gun_rights}
             <tr>
                 <td title="Оружие у гражданского населения, законы и ограничения">Правила ношения оружия:</td>
                 <td>
-                    {$json->laws->gun_rights|default:''}
+                    {$content_extra->laws->gun_rights|default:''}
                 </td>
             </tr>
         {/if}
 
-        {if $json->laws->private_property}
+        {if $content_extra->laws->private_property}
             <tr>
                 <td title="Принцип 'мой дом - моя крепость', защита частной собственности любыми способами">Частная собственность:</td>
                 <td>
-                    {$json->laws->private_property|default:''}
+                    {$content_extra->laws->private_property|default:''}
                 </td>
             </tr>
         {/if}
 
-        {if $json->laws->gencard->info}
+        {if $content_extra->laws->gencard->info}
             <tr>
                 <td title="Используется ли, публичная ли это информация, впечатывается ли в паспорт?">Генкарта: общее:</td>
                 <td>
-                    {$json->laws->gencard->info|default:''}
+                    {$content_extra->laws->gencard->info|default:''}
                 </td>
             </tr>
         {/if}
 
 
-        {if $json->laws->gencard->restrictions}
+        {if $content_extra->laws->gencard->restrictions}
             <tr>
                 <td title="Генкарта: социальные ограничения">Генкарта: ограничения:</td>
                 <td>
-                    {$json->laws->gencard->restrictions|default:''}
+                    {$content_extra->laws->gencard->restrictions|default:''}
                 </td>
             </tr>
         {/if}
     </table>
 </fieldset>
 
-{if $json->other->local_heroes}
+{if $content_extra->other->local_heroes}
     <fieldset>
         <legend>Известные личности:</legend>
-        {$json->other->local_heroes}
+        {$content_extra->other->local_heroes}
     </fieldset>
 {/if}
 
-{if $json->legacy->description}
+{if $content_extra->legacy->description}
     <fieldset>
         <legend>Legacy</legend>
-        {$json->legacy->description}
+        {$content_extra->legacy->description}
     </fieldset>
 {/if}
 
-{if $json->tags}
+{if $content_extra->tags}
 
     <fieldset>
         <legend>Теги</legend>
         <small>
-            {$json->tags}
+            {$content_extra->tags}
         </small>
     </fieldset>
 {/if}

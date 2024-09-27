@@ -121,8 +121,8 @@
             new RangeInputGroup('lsi_slider');
             new RangeInputGroup('statehood_ss');
 
-            let selectUpdater = new SelectUpdater('.action-update-select');
-            selectUpdater.update();
+            // устанавливаем значения селектов согласно атрибуту data-selected
+            (new SelectUpdater('.action-onload-update-select')).update();
         });
     </script>
 
