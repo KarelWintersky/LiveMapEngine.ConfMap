@@ -95,7 +95,7 @@ class ConfmapHandler implements ContentExtraInterface
      */
     public function renderEdit(string $source_data = ''):mixed
     {
-        return json_decode($source_data, true);
+        return json_decode($source_data);
     }
 
     /**

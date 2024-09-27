@@ -69,7 +69,7 @@ class RegionsController extends AbstractClass
         $t->assign('region_text', $region_data['content']);
         $t->assign('is_can_edit', $region_data['can_edit']);
         $t->assign('edit_button_url', AppRouter::getRouter('update.region.info'));
-        $t->assign('is_display_extra_content', $region_data['is_display_extra_content']);
+        $t->assign('is_display_extra_content', $region_data['is_display_extra_content'] ?? 0);
 
         $t->assign("view_mode", $this->map->getConfig('display->viewmode')); // тип просмотра для шаблона
 
@@ -121,7 +121,7 @@ class RegionsController extends AbstractClass
         // Конвертируем значение поля content_extra в JSON-структуру и передаем её в шаблон
         // Если associative: true - то доступ через точку, иначе через стрелочку
         $extra_data_handler = new ConfmapHandler();
-        $content_extra = $extra_data_handler->renderEdit($region_data['content_extra'] ?? '');
+        $content_extra = $extra_data_handler->renderEdit($region_data['content_extra'] ?? '{}');
         // было '{}' - но мы пока передаем ассоциативный массив, а не объект. Для передачи объекта надо править шаблон.
 
         $this->template->assign("content_extra", $content_extra);
@@ -149,8 +149,7 @@ class RegionsController extends AbstractClass
             'is_publicity'      =>  $region_data['is_publicity'] ?? 'ANYONE',
 
             // использовать экстра-контент
-            "is_display_extra_content"
-                                =>  $region_data["is_display_extra_content"]
+            "is_display_extra_content" =>  $region_data["is_display_extra_content"] ?? 0 //@todo: ? флаг в конфиге карты: "имеется экстра-контент по-умолчанию" ?
         ]);
 
         // Устанавливаем нативный флаг для Smarty->escape_html = true. Автоэскейп актуален только для формы редактирования
