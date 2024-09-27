@@ -1,3 +1,26 @@
+<script>
+    $(document).ready(function() {
+        let _editRegion = new EditorConnector({ menubar: false });
+
+        _editRegion.createInstance('editor_history');
+        _editRegion.createInstance('editor_trade_export');
+        _editRegion.createInstance('editor_trade_import');
+        _editRegion.createInstance('editor_assets_natural');
+        _editRegion.createInstance('editor_assets_financial');
+        _editRegion.createInstance('editor_assets_industrial');
+        _editRegion.createInstance('editor_assets_social');
+        _editRegion.createInstance('editor_assets_oldmoney');
+        _editRegion.createInstance('editor_other_local_heroes');
+        _editRegion.createInstance('editor_legacy_description');
+        _editRegion.createInstance('editor_statehood_administration_principle', { height: 300 });
+        _editRegion.createInstance('editor_system_chart', { /*toolbar: false, width: 600, height: 300*/ });
+
+        _editRegion.createInstance('editor_other_unverified_data');
+
+        _editRegion.createInstance('editor_culture_holydays');
+        _editRegion.createInstance('editor_culture_showplaces');
+    }); // jQuery
+</script>
 <fieldset>
     <legend>Системная лоция</legend>
     <label>

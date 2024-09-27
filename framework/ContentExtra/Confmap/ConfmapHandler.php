@@ -203,6 +203,28 @@ class ConfmapHandler implements ContentExtraInterface
         return json_encode($json, self::JSON_ENCODE_FLAGS);
     }
 
+    /**
+     * Возвращает имя кастомного шаблона для просмотра content_extra
+     * НЕ ИСПОЛЬЗУЕТСЯ, ДОБАВЛЕНО НА ПЕРСПЕКТИВУ ЕСЛИ ИДЕЯ С ПАКЕТИРОВАНИЕМ TPL-шаблона будет принята в работу
+     *
+     * @return string
+     */
+    public function getTemplateFileView():string
+    {
+        return '_content_extra/confmap/view.region_extra.tpl';
+    }
+
+    /**
+     * Возвращает имя кастомного шаблона для редактирования content_extra
+     * НЕ ИСПОЛЬЗУЕТСЯ, ДОБАВЛЕНО НА ПЕРСПЕКТИВУ ЕСЛИ ИДЕЯ С ПАКЕТИРОВАНИЕМ TPL-шаблона будет принята в работу
+     *
+     * @return string
+     */
+    public function getTemplateFileEdit():string
+    {
+        return '_content_extra/confmap/edit.region_extra.tpl';
+    }
+
     private static function json(string $field = '', string $prefix = 'json:'): string
     {
         if (empty($field)) {

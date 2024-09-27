@@ -72,6 +72,17 @@ $population = $json->getData(path: 'population->count', default: 0, casting: fun
     }
 });
 
+// ИЛИ, лучше, с использованием match:
+$population = $json->getData(path: 'population->count', default: 0, casting: function($population) {
+    return match (true) {
+        $population >= 1000 =>  "~" . number_format($population / 1000, 0, '.', ' ') . ' млрд.',
+        $population >= 1    =>  "~" . number_format($population, 0, '.', ' ') . ' млн.',
+        $population > 0     =>  "~" . number_format($population * 1000, 0, '.', ' ') . ' тыс.',
+        default             =>  0
+    };
+});
+
+
 // теперь мы передаем в $json по тому же пути отформатированные данные
 $json->setData('population->count', $population);
 

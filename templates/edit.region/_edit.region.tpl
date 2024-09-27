@@ -26,24 +26,8 @@
         let saving_in_progress = false;
 
         $(document).ready(function() {
+            // Инициализируем только основной редактор. Остальные описаны в шаблоне редактирования content_extra
             _editRegion.createInstance('editor_summary', { menubar: true, height: 300 });
-            _editRegion.createInstance('editor_history');
-            _editRegion.createInstance('editor_trade_export');
-            _editRegion.createInstance('editor_trade_import');
-            _editRegion.createInstance('editor_assets_natural');
-            _editRegion.createInstance('editor_assets_financial');
-            _editRegion.createInstance('editor_assets_industrial');
-            _editRegion.createInstance('editor_assets_social');
-            _editRegion.createInstance('editor_assets_oldmoney');
-            _editRegion.createInstance('editor_other_local_heroes');
-            _editRegion.createInstance('editor_legacy_description');
-            _editRegion.createInstance('editor_statehood_administration_principle', { height: 300 });
-            _editRegion.createInstance('editor_system_chart', { /*toolbar: false, width: 600, height: 300*/ });
-
-            _editRegion.createInstance('editor_other_unverified_data');
-
-            _editRegion.createInstance('editor_culture_holydays');
-            _editRegion.createInstance('editor_culture_showplaces');
 
             setTimeout(function(){
                 document.getElementById('title').focus();
@@ -95,8 +79,15 @@
                 return false;
             });
 
+            let $actor_toggle_extra_content = $('#actor-toggle-extra-content');
+
+            // onload
+            if ($actor_toggle_extra_content.is(':checked') == false) {
+                $(`#fieldset-extra-content > fieldset`).hide();
+            }
+
             // toggle checkbox
-            $('#actor-toggle-extra-content').on('change', function (){
+            $actor_toggle_extra_content.on('change', function (){
                 let checked = $(this).is(':checked');
                 if (!checked) {
                     $(`#fieldset-extra-content > fieldset`).hide();
@@ -105,10 +96,6 @@
                 }
             });
 
-            // onload
-            if ($('#actor-toggle-extra-content').is(':checked') == false) {
-                $(`#fieldset-extra-content > fieldset`).hide();
-            }
 
         }); // jQuery
     </script>
@@ -163,20 +150,6 @@
         </label>
     </fieldset>
 
-    {*
-    можно сказать так:
-
-    <fieldset>
-        <legend>
-            <label style="user-select: none">
-                <input type="checkbox" name="is_display_extra_content" {if $is_display_extra_content}checked{/if}>&nbsp;
-                Показывать расширенную информацию?
-            </label>
-        </legend>
-        ... все остальные поля ввода экстра-информации, разворачиваются спойлером если установлен чекбокс
-    </fieldset>
-    Но это нужно писать много интерактивности. Я напишу проще:
-    *}
     <fieldset class="common" id="fieldset-extra-content">
         <legend>
             <label style="user-select: none; padding-right: initial">
@@ -186,7 +159,15 @@
         </legend>
 
         {include file="edit.region/_edit.region_extra.tpl"}
-
+{*
+Но каким образом указать кастомный экстра-шаблон?
+Самый простой вариант - при установке пакета копировать шаблоны в
+- templates/
+-- _content_extra/XXX/view.region_extra.tpl
+-- _content_extra/XXX/edit.region_extra.tpl
+И передавать путь соотв. шаблону через переменную: {include file=$content_extra_template}
+Но...
+*}
     </fieldset>
 
     <fieldset class="common">

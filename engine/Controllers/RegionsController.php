@@ -185,11 +185,7 @@ class RegionsController extends AbstractClass
             // В редакторе карты КОНФЕДЕРАЦИИ значение равно 0 (т.к. редактор один)
             'edit_whois'        =>  0,
             'edit_ipv4'         =>  ip2long(\Arris\Helpers\Server::getIP()),
-            /*
-            'edit_ipv4'         =>  $request->getData(null, default: \Arris\Helpers\Server::getIP(), casting: function ($ip) {
-                return ip2long($ip);
-            }),
-            */
+
             'id_region'         =>  $request->getData('edit:id:region'),
             'title'             =>  $request->getData('edit:region:title'),
             'content'           =>  $request->getData('edit:region:content'),
@@ -198,14 +194,8 @@ class RegionsController extends AbstractClass
             'is_excludelists'   =>  $request->getData('edit:is:excludelists'),
             'is_publicity'      =>  $request->getData('edit:is:publicity'),
             'is_display_extra_content'  => $request->getData('is_display_extra_content', default: 'no', casting: function ($data){
-                // фишка в том, что с фронта установленный чекбокс приходит строкой `on` (по умолчанию, если не задан input val)
-                // значение по-умолчанию задано 'no' (чекбокс снят, на бэк ничего не отправляется)
-                // и проверяем, что передано. Либо 'on' (1), либо 'no' (0)
-                return (strtolower($data) == 'on') ? 1 : 0;
+                return (strtolower($data) == 'on') ? 1 : 0; // см DataCollection.md
             })
-            /* Заменяет более короткий, но менее красивый код:
-            * $data = array_key_exists('is_display_extra_content', $_REQUEST) && strtolower($_REQUEST['is_display_extra_content']) == 'on' ? 1 : 0
-            */
         ];
 
         // Каждое кастомное поле нужно описать в методе parseEditData(), завернуть в JSON-структуру и её строковое представление записать в БД
@@ -218,30 +208,10 @@ class RegionsController extends AbstractClass
             throw new \RuntimeException($result->getMessage());
         }
 
-        // logging
-
         // assign
         $this->template->assignResult($result);
     }
 
-    /**
-     * Хелпер для доступа к REQUEST json: полям
-     *
-     * @param string $field
-     * @param string $prefix
-     * @return string
-     */
-    private static function json(string $field = '', string $prefix = 'json:'): string
-    {
-        if (empty($field)) {
-            return '';
-        }
-        $rq_field = "{$prefix}{$field}";
-
-        return  array_key_exists($rq_field, $_REQUEST)
-                ? $_REQUEST[$rq_field]
-                : '';
-    }
 
 }
 

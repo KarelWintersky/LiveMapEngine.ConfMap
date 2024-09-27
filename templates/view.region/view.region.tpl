@@ -41,3 +41,13 @@
     {* ===== СТИЛИ ===== *}
 
 {/if}
+
+{*
+Но каким образом указать кастомный экстра-шаблон?
+Самый простой вариант - при установке пакета копировать шаблоны в
+- templates/
+-- _content_extra/XXX/view.region_extra.tpl
+-- _content_extra/XXX/edit.region_extra.tpl
+И передавать путь соотв. шаблону через переменную: {include file=$content_extra_template}
+Но...
+*}
