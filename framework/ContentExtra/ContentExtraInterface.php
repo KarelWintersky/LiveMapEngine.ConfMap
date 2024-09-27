@@ -10,6 +10,8 @@ interface ContentExtraInterface
      * @param string $source
      * @return mixed
      */
-    public function render(string $source_data):mixed;
+    public function renderView(string $source_data):mixed;
+
+    public function renderEdit(string $source_data = ''):mixed;
 
 }

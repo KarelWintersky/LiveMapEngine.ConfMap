@@ -74,7 +74,7 @@ class RegionsController extends AbstractClass
         $t->assign("view_mode", $this->map->getConfig('display->viewmode')); // тип просмотра для шаблона
 
         $extra_data_handler = new ConfmapHandler();
-        $content_extra = $extra_data_handler->render($region_data['content_extra'] ?? '{}');
+        $content_extra = $extra_data_handler->renderView($region_data['content_extra'] ?? '{}');
 
         // @TODO: ВАЖНО, В ШАБЛОНЕ ХОДИМ ТАК: {$json->economy->type}, А НЕ ЧЕРЕЗ ТОЧКУ!!!!
         $t->assign('content_extra', $content_extra);
@@ -120,7 +120,12 @@ class RegionsController extends AbstractClass
 
         // Конвертируем значение поля content_extra в JSON-структуру и передаем её в шаблон
         // Если associative: true - то доступ через точку, иначе через стрелочку
-        $this->template->assign("json", json_decode($region_data['content_extra'] ?? '', true));
+
+        $extra_data_handler = new ConfmapHandler();
+        $content_extra = $extra_data_handler->renderEdit($region_data['content_extra'] ?? '');
+        // было '{}' - но мы пока передаем ассоциативный массив, а не объект. Для передачи объекта надо править шаблон.
+
+        $this->template->assign("content_extra", $content_extra);
 
         // и больше никаких действий здесь не требуется!
         // магия сохранения будет в коллбэке!

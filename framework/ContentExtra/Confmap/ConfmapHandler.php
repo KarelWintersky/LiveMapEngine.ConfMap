@@ -17,7 +17,7 @@ class ConfmapHandler implements ContentExtraInterface
      * @param string $source_data
      * @return mixed
      */
-    public function render(string $source_data = ''): mixed
+    public function renderView(string $source_data = ''): mixed
     {
         if (empty($source_data)) {
             return $source_data;
@@ -85,4 +85,14 @@ class ConfmapHandler implements ContentExtraInterface
         return $json->getData();
     }
 
+    /**
+     * Рендерит представление экстра-контента для вывода информации в редактор
+     *
+     * @param string $source_data
+     * @return mixed
+     */
+    public function renderEdit(string $source_data = ''):mixed
+    {
+        return json_decode($source_data, true);
+    }
 }
