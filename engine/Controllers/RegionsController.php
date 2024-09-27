@@ -120,7 +120,6 @@ class RegionsController extends AbstractClass
 
         // Конвертируем значение поля content_extra в JSON-структуру и передаем её в шаблон
         // Если associative: true - то доступ через точку, иначе через стрелочку
-
         $extra_data_handler = new ConfmapHandler();
         $content_extra = $extra_data_handler->renderEdit($region_data['content_extra'] ?? '');
         // было '{}' - но мы пока передаем ассоциативный массив, а не объект. Для передачи объекта надо править шаблон.
