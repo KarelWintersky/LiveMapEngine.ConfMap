@@ -3,7 +3,7 @@
 namespace LiveMapEngine\ContentExtra\Confmap;
 
 use LiveMapEngine\ContentExtra\ContentExtraInterface;
-use LiveMapEngine\DataCollection;
+use LiveMapEngine\DataCollection\DataCollection;
 
 /**
  * Класс для работы с кастомными экстра-данными для проекта ConfMap

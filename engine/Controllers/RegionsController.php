@@ -11,15 +11,12 @@ use Confmap\App;
 use Confmap\Exceptions\AccessDeniedException;
 use Confmap\Units\Map;
 use LiveMapEngine\ContentExtra\Confmap\ConfmapHandler;
-use LiveMapEngine\DataCollection;
-use LiveMapEngine\Helpers;
+use LiveMapEngine\DataCollection\DataCollection;
 use LiveMapEngine\Map\MapMaker;
 use Psr\Log\LoggerInterface;
 
 class RegionsController extends AbstractClass
 {
-    const JSON_ENCODE_FLAGS = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK | JSON_PRESERVE_ZERO_FRACTION | JSON_THROW_ON_ERROR;
-
     private MapMaker $map;
 
     public function __construct($options = [], LoggerInterface $logger = null)

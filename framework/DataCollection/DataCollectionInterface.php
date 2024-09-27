@@ -1,6 +1,6 @@
 <?php
 
-namespace LiveMapEngine;
+namespace LiveMapEngine\DataCollection;
 
 interface DataCollectionInterface
 {

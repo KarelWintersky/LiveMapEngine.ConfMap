@@ -1,6 +1,6 @@
 <?php
 
-namespace LiveMapEngine;
+namespace LiveMapEngine\DataCollection;
 
 use RuntimeException;
 
