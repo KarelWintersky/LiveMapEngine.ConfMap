@@ -127,13 +127,8 @@ class RegionsController extends AbstractClass
 
         $json->setData('population->count', $population);
 
-        /*$json->setData('pie_chart', [
-            'present'   =>  $pcd_sum > 0,
-            'full'      =>  json_encode($pie_chart_data, JSON_UNESCAPED_UNICODE)
-        ]);*/
-
-        // круговая диаграмма
-        $t->assign("pie_chart", [
+        // так как передается массив, к его полям ходим в шаблоне через точку: `{$content_extra->pie_chart.full}`
+        $json->setData('pie_chart', [
             'present'   =>  $pcd_sum > 0,
             'full'      =>  json_encode($pie_chart_data, JSON_UNESCAPED_UNICODE)
         ]);

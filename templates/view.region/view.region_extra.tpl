@@ -190,10 +190,10 @@
         <legend>Экономика</legend>
         <strong>Тип:</strong> {$content_extra->economy->type}<br> <br>
 
-        {if $pie_chart.present}
+        {if $content_extra->pie_chart.present}
             <canvas id="economy_pie_chart" width="400" height="200"></canvas>
             <script>
-                var chart_data = {$pie_chart.full};
+                var chart_data = {$content_extra->pie_chart.full};
                 var canvas = document.getElementById("economy_pie_chart");
                 var ctx = canvas.getContext("2d");
                 var lastend = 0;
@@ -314,10 +314,10 @@
             </tr>
             <tr>
                 <td>
-                    {if $pie_chart.present}
+                    {if $content_extra->pie_chart.present}
                         <canvas id="economy_pie_chart" width="350" height="200"></canvas>
                         <script>
-                            var chart_data = {$pie_chart.full};
+                            var chart_data = {$content_extra->pie_chart.full};
                             var canvas = document.getElementById("economy_pie_chart");
                             var ctx = canvas.getContext("2d");
                             var lastend = 0;
