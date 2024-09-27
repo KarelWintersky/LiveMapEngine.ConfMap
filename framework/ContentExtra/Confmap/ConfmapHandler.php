@@ -11,6 +11,8 @@ use LiveMapEngine\DataCollection;
  */
 class ConfmapHandler implements ContentExtraInterface
 {
+    const JSON_ENCODE_FLAGS = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK | JSON_PRESERVE_ZERO_FRACTION | JSON_THROW_ON_ERROR;
+
     /**
      * Рендерит представление экстра-контента для вывода в информацию по региону
      *
@@ -94,5 +96,133 @@ class ConfmapHandler implements ContentExtraInterface
     public function renderEdit(string $source_data = ''):mixed
     {
         return json_decode($source_data, true);
+    }
+
+    /**
+     * Из входящего набора данных ($_REQUEST) генерит строку для поля `content_extra`
+     *
+     * @return string
+     */
+    public function parseEditData():string
+    {
+        $json = [
+            // @todo: версия latest ОБРАТНО НЕСОВМЕСТИМЫХ изменений структуры, например переименования полей, задается в формате "ГГГГММДД"
+            // Используется (потенциально) нужна для скриптов миграции данных из версии в версию.
+            'version'   =>  '20240723',
+
+            'lsi'       =>  [
+                'index'     =>  self::json('lsi-index'),
+                'type'      =>  self::json('lsi-type'),
+                'atmosphere'=>  self::json('lsi-atmosphere'),
+                'hydrosphere'   =>  self::json('lsi-hydrosphere'),
+                'climate'   =>  self::json('lsi-climate')
+            ],
+            'history'   =>  [
+                'year'  =>  [
+                    'found'         =>  self::json('history-year-found'),
+                    'colonization'  =>  self::json('history-year-colonization')
+                ],
+                'text'          =>  self::json('history-text'),
+            ],
+            'population'=>  [
+                'count'     =>  self::floatvalue(self::json('population-count')),
+                'ethnic'    =>  self::json('population-ethnic'),
+                'features'  =>  self::json('population-features'),
+                'religion'  =>  self::json('population-religion')
+            ],
+            'economy'   =>  [
+                'type'      =>  self::json('economy-type'),
+                'shares'    =>  [
+                    'natural'   =>  self::json('economy-shares-natural'),
+                    'financial' =>  self::json('economy-shares-financial'),
+                    'industrial'=>  self::json('economy-shares-industrial'),
+                    'social'    =>  self::json('economy-shares-social')
+                ],
+                'assets'    =>  [
+                    'natural'   =>  self::json('economy-assets-natural'),
+                    'financial' =>  self::json('economy-assets-financial'),
+                    'industrial'=>  self::json('economy-assets-industrial'),
+                    'social'    =>  self::json('economy-assets-social'),
+                    'oldmoney'  =>  self::json('economy-assets-oldmoney')
+                ]
+            ],
+            'trade' =>  [
+                'export'    =>  self::json('trade-export'),
+                'import'    =>  self::json('trade-import'),
+            ],
+            'statehood' =>  [
+                'ss'            =>  self::json('statehood-ss'),
+
+                'type'          =>  self::json('statehood-type'),
+                'dependency'    =>  self::json('statehood-dependency'),
+                'radius'        =>  self::json('statehood-radius'),
+                'sector'        =>  self::json('statehood-sector'),
+
+                'administration_principle'  => self::json('statehood:administration_principle'),
+
+                'local_governance'  =>  self::json('statehood-local_governance'),
+                'terr_guards'   =>  self::json('statehood-terr_guards'),
+                'agency'    =>  [
+                    'css'       =>  self::json('statehood-agency-css'),
+                    'drc'       =>  self::json('statehood-agency-drc'),
+                    'psi'       =>  self::json('statehood-agency-psi'),
+                    'starfleet' =>  self::json('statehood-agency-starfleet')
+                ],
+            ],
+            'laws'  => [
+                'language'          =>  self::json('laws-language'),
+                'passport'          =>  self::json('laws-passport'),
+                'visa'              =>  self::json('laws-visa'),
+                'gun_rights'        =>  self::json('laws-gun_rights'),
+                'private_property'  =>  self::json('laws-private_property'),
+                'gencard'   =>  [
+                    'info'          =>  self::json('laws-gencard-info'),
+                    'restrictions'  =>  self::json('laws-gencard-restrictions'),
+                ],
+            ],
+            'culture'   =>  [
+                'currency'      =>  self::json('culture-currency'),
+                'holydays'      =>  self::json('culture-holydays'),
+                'showplaces'    =>  self::json('culture-showplaces')
+            ],
+            // 'infrastructure'    =>  [], //
+            'other'     =>  [
+                'unverified'    =>  self::json('other-unverified_data'),
+                'local_heroes'  =>  self::json('other-local_heroes'),
+                'legacy'        => self::json('other-legacy'),
+            ],
+            'system_chart'  =>  self::json('system_chart'),
+            'tags'          =>  self::json('tags'),
+
+            // но можно и так:
+            // хотя не нужно
+            // 'tags'          =>  $request->getData('json:tags')
+        ];
+
+        // пакуем контент в JSON
+        return json_encode($json, self::JSON_ENCODE_FLAGS);
+    }
+
+    private static function json(string $field = '', string $prefix = 'json:'): string
+    {
+        if (empty($field)) {
+            return '';
+        }
+        $rq_field = "{$prefix}{$field}";
+
+        return  array_key_exists($rq_field, $_REQUEST)
+            ? $_REQUEST[$rq_field]
+            : '';
+    }
+
+    /**
+     * @param string $val
+     * @return float
+     */
+    private static function floatvalue(string $val): float
+    {
+        $val = \str_replace(",",".",$val);
+        $val = \preg_replace('/\.(?=.*\.)/', '', $val);
+        return \floatval($val);
     }
 }
