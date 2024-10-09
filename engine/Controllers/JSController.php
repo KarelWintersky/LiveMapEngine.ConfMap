@@ -32,8 +32,7 @@ class JSController extends AbstractClass
 
     /**
      * @return void
-     * @throws SyntaxError
-     * 
+     *
      * @todo: перенести в framework, как и шаблон к нему
      */
     public function view_js_map_definition(): void
@@ -62,6 +61,8 @@ class JSController extends AbstractClass
 
         $paths_data = [];
         $layers = [];
+
+
 
         try {
             if ($json->type === "vector" && empty($json->image)) {
@@ -143,6 +144,9 @@ class JSController extends AbstractClass
                 $layer_config = null;
 
                 /**
+                 * Определение слоя. Скорее всего оно никогда не будет null.
+                 * Только если не указать в массиве !->layout->layers имя слоя, которого нет в структуре !->layers
+                 *
                  * @var \stdClass $layer_config
                  */
                 if (!empty($json->layers->{$layer})) {
@@ -162,9 +166,7 @@ class JSController extends AbstractClass
                     return "'{$item}'";
                 }, array_keys($paths_at_layer)));*/
 
-                // запросим БД на предмет кастомных значений и заполненности регионов
-
-                // технически в функцию надо отдавать МАССИВ, а превращать его в строку внутри функции
+                // вытаскиваем из БД контент регионов и заполненность полей кастомной разметки регионов. По умолчанию там будет NULL если разметка "по умолчанию"!
                 $paths_at_layer_filled = $this->map->getRegionsWithInfo($paths_at_layer);
 
                 // фильтруем по доступности пользователю (is_publicity)
@@ -173,7 +175,7 @@ class JSController extends AbstractClass
                 foreach ($paths_at_layer_filled as $path_present) {
                     $id_region = $path_present['id_region'];
 
-                    // если конфиг слоя определен
+                    // если конфиг слоя определен (практически всегда)
                     if ($layer_config) {
                         // если определены параметры заполнения региона
                         if ($layer_config->display_defaults->present->fill && $layer_config->display_defaults->present->fill == 1) {
@@ -185,10 +187,55 @@ class JSController extends AbstractClass
                             if (!array_key_exists('fillOpacity', $path_present) && $layer_config->display_defaults->present->fillOpacity) {
                                 $path_present['fillOpacity'] = $layer_config->display_defaults->present->fillOpacity;
                             }
+
+                            // Кажется, это некорректная проверка. Поля будут всегда, но они могут содержать NULL. Поэтому нам надо проверить еще и значение поля на NULL
+                            // Хотя нет, если они NULL - то в MapManager.js параметрам региона будет сопоставлен параметр слоя в buildRegionsDataset(), строка 338.
+                            // То есть можно оставить старую проверку, там будет значение NULL которое трактуют правильно (надеюсь) - 2024-09-30
+                            // с другой стороны, сейчас MapManager.js работает некорректно. Он не учитывает значения по-умолчанию для слоя. Только для региона и глобальные
+                            // display_defaults
+
+                            /*if (
+                                $layer_config->display_defaults->present->fillColor &&
+                                ( !array_key_exists('fillColor', $path_present) || is_null($path_present['fillColor']))
+                            ) {
+                                $path_present['fillColor'] = $layer_config->display_defaults->present->fillColor;
+                            }
+
+                            if (
+                                $layer_config->display_defaults->present->fillOpacity &&
+                                ( !array_key_exists('fillOpacity', $path_present) || is_null($path_present['fillOpacity']))
+                            ) {
+                                $path_present['fillOpacity'] = $layer_config->display_defaults->present->fillOpacity;
+                            }*/
+
                         }
 
                         // если определены параметры кастомной отрисовки границ региона
                         if ($layer_config->display_defaults->present->stroke && $layer_config->display_defaults->present->stroke == 1) {
+
+                            // аналогично, см. выше
+
+                            /*if (
+                                $layer_config->display_defaults->present->borderColor &&
+                                ( !array_key_exists('borderColor', $path_present) || is_null($path_present['borderColor']))
+                            ) {
+                                $path_present['borderColor'] = $layer_config->display_defaults->present->borderColor;
+                            }
+
+                            if (
+
+                                $layer_config->display_defaults->present->borderWidth &&
+                                ( !array_key_exists('borderWidth', $path_present) || is_null($path_present['borderWidth']))
+                            ) {
+                                $path_present['borderWidth'] = $layer_config->display_defaults->present->borderWidth;
+                            }
+
+                            if (
+                                $layer_config->display_defaults->present->borderOpacity &&
+                                ( !array_key_exists('borderOpacity', $path_present) || is_null($path_present['borderOpacity']))
+                            ) {
+                                $path_present['borderOpacity'] = $layer_config->display_defaults->present->borderOpacity;
+                            }*/
 
                             if (!array_key_exists('borderColor', $path_present) && $layer_config->display_defaults->present->borderColor) {
                                 $path_present['borderColor'] = $layer_config->display_defaults->present->borderColor;
@@ -246,6 +293,8 @@ class JSController extends AbstractClass
                     'zoom'      =>  $layer_config->zoom ?? $json->display->zoom,
                     'zoom_min'  =>  $layer_config->zoom_min ?? -100,
                     'zoom_max'  =>  $layer_config->zoom_max ?? 100,
+
+                    'display_defaults'  =>  $layer_config->display_defaults
                     // 'regions'   =>  $paths_at_layer
                 ];
 
@@ -295,7 +344,8 @@ class JSController extends AbstractClass
             'focus_animate_duration'    =>  $json->display->focus_animate_duration ?? 0.7, // НЕ ИСПОЛЬЗУЕТСЯ НИГДЕ!
             'focus_highlight_color'     =>  $json->display->focus_highlight_color ?? '#ff0000',
             'focus_timeout'             =>  $json->display->focus_timeout ?? 1000,
-            'viewmode'                  =>  $json->display->viewmode ?? 'colorbox'
+            'viewmode'                  =>  $json->display->viewmode ?? 'colorbox',
+            // 'cursor'                    =>  $json->display->cursor ?? 'pointer'
         ];
 
         switch ($_assign_display['viewmode']) {
@@ -321,11 +371,7 @@ class JSController extends AbstractClass
 
         $this->template->assign("display", $_assign_display);
 
-
-
-        /*
-         * Новый механизм данных для расцветки регионов по-умолчанию
-         */
+        /* Механизм сбора данных для расцветки регионов по-умолчанию */
         $display_defaults_region =[];
         $display_defaults_region['empty'] = [
             "stroke"        =>  $json->display_defaults->region->{'empty'}->{'stroke'} ?? 0,
@@ -333,7 +379,7 @@ class JSController extends AbstractClass
             "borderWidth"   =>  $json->display_defaults->region->{'empty'}->{'borderWidth'} ?? 0,
             "borderOpacity" =>  $json->display_defaults->region->{'empty'}->{'borderOpacity'} ?? 0,
             "fill"          =>  $json->display_defaults->region->{'empty'}->{'fill'} ?? 0,
-            "fillColor"   =>  $json->display_defaults->region->{'empty'}->{'fillColor'} ?? "#ffffff",
+            "fillColor"     =>  $json->display_defaults->region->{'empty'}->{'fillColor'} ?? "#ffffff",
             "fillOpacity"   =>  $json->display_defaults->region->{'empty'}->{'fillOpacity'} ?? 0,
         ];
         $display_defaults_region['empty_hover'] = [
@@ -368,43 +414,43 @@ class JSController extends AbstractClass
         $display_defaults_poi['any'] = [
             // 'iconClass'     =>  Helpers::property_get_recursive($json, "display_defaults->poi->any->iconClass", '->', 'fa-fort-awesome'),
 
-            'iconClass'     =>  $json->display_defaults->poi->{'any'}->{'iconClass'}          ?? 'fa-fort-awesome',
-            'markerColor'     =>  $json->display_defaults->poi->{'any'}->{'markerColor'}      ?? 'black',
-            'iconColor'     =>  $json->display_defaults->poi->{'any'}->{'iconColor'}          ?? 'white',
-            'iconXOffset'     =>  $json->display_defaults->poi->{'any'}->{'iconXOffset'}      ?? -1,
-            'iconYOffset'     =>  $json->display_defaults->poi->{'any'}->{'iconYOffset'}      ?? 0,
+            'iconClass'     =>  $json->display_defaults->poi->{'any'}->{'iconClass'}        ?? 'fa-fort-awesome',
+            'markerColor'   =>  $json->display_defaults->poi->{'any'}->{'markerColor'}      ?? 'black',
+            'iconColor'     =>  $json->display_defaults->poi->{'any'}->{'iconColor'}        ?? 'white',
+            'iconXOffset'   =>  $json->display_defaults->poi->{'any'}->{'iconXOffset'}      ?? -1,
+            'iconYOffset'   =>  $json->display_defaults->poi->{'any'}->{'iconYOffset'}      ?? 0,
         ];
-       /*
-       // не используются, так как есть проблемы с отловом события mouseover/mouseout над POI
-       // см /public/frontend/view.map.fullscreen.js:82
-       $display_defaults_poi['empty'] = [
-            'iconClass'     =>  $json->display_defaults->poi->{'empty'}->{'iconClass'}          ?? 'fa-fort-awesome',
-            'markerColor'     =>  $json->display_defaults->poi->{'empty'}->{'markerColor'}      ?? 'black',
-            'iconColor'     =>  $json->display_defaults->poi->{'empty'}->{'iconColor'}          ?? 'white',
-            'iconXOffset'     =>  $json->display_defaults->poi->{'empty'}->{'iconXOffset'}      ?? -1,
-            'iconYOffset'     =>  $json->display_defaults->poi->{'empty'}->{'iconYOffset'}      ?? 0,
-        ];
-        $display_defaults_poi['empty_hover'] = [
-            'iconClass'     =>  $json->display_defaults->poi->{'empty:hover'}->{'iconClass'}    ?? $display_defaults_poi['empty']['iconClass'],
-            'markerColor'   =>  $json->display_defaults->poi->{'empty:hover'}->{'markerColor'}  ?? $display_defaults_poi['empty']['markerColor'],
-            'iconColor'     =>  $json->display_defaults->poi->{'empty:hover'}->{'iconColor'}    ?? $display_defaults_poi['empty']['iconColor'],
-            'iconXOffset'   =>  $json->display_defaults->poi->{'empty:hover'}->{'iconXOffset'}  ?? $display_defaults_poi['empty']['iconXOffset'],
-            'iconYOffset'   =>  $json->display_defaults->poi->{'empty:hover'}->{'iconYOffset'}  ?? $display_defaults_poi['empty']['iconYOffset'],
-        ];
-        $display_defaults_poi['present'] = [
-            'iconClass'     =>  $json->display_defaults->poi->{'present'}->{'iconClass'}        ?? $display_defaults_poi['empty']['iconClass'],
-            'markerColor'   =>  $json->display_defaults->poi->{'present'}->{'markerColor'}      ?? $display_defaults_poi['empty']['markerColor'],
-            'iconColor'     =>  $json->display_defaults->poi->{'present'}->{'iconColor'}        ?? $display_defaults_poi['empty']['iconColor'],
-            'iconXOffset'   =>  $json->display_defaults->poi->{'present'}->{'iconXOffset'}      ?? $display_defaults_poi['empty']['iconXOffset'],
-            'iconYOffset'   =>  $json->display_defaults->poi->{'present'}->{'iconYOffset'}      ?? $display_defaults_poi['empty']['iconYOffset'],
-        ];
-        $display_defaults_poi['present_hover'] = [
-            'iconClass'     =>  $json->display_defaults->poi->{'present:hover'}->{'iconClass'}    ?? $display_defaults_poi['present']['iconClass'],
-            'markerColor'   =>  $json->display_defaults->poi->{'present:hover'}->{'markerColor'}  ?? $display_defaults_poi['present']['markerColor'],
-            'iconColor'     =>  $json->display_defaults->poi->{'present:hover'}->{'iconColor'}    ?? $display_defaults_poi['present']['iconColor'],
-            'iconXOffset'   =>  $json->display_defaults->poi->{'present:hover'}->{'iconXOffset'}  ?? $display_defaults_poi['present']['iconXOffset'],
-            'iconYOffset'   =>  $json->display_defaults->poi->{'present:hover'}->{'iconYOffset'}  ?? $display_defaults_poi['present']['iconYOffset'],
-        ];*/
+        /*
+        // не используются, так как есть проблемы с отловом события mouseover/mouseout над POI
+        // см /public/frontend/view.map.fullscreen.js:82
+        $display_defaults_poi['empty'] = [
+             'iconClass'     =>  $json->display_defaults->poi->{'empty'}->{'iconClass'}          ?? 'fa-fort-awesome',
+             'markerColor'     =>  $json->display_defaults->poi->{'empty'}->{'markerColor'}      ?? 'black',
+             'iconColor'     =>  $json->display_defaults->poi->{'empty'}->{'iconColor'}          ?? 'white',
+             'iconXOffset'     =>  $json->display_defaults->poi->{'empty'}->{'iconXOffset'}      ?? -1,
+             'iconYOffset'     =>  $json->display_defaults->poi->{'empty'}->{'iconYOffset'}      ?? 0,
+         ];
+         $display_defaults_poi['empty_hover'] = [
+             'iconClass'     =>  $json->display_defaults->poi->{'empty:hover'}->{'iconClass'}    ?? $display_defaults_poi['empty']['iconClass'],
+             'markerColor'   =>  $json->display_defaults->poi->{'empty:hover'}->{'markerColor'}  ?? $display_defaults_poi['empty']['markerColor'],
+             'iconColor'     =>  $json->display_defaults->poi->{'empty:hover'}->{'iconColor'}    ?? $display_defaults_poi['empty']['iconColor'],
+             'iconXOffset'   =>  $json->display_defaults->poi->{'empty:hover'}->{'iconXOffset'}  ?? $display_defaults_poi['empty']['iconXOffset'],
+             'iconYOffset'   =>  $json->display_defaults->poi->{'empty:hover'}->{'iconYOffset'}  ?? $display_defaults_poi['empty']['iconYOffset'],
+         ];
+         $display_defaults_poi['present'] = [
+             'iconClass'     =>  $json->display_defaults->poi->{'present'}->{'iconClass'}        ?? $display_defaults_poi['empty']['iconClass'],
+             'markerColor'   =>  $json->display_defaults->poi->{'present'}->{'markerColor'}      ?? $display_defaults_poi['empty']['markerColor'],
+             'iconColor'     =>  $json->display_defaults->poi->{'present'}->{'iconColor'}        ?? $display_defaults_poi['empty']['iconColor'],
+             'iconXOffset'   =>  $json->display_defaults->poi->{'present'}->{'iconXOffset'}      ?? $display_defaults_poi['empty']['iconXOffset'],
+             'iconYOffset'   =>  $json->display_defaults->poi->{'present'}->{'iconYOffset'}      ?? $display_defaults_poi['empty']['iconYOffset'],
+         ];
+         $display_defaults_poi['present_hover'] = [
+             'iconClass'     =>  $json->display_defaults->poi->{'present:hover'}->{'iconClass'}    ?? $display_defaults_poi['present']['iconClass'],
+             'markerColor'   =>  $json->display_defaults->poi->{'present:hover'}->{'markerColor'}  ?? $display_defaults_poi['present']['markerColor'],
+             'iconColor'     =>  $json->display_defaults->poi->{'present:hover'}->{'iconColor'}    ?? $display_defaults_poi['present']['iconColor'],
+             'iconXOffset'   =>  $json->display_defaults->poi->{'present:hover'}->{'iconXOffset'}  ?? $display_defaults_poi['present']['iconXOffset'],
+             'iconYOffset'   =>  $json->display_defaults->poi->{'present:hover'}->{'iconYOffset'}  ?? $display_defaults_poi['present']['iconYOffset'],
+         ];*/
 
         $display_defaults = [
             "region"    =>  $display_defaults_region,
@@ -413,6 +459,7 @@ class JSController extends AbstractClass
 
         // параметры для секции theMap.display.region и theMap.display.poi
         $this->template->assign("display_defaults", $display_defaults);
+
 
         $this->template->assign('layers', $layers);
         $this->template->assign('regions', $paths_data);

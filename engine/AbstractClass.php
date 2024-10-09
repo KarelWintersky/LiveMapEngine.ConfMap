@@ -24,10 +24,7 @@ class AbstractClass
 
     public string $map_alias = '';
 
-    /**
-     * @var \Monolog\Logger
-     */
-    public $logger;
+    public AppLogger\Monolog\Logger $logger;
 
     public bool $is_internal_request;
 

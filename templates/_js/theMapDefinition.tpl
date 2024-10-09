@@ -44,6 +44,8 @@ window.theMap = {
         "viewmode"              : "{$display.viewmode}",
 
         "viewoptions"           : {$display.viewoptions|json_encode},
+
+        {*"cursor"                : "{$display.cursor|default:'pointer'}"*}
     },
 
     "display_defaults": {
@@ -68,6 +70,7 @@ window.theMap = {
             "zoom" : {$layer.zoom},
             "zoom_min" : {$layer.zoom_min},
             "zoom_max" : {$layer.zoom_max},
+            "display_defaults": {$layer.display_defaults|default:'{}'|json_encode}
         },
 
     {/foreach}

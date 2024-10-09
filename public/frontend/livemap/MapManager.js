@@ -317,7 +317,7 @@ class MapManager {
 
             let type = region['type'];
             let coords = region['coords'];
-            let layer = region['layer'];
+            let layer = region['layer']; // к какому слою относится регион?
             let is_have_content = region.hasOwnProperty('title');
             let dd_key = is_have_content ? 'present' : 'empty';
             let dd_key_hover = is_have_content ? 'present_hover' : 'empty_hover';

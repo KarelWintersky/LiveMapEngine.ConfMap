@@ -228,6 +228,9 @@ $(function() {
         });
     });
 
+    // Вот так можно изменить глобальный курсор
+    // document.getElementById('map').style.cursor = 'crosshair'; // window.theMap.display.cursor;
+    // но с изменением курсора при mouseover/mouseout есть проблемы. Курсор меняется не на то и не меняется обратно.
 });
 
 $(document).on('click', '#actor-edit', function() {
