@@ -1,14 +1,15 @@
 <?php
 
-namespace Confmap;
+namespace App;
 
-use AJUR\Template\FlashMessages;
 use Arris\AppLogger;
+use Arris\Cache\Cache;
 use Arris\Core\Dot;
 use Arris\Database\DBWrapper;
 use Arris\DelightAuth\Auth\Auth;
 use Arris\Path;
-use Arris\Template\Template;
+use Arris\Presenter\FlashMessages;
+use Arris\Presenter\Template;
 use Kuria\Error\ErrorHandler;
 use LiveMapEngine\Auth\AccessControl;
 
@@ -87,6 +88,7 @@ class App extends \Arris\App
             'default_logfile_path'      => config('path.logs'),
             'default_logfile_prefix'    => date_format(date_create(), 'Y-m-d') . '__'
         ] );
+        AppLogger::scope('router');
     }
 
     public static function initMobileDetect()
@@ -190,7 +192,17 @@ class App extends \Arris\App
 
         App::$template->setTemplate("_map.tpl");
 
+
+    }
+
+    /**
+     * @return void
+     */
+    public static function initFlashMessages()
+    {
         App::$flash = new FlashMessages();
+
+        App::$template->assign("flash_messages", json_encode( App::$flash->getMessages() ));
     }
 
 

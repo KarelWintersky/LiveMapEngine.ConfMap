@@ -57,12 +57,9 @@ binary-arch: build install
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install configure
 
-# %:
-#	dh $@
-#
-#
-#override_dh_auto_install:
-#	$(MAKE) install DESTDIR=$(CURDIR)/debian/ecoparser
-#
-# override_dh_auto_build:
+override_dh_auto_install:
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/$(PACKAGENAME)
+
+override_dh_auto_build:
+
 

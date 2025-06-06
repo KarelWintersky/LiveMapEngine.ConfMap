@@ -13,7 +13,7 @@
       "engine/_functions.php"
     ],
     "psr-4": {
-      "Confmap\\": "engine/",
+      "App\\": "engine/",
       "LiveMapEngine\\": "framework/"
     }
   },
@@ -32,18 +32,17 @@
     "vlucas/phpdotenv": "^3.3",
     "karelwintersky/arris": "^2.12.0",
     "karelwintersky/arris.helpers": "^0.6.0",
-    "karelwintersky/arris.router": "^1.100",
-    "karelwintersky/arris.logger": "^1.0",
+    "karelwintersky/arris.router": "^2",
+    "karelwintersky/arris.logger": "^2.0",
     "karelwintersky/arris.delight-php-auth": "^0.99",
-    "karelwintersky/arris.template": "^0.17.0",
-    "karelwintersky/arris.entity": "^0.9.3",
+    "karelwintersky/arris.entity": "^1",
     "karelwintersky/arris.database": "^1",
-    "karelwintersky/arris.cache": "^0.7.1",
-    "ajur-media/template.flash": "^0.1.0",
+    "karelwintersky/arris.cache": "^0",
+    "karelwintersky/arris.presenter": "^1",
     "mobiledetect/mobiledetectlib": "^3.74",
     "kuria/error": "^4.2",
     "colinodell/json5": "^3",
-    "livemap/svg-parser": "^1"
+    "livemap/svg-parser": "^1.2"
   },
   "suggest": {
     "fluxsoft/php-turnstile": "^0.1.3",

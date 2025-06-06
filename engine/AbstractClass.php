@@ -1,10 +1,10 @@
 <?php
 
-namespace Confmap;
+namespace App;
 
 use Arris\AppLogger;
 use Arris\Database\DBWrapper;
-use Arris\Template\Template;
+use Arris\Presenter\Template;
 use Psr\Log\LoggerInterface;
 use Smarty;
 
@@ -33,7 +33,7 @@ class AbstractClass
         $this->options = $options;
         $this->tables = new DBConfigTables();
 
-        $this->app = \Confmap\App::factory();
+        $this->app = \App\App::factory();
         $this->logger = AppLogger::scope('main');
 
         $this->pdo = App::$pdo;

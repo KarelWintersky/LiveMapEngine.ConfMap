@@ -1,14 +1,13 @@
 <?php
 
-namespace Confmap\Controllers;
+namespace App\Controllers;
 
+use App\AbstractClass;
+use App\App;
+use App\Units\Map;
 use Arris\Entity\Result;
 use Arris\Path;
-use Arris\Template\Template;
-use ColinODell\Json5\SyntaxError;
-use Confmap\AbstractClass;
-use Confmap\App;
-use Confmap\Units\Map;
+use Arris\Presenter\Template;
 use LiveMapEngine\Helpers;
 use LiveMapEngine\Map\MapMaker;
 use LiveMapEngine\Map\MapMakerInterface;
@@ -160,6 +159,8 @@ class JSController extends AbstractClass
 
                 // получаем все элементы на слое
                 $paths_at_layer = $_svgParserClass->getElementsAll();
+
+                // dd($paths_at_layer);
 
                 // теперь нам нужны айдишники этих элементов на слое. Их надо проверить в БД и заполнить значениями кастомных полей из БД
                 /*$paths_at_layers_ids = implode(", ", array_map( static function($item){

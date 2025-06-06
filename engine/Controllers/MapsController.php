@@ -1,12 +1,12 @@
 <?php
 
-namespace Confmap\Controllers;
+namespace App\Controllers;
 
+use App\AbstractClass;
+use App\App;
+use App\OpenGraph;
+use App\Units\Map;
 use Arris\Path;
-use Confmap\AbstractClass;
-use Confmap\App;
-use Confmap\OpenGraph;
-use Confmap\Units\Map;
 use LiveMapEngine\Map\MapMaker;
 use Psr\Log\LoggerInterface;
 

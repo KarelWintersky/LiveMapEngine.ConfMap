@@ -1,6 +1,6 @@
 <?php
 
-namespace Confmap;
+namespace App;
 
 #[\AllowDynamicProperties]
 final class DBConfigTables

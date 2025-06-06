@@ -1,11 +1,11 @@
 <?php
 
-namespace Confmap\Middlewares;
+namespace App\Middlewares;
 
+use App\AbstractClass;
+use App\App;
+use App\Exceptions\AccessDeniedException;
 use Arris\Helpers\Server;
-use Confmap\AbstractClass;
-use Confmap\App;
-use Confmap\Exceptions\AccessDeniedException;
 
 class AuthMiddleware extends AbstractClass
 {

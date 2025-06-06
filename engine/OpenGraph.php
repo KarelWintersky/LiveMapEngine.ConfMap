@@ -1,6 +1,6 @@
 <?php
 
-namespace Confmap;
+namespace App;
 
 class OpenGraph
 {

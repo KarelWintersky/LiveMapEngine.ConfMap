@@ -8,7 +8,6 @@ ANSI_RESET='\033[0m'
 
 PATH_PROJECT=/var/www/confmap
 PATH_PUBLIC=/var/www/confmap/public
-# PATH_STORAGE=/var/www/confmap/public/storage
 PATH_CONFIG=/etc/arris/livemap.confmap
 # PATH_STORAGE_LINKED=${PATH_PUBLIC}/storage
 PATH_CACHE_SMARTY=${PATH_PROJECT}/cache
@@ -38,7 +37,7 @@ case "$1" in
         # https://stackoverflow.com/questions/5767062/how-to-check-if-a-symlink-exists
         echo "Relinking favicon.ico"
         rm -f ${PATH_PUBLIC}/favicon.ico
-        ln -s ${PATH_PUBLIC}/frontend/favicons/favicon.ico ${PATH_PUBLIC}/favicon.ico ;
+        ln -s ${PATH_PUBLIC}/frontend/favicons/favicon.ico ${PATH_PUBLIC}/favicon.ico
         echo "${ANSI_YELLOW} Favicon symlink created. ${ANSI_RESET}"
 
         echo "Cleaning SMARTY Cache..."

@@ -3,8 +3,8 @@
 <head>
     <title>{$title}</title>
 
-    <script src="/frontend/jquery/jquery-3.2.1_min.js"></script>
-    <script src="/frontend/livemap/NotifyMessages.js"></script>
+    {*<script src="/frontend/jquery/jquery-3.2.1_min.js"></script>*}
+    {*<script src="/frontend/livemap/NotifyMessages.js"></script>*}
     <style>
         .content-center {
             display: flex;
@@ -22,20 +22,46 @@
             border-radius: 5px;
         }
     </style>
+
+    <script type="module" data-comment="XZ Notify (via helper) + XZ Notify CSS (ver 2025-02-21)">
+        import { XZNotifyHelper } from "/frontend/xz-notify/xz-notify-helper.js";
+
+        const flash_messages = {$flash_messages|json_encode|default:"{ }"};
+        document.addEventListener('DOMContentLoaded', function() {
+            XZNotifyHelper(flash_messages);
+        });
+    </script>
+
     <script>
-        const flash_messages = {$flash_messages};
-        $(document).ready(function() {
-            NotifyMessages.display(flash_messages);
+        /**
+         * Attach action-redirect actions (from dash-dash)
+         */
+        document.addEventListener("DOMContentLoaded", function() {
+            const elements = document.querySelectorAll("[data-action='redirect']");
+            elements.forEach(function(element) {
+                element.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
 
-            $("[data-action='redirect']").on('click', function (event) {
-                let url = $(this).data('url');
-                let target = $(this).data('target');
+                    let url = element.getAttribute('data-url');
+                    if (!url) {
+                        return false;
+                    }
 
-                if (target == "_blank") {
-                    window.open(url, '_blank').focus();
-                } else {
-                    window.location.href = url;
-                }
+                    let confirmMessage = element.getAttribute('data-confirm-message') || '';
+                    if (confirmMessage.length > 0 && !confirm(confirmMessage)) {
+                        return false;
+                    }
+
+                    let target = element.getAttribute('data-target') || '';
+                    if (target === "_blank") {
+                        const newWindow = window.open(url, '_blank');
+                        if (newWindow) newWindow.focus(); // Проверяем, что новое окно успешно открылось
+                    } else {
+                        window.location.assign(url);
+                    }
+                    return false;
+                });
             });
         });
     </script>

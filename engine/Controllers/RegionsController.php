@@ -1,15 +1,15 @@
 <?php
 
-namespace Confmap\Controllers;
+namespace App\Controllers;
 
+use App\AbstractClass;
+use App\App;
+use App\Exceptions\AccessDeniedException;
+use App\Units\Map;
 use Arris\AppRouter;
 use Arris\Path;
-use Arris\Template\Template;
+use Arris\Presenter\Template;
 use ColinODell\Json5\SyntaxError;
-use Confmap\AbstractClass;
-use Confmap\App;
-use Confmap\Exceptions\AccessDeniedException;
-use Confmap\Units\Map;
 use LiveMapEngine\ContentExtra\Confmap\ConfmapHandler;
 use LiveMapEngine\DataCollection\DataCollection;
 use LiveMapEngine\Map\MapMaker;

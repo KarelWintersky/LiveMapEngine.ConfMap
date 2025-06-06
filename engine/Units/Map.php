@@ -1,6 +1,6 @@
 <?php
 
-namespace Confmap\Units;
+namespace App\Units;
 
 use LiveMapEngine\Helpers;
 

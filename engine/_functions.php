@@ -1,7 +1,7 @@
 <?php
 
+use App\App;
 use Arris\Database\DBWrapper;
-use Confmap\App;
 use Psr\Log\LoggerInterface;
 use Arris\Helpers\Server;
 
@@ -34,6 +34,8 @@ function config(array|string $key = '', $value = null): mixed
 }
 
 /**
+* 
+* 
  * https://gist.github.com/nyamsprod/10adbef7926dbc449e01eaa58ead5feb
  *
  * @param $object
@@ -41,6 +43,7 @@ function config(array|string $key = '', $value = null): mixed
  * @param string $separator
  * @return bool
  */
+//@TODO: use Arris\Helpers\Objects::property_exists_recursive()
 function property_exists_recursive($object, string $path, string $separator = '->'): bool
 {
     if (!\is_object($object)) {
@@ -66,7 +69,9 @@ function property_exists_recursive($object, string $path, string $separator = '-
     return property_exists_recursive($object, \implode('->', $properties));
 }
 
+
 /**
+ 
  * @todo: перенести в livemap
  *
  * @param $object
@@ -75,6 +80,7 @@ function property_exists_recursive($object, string $path, string $separator = '-
  * @param $default
  * @return mixed|null
  */
+//*@TODO: use Arris\Helpers\Objects::property_get_recursive()
 function property_get_recursive($object, string $path, string $separator = '->', $default = null)
 {
     $properties = \explode($separator, $path);
@@ -115,6 +121,8 @@ function logSiteUsage(LoggerInterface $logger, $is_print = false)
 
     $logger->notice('', $metrics);
 }
+
+// @todo: use Arris\Helpers\Arrays::filter_array_for_allowed()
 
 function filter_array_for_allowed($input_array, $required_key, $allowed_values, $default_value)
 {

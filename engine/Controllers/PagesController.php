@@ -1,9 +1,9 @@
 <?php
 
-namespace Confmap\Controllers;
+namespace App\Controllers;
 
-use Confmap\AbstractClass;
-use Confmap\OpenGraph;
+use App\AbstractClass;
+use App\OpenGraph;
 use Psr\Log\LoggerInterface;
 
 class PagesController extends AbstractClass

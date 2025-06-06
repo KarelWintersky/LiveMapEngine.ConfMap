@@ -1,15 +1,13 @@
 <?php
 
+use App\App;
 use Arris\AppLogger;
 use Arris\AppRouter;
 use Arris\Exceptions\AppRouterNotFoundException;
-use Confmap\App;
-use Confmap\Controllers\AuthController;
 use Dotenv\Dotenv;
-use Kuria\Error\ErrorHandler;
 
 define('__PATH_ROOT__', dirname(__DIR__));
-define('__PATH_CONFIG__', '/etc/arris/livemap.confmap/');
+const __PATH_CONFIG__ = '/etc/arris/livemap.confmap/';
 
 if (!session_id()) @session_start();
 
@@ -26,46 +24,44 @@ try {
     App::initErrorHandler();
     App::initLogger();
     App::initTemplate();
+    App::initFlashMessages();
     App::initMobileDetect();
 
     App::initDBConnection();
     App::initAuth();
     App::initRedis();
 
-    AppRouter::init(AppLogger::addScope('router'));
-    AppRouter::setDefaultNamespace('\Confmap\Controllers');
+    AppRouter::init(AppLogger::scope('router'));
+    AppRouter::setDefaultNamespace('\App\Controllers');
 
-    AppRouter::get('/',             [\Confmap\Controllers\MapsController::class, 'view_map_fullscreen'],'view.frontpage');
-    AppRouter::get('/about',               [\Confmap\Controllers\PagesController::class, 'view_about'], 'view.about');
+    AppRouter::get('/',             [\App\Controllers\MapsController::class, 'view_map_fullscreen'],'view.frontpage');
+    AppRouter::get('/about',               [\App\Controllers\PagesController::class, 'view_about'], 'view.about');
 
-    AppRouter::get('/js/confmap.js',[\Confmap\Controllers\JSController::class, 'view_js_map_definition', 'view.map.js']);
+    AppRouter::get('/js/confmap.js',[\App\Controllers\JSController::class, 'view_js_map_definition'], 'view.map.js');
 
-    AppRouter::get('/region/get',   [\Confmap\Controllers\RegionsController::class, 'view_region_info'], 'ajax.get.region_info');
+    AppRouter::get('/region/get',   [\App\Controllers\RegionsController::class, 'view_region_info'], 'ajax.get.region_info');
 
-    AppRouter::get('/auth/login', [\Confmap\Controllers\AuthController::class, 'view_form_login'], 'view.form.login');
-    AppRouter::post('/auth/login', [\Confmap\Controllers\AuthController::class, 'callback_login'], 'callback.form.login');
-    AppRouter::get('/auth/logout', [\Confmap\Controllers\AuthController::class, 'callback_logout'], 'view.form.logout');
+    AppRouter::get('/auth/login', [\App\Controllers\AuthController::class, 'view_form_login'], 'view.form.login');
+    AppRouter::post('/auth/login', [\App\Controllers\AuthController::class, 'callback_login'], 'callback.form.login');
+    AppRouter::get('/auth/logout', [\App\Controllers\AuthController::class, 'callback_logout'], 'view.form.logout');
 
     AppRouter::group(
-        [
-            'before'    =>  '\Confmap\Middlewares\AuthMiddleware@check_is_logged_in'
-        ], static function() {
+        before: '\Confmap\Middlewares\AuthMiddleware@check_is_logged_in',
+        callback: static function() {
             // редактировать регион: форма и коллбэк
-            AppRouter::get('/region/edit', [\Confmap\Controllers\RegionsController::class, 'view_region_edit_form'], 'edit.region.info');
-            AppRouter::post('/region/edit', [\Confmap\Controllers\RegionsController::class, 'callback_update_region'], 'update.region.info');
-        }
-    );
-
+            AppRouter::get('/region/edit', [\App\Controllers\RegionsController::class, 'view_region_edit_form'], 'edit.region.info');
+            AppRouter::post('/region/edit', [\App\Controllers\RegionsController::class, 'callback_update_region'], 'update.region.info');
+        });
 
     AppRouter::dispatch();
 
-    App::$template->assign("flash_messages", json_encode( App::$flash->getMessages() ));
+
 
     App::$template->assign("_auth", \config('auth'));
     App::$template->assign("_request", $_REQUEST);
     App::$template->assign("_config", config());
 
-} catch (\Confmap\Exceptions\AccessDeniedException $e) {
+} catch (\App\Exceptions\AccessDeniedException $e) {
 
     AppLogger::scope('access.denied')->notice($e->getMessage(), [ $_SERVER['REQUEST_URI'], config('auth.ipv4') ] );
 

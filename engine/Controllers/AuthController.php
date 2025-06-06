@@ -1,7 +1,10 @@
 <?php
 
-namespace Confmap\Controllers;
+namespace App\Controllers;
 
+use App\AbstractClass;
+use App\App;
+use App\Exceptions\AccessDeniedException;
 use Arris\AppLogger;
 use Arris\AppRouter;
 use Arris\DelightAuth\Auth\Exceptions\AttemptCancelledException;
@@ -10,14 +13,12 @@ use Arris\DelightAuth\Auth\Exceptions\EmailNotVerifiedException;
 use Arris\DelightAuth\Auth\Exceptions\InvalidEmailException;
 use Arris\DelightAuth\Auth\Exceptions\InvalidPasswordException;
 use Arris\DelightAuth\Auth\Exceptions\TooManyRequestsException;
-use Confmap\App;
-use Confmap\Exceptions\AccessDeniedException;
 use Psr\Log\LoggerInterface;
 
 /**
  * Страницы и коллбэки авторизации
  */
-class AuthController extends \Confmap\AbstractClass
+class AuthController extends AbstractClass
 {
     public function __construct($options = [], LoggerInterface $logger = null)
     {

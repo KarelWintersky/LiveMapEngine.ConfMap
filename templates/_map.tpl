@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>{$html_title}</title>
+    <meta name="version" content="VERSION_PLACEHOLDER">
 
     {include file="_common/opengraph.tpl"}
 

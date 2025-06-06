@@ -1,7 +1,10 @@
 #!/usr/bin/make
-PROJECT = confmap
-PATH_PROJECT = $(DESTDIR)/var/www/$(PROJECT)
+PACKAGE_NAME = livemap-confmap
+INSTALL_DIR = livemap.confmap
+
+PATH_PROJECT = $(DESTDIR)/var/www/$(INSTALL_DIR)
 PATH_PUBLIC = $(PATH_PROJECT)/public
+
 MANTICONF_DIR = manticonf
 MANTICONF_PROJECT = confmap
 
@@ -43,17 +46,22 @@ setup_env:	##@localhost Setup environment at localhost
 install: 	##@system Install package. Don't run it manually!!!
 	@echo Installing...
 	install -d $(PATH_PROJECT)
-	cp -r admin.tools $(PATH_PROJECT)
+	cp -r admin $(PATH_PROJECT)
 	cp -r engine $(PATH_PROJECT)
 	cp -r framework $(PATH_PROJECT)
 	cp -r public $(PATH_PROJECT)
 	cp -r templates $(PATH_PROJECT)
 	cp -r composer.json $(PATH_PROJECT)
-#	cp debian/makefile.production $(PATH_PROJECT)/makefile
-	git rev-parse --short HEAD > $(PATH_PROJECT)/_version
-	git log --oneline --format=%B -n 1 HEAD | head -n 1 >> $(PATH_PROJECT)/_version
-	git log --oneline --format="%at" -n 1 HEAD | xargs -I{} date -d @{} +%Y-%m-%d >> $(PATH_PROJECT)/_version
+
+	$(eval COMMIT_HASH := $(shell git rev-parse --short HEAD))
+	$(eval VERSION := $(shell git log --oneline --format=%B -n 1 HEAD | head -n 1))
+	$(eval DATE := $(shell git log --oneline --format="%at" -n 1 HEAD | xargs -I{} date -d @{} +%Y-%m-%d))
+	@printf "Version $(VERSION), from $(DATE), commit hash '$(COMMIT_HASH)'\n" >> $(PATH_PROJECT)/_version
+	@sed -i 's/<meta name="version" content="VERSION_PLACEHOLDER">/<meta name="version" content="Version $(VERSION) from $(DATE), commit hash $(COMMIT_HASH)">/' $(PATH_PROJECT)/templates/_about.tpl
+	@sed -i 's/<meta name="version" content="VERSION_PLACEHOLDER">/<meta name="version" content="Version $(VERSION) from $(DATE), commit hash $(COMMIT_HASH)">/' $(PATH_PROJECT)/templates/_map.tpl
+
 	cd $(PATH_PROJECT)/ && composer install && rm composer.json
+
 #	mkdir -p $(DESTDIR)/etc/$(MANTICONF_DIR)/conf.d/$(MANTICONF_PROJECT)
 #	cp -r config.searchd/* $(DESTDIR)/etc/$(SEARCH_ENGINE_DIR)/conf.d/$(SEARCH_ENGINE_PROJECT)/
 #	chown -R manticore:manticore $(DESTDIR)/etc/$(SEARCH_ENGINE_DIR)/conf.d/$(SEARCH_ENGINE_PROJECT)/
