@@ -1,6 +1,6 @@
 #!/usr/bin/make
 PACKAGE_NAME = livemap-confmap
-INSTALL_DIR = livemap.confmap
+INSTALL_DIR = confmap
 
 PATH_PROJECT = $(DESTDIR)/var/www/$(INSTALL_DIR)
 PATH_PUBLIC = $(PATH_PROJECT)/public
