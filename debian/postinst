@@ -25,14 +25,7 @@ case "$1" in
             echo "${ANSI_RED} COMMON.CONF file not found! ${ANSI_RESET}" ;
         fi
 
-# для confmap storage скопируем ручками
-#        echo "Checking symlink from '${PATH_STORAGE}' to '${PATH_PUBLIC}/storage' directory"
-#        if [ ! -L "${PATH_STORAGE_LINKED}" ] ; then
-#            ln -s ${PATH_STORAGE} ${PATH_PUBLIC}/storage ;
-#            echo "${ANSI_YELLOW} Created. ${ANSI_RESET}"
-#        else
-#            echo "${ANSI_GREEN} Present. ${ANSI_RESET}"
-#        fi
+        # для confmap storage скопируем ручками
 
         # https://stackoverflow.com/questions/5767062/how-to-check-if-a-symlink-exists
         echo "Relinking favicon.ico"

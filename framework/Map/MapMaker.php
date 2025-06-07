@@ -184,34 +184,40 @@ class MapMaker implements MapMakerInterface
     /**
      * Загружает JSON5-конфиг из файла в поле $this->mapConfig
      *
-     * @param null $path
+     * @param null $explicit_config_filepath
      * @return Result
      */
-    public function loadConfig($path = null): Result
+    public function loadConfig($explicit_config_filepath = null): Result
     {
-        if (empty($this->path_config) && empty($path)) {
+        if (empty($this->path_config) && empty($explicit_config_filepath)) {
             $this->state->error("Config path not defined");
             return $this->state;
         }
+        
+        if (empty($explicit_config_filepath)) {
 
-        $path = $path ?: $this->path_config;
-
-        if (empty($this->config_files)) {
-            $this->state->error("[JS Builder] No config files for map {$this->id_map} declared");
-            return $this->state;
-        }
-
-        if (is_string($path)) {
-            $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-        }
-
-        foreach ($this->config_files as $cf) {
-            $fn = $path . $cf;
-            if (is_file($fn) && is_readable($fn)) {
-                $this->json_config_filename = $fn;
-                break;
+            if (empty($this->config_files)) {
+                $this->state->error("[JS Builder] No config files for map {$this->id_map} declared");
+                return $this->state;
             }
+
+            if (is_string($this->path_config)) {
+                $config_file_path = rtrim($this->path_config, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+            }
+
+            foreach ($this->config_files as $cf) {
+                $fn = $config_file_path . $cf;
+                if (is_file($fn) && is_readable($fn)) {
+                    $this->json_config_filename = $fn;
+                    break;
+                }
+            }
+
+        } else {
+            // файл задан напрямую
+            $this->json_config_filename = $explicit_config_filepath;
         }
+
         // какой-из следующих трех throw лишний
         if (empty($this->json_config_filename)) {
             $this->state->error("Файл конфигурации не задан для карты {$this->id_map}");
@@ -249,6 +255,8 @@ class MapMaker implements MapMakerInterface
         }
 
         $this->mapConfig = $json;
+
+        // $this->mapConfig = new DataCollection($json);
 
         // Модифицируем конфиг, приводя некоторые значения к рекомендуемому виду
 

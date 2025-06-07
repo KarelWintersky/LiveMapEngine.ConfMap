@@ -18,10 +18,10 @@ interface MapMakerInterface
     /**
      * Загружает JSON5-конфиг из файла в поле $this->mapConfig
      *
-     * @param null $path
+     * @param null $explicit_config_filepath
      * @return Result
      */
-    public function loadConfig($path = null): Result;
+    public function loadConfig($explicit_config_filepath = null): Result;
 
     /**
      * Возвращает конфиг карты
