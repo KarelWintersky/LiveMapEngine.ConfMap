@@ -3,8 +3,8 @@
 namespace App;
 
 use Arris\AppLogger;
-use Arris\Database\DBWrapper;
 use Arris\Presenter\Template;
+use PDO;
 use Psr\Log\LoggerInterface;
 use Smarty;
 
@@ -12,7 +12,7 @@ class AbstractClass
 {
     public ?\Arris\App $app;
 
-    public ?DBWrapper $pdo;
+    public PDO $pdo;
 
     public ?Smarty $smarty;
 

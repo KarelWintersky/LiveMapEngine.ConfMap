@@ -36,16 +36,16 @@ window.theMap = {
         "maxbounds"         :   {$maxbounds|json_encode},
 
         "focus": {
-            "animate_duration"  : {$display.focus_animate_duration},   {* нигде не используется *}
+            "animate_duration"  : {$display.focus_animate_duration}, {* нигде не используется *}
+
             "highlight_color"   : "{$display.focus_highlight_color}",
             "timeout"           : {$display.focus_timeout},
         },
 
         "viewmode"              : "{$display.viewmode}",
 
-        "viewoptions"           : {$display.viewoptions|json_encode},
+        "viewoptions"           : {$display.viewoptions|json_encode},  {*"cursor"                : "{$display.cursor|default:'pointer'}"*}
 
-        {*"cursor"                : "{$display.cursor|default:'pointer'}"*}
     },
 
     "display_defaults": {

@@ -1,3 +1,10 @@
+confmap (1.1.0) stable; urgency=medium
+
+  * [!] Используем karelwintersky/arris.database package (pre 2.0 version) - библиотеку, совместимую с PDO
+  * [*] упрощаем вызовы
+
+ -- Karel Wintersky <karel@wintersky.ru>  Wed, 11 Jun 2025 00:52:12 +0300
+
 confmap (1.0.1) stable; urgency=medium
 
   * [*] build fixes

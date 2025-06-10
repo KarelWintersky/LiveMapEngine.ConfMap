@@ -3,23 +3,23 @@
 namespace App;
 
 use Arris\AppLogger;
-use Arris\Cache\Cache;
 use Arris\Core\Dot;
-use Arris\Database\DBWrapper;
+use Arris\Database\Config;
 use Arris\DelightAuth\Auth\Auth;
 use Arris\Path;
 use Arris\Presenter\FlashMessages;
 use Arris\Presenter\Template;
 use Kuria\Error\ErrorHandler;
 use LiveMapEngine\Auth\AccessControl;
+use PDO;
 
 class App extends \Arris\App
 {
     public static $id_map = 'spring.confederation';
     /**
-     * @var DBWrapper
+     * @var PDO
      */
-    public static DBWrapper $pdo;
+    public static $pdo;
 
     /**
      * @var Dot
@@ -104,40 +104,18 @@ class App extends \Arris\App
 
     public static function initDBConnection()
     {
-        $app = self::factory();
-
-        /**
-         * Database
-         */
-        $db_credentials = [
-            'driver'            =>  'mysql',
-            'hostname'          =>  getenv('DB.HOST'),
-            'database'          =>  getenv('DB.NAME'),
-            'username'          =>  getenv('DB.USERNAME'),
-            'password'          =>  getenv('DB.PASSWORD'),
-            'port'              =>  getenv('DB.PORT'),
-            'charset'           =>  'utf8',
-            'charset_collate'   =>  'utf8_general_ci',
-            'slow_query_threshold'  => 1
-        ];
-        config('credentials.db', $db_credentials);
-
-        App::$pdo = new DBWrapper(
-            config('credentials.db'),
-            [ 'slow_query_threshold' => 100 ],
-            AppLogger::scope('mysql')
-        );
-        $app->addService('pdo', App::$pdo);
+        App::$pdo = (new Config())
+            ->setHost(getenv('DB.HOST'))
+            ->setPort(getenv('DB.PORT'))
+            ->setUsername(getenv('DB.USERNAME'))
+            ->setPassword( getenv('DB.PASSWORD'))
+            ->setDatabase(getenv('DB.NAME'))
+            ->connect();
     }
 
     public static function initAuth()
     {
-        App::$acl = new AccessControl([
-            'hostname'  =>  config('credentials.db.hostname'),
-            'database'  =>  config('credentials.db.database'),
-            'username'  =>  config('credentials.db.username'),
-            'password'  =>  config('credentials.db.password')
-        ]);
+        App::$acl = new AccessControl();
 
         config('auth', [
             'id'            =>  App::$acl->currentUser->id,
@@ -153,6 +131,9 @@ class App extends \Arris\App
 
     }
 
+    /**
+     * @throws \JsonException
+     */
     public static function initRedis()
     {
         \Arris\Cache\Cache::init([
@@ -167,7 +148,7 @@ class App extends \Arris\App
     /**
      * @throws \SmartyException
      */
-    public static function initTemplate()
+    public static function initPresenter()
     {
         App::$template = new Template([], [], AppLogger::scope('template'));
 
@@ -191,14 +172,12 @@ class App extends \Arris\App
             ->registerClass("Arris\AppRouter", "Arris\AppRouter");
 
         App::$template->setTemplate("_map.tpl");
-
-
     }
 
     /**
      * @return void
      */
-    public static function initFlashMessages()
+    public static function initFlashMessages(): void
     {
         App::$flash = new FlashMessages();
 

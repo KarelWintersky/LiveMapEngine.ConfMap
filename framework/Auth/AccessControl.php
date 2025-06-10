@@ -2,7 +2,9 @@
 
 namespace LiveMapEngine\Auth;
 
+use App\App;
 use Arris\DelightAuth\Auth\Auth;
+use Arris\DelightAuth\Auth\Exceptions\DatabaseError;
 
 /**
  * К сожалению, придется писать отдельный класс, потому что MapManager использует
@@ -28,34 +30,12 @@ class AccessControl
      */
     public CurrentUser $currentUser;
 
-    public function __construct($connection_credentials = [])
+    /**
+     * @throws DatabaseError
+     */
+    public function __construct()
     {
-        if (empty($connection_credentials['hostname'])) {
-            throw new \RuntimeException("Hostname unknown");
-        }
-
-        if (empty($connection_credentials['database'])) {
-            throw new \RuntimeException("Database unknown");
-        }
-
-        if (empty($connection_credentials['username'])) {
-            throw new \RuntimeException("User unknown");
-        }
-
-        if (empty($connection_credentials['password'])) {
-            throw new \RuntimeException("Password is empty or not set");
-        }
-
-        $this->auth = new Auth(
-            new \PDO(
-                sprintf(
-                    "mysql:dbname=%s;host=%s;charset=utf8mb4",
-                    $connection_credentials['database'], $connection_credentials['hostname']
-                ),
-                $connection_credentials['username'],
-                $connection_credentials['password']
-            )
-        );
+        $this->auth = new Auth(App::$pdo);
 
         $this->currentUser = new CurrentUser($this->auth);
     }

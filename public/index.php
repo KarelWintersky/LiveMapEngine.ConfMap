@@ -23,7 +23,7 @@ try {
     App::init();
     App::initErrorHandler();
     App::initLogger();
-    App::initTemplate();
+    App::initPresenter();
     App::initFlashMessages();
     App::initMobileDetect();
 
@@ -99,11 +99,12 @@ try {
     }
 }*/
 
-$render = App::$template->render();
+/*$render = App::$template->render();
 if ($render) {
-    $render = \preg_replace('/^\h*\v+/m', '', $render); // удаляем лишние переводы строк
     echo $render;
-}
+}*/
+
+echo App::$template->render();
 
 logSiteUsage( AppLogger::scope('site_usage') );
 
