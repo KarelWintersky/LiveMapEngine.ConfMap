@@ -13,7 +13,7 @@ class Helpers
      * @param string $default_value
      * @return mixed
      */
-    public static function filter_array_for_allowed(array $input_array = [], string $required_key = '', array $allowed_values = [], string $default_value = '')
+    public static function filter_array_for_allowed(array $input_array = [], string $required_key = '', array $allowed_values = [], string $default_value = ''): mixed
     {
         return
             \array_key_exists($required_key, $input_array)
@@ -32,7 +32,7 @@ class Helpers
      * @param mixed|null $default
      * @return mixed|null
      */
-    public static function property_get_recursive($object, string $path, string $separator = '->', mixed $default = null)
+    public static function property_get_recursive($object, string $path, string $separator = '->', mixed $default = null): mixed
     {
         $properties = \explode($separator, $path);
 
@@ -142,6 +142,41 @@ class Helpers
     }
 
 
+    /**
+     * Возвращает результирующий конфиг, в котором опции дефолтного конфига заменены на опции кастомного конфига,
+     * а несуществующие в кастомном оставлены как есть в дефолтном.
+     *
+     * При `include_new_params = true` добавит в результирующий конфиг опции из кастомного даже если они не существуют в дефолтном.
+     *
+     * @todo: Arris.helpers ?
+     *
+     * @param array $default_config
+     * @param array $custom_config
+     * @param bool $include_new_params
+     * @return array
+     */
+    public static function mergeConfigs(array $default_config, array $custom_config, bool $include_new_params = false): array
+    {
+        $result = $default_config;
+
+        foreach ($custom_config as $key => $value) {
+            // Если ключ существует в дефолтном конфиге
+            if (array_key_exists($key, $default_config)) {
+                // Если оба значения являются массивами - рекурсивно объединяем
+                if (is_array($value) && is_array($default_config[$key])) {
+                    $result[$key] = self::mergeConfigs($default_config[$key], $value, $include_new_params);
+                } else {
+                    // Заменяем значение
+                    $result[$key] = $value;
+                }
+            } elseif ($include_new_params) {
+                // Если ключа нет в дефолтном, но включено добавление новых параметров
+                $result[$key] = $value;
+            }
+        }
+
+        return $result;
+    }
 
 
 

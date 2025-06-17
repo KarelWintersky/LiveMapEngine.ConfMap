@@ -1,3 +1,9 @@
+confmap (1.1.1) stable; urgency=medium
+
+  * [*] update `karelwintersky/arris.cache` до 1.0.0+
+
+ -- Karel Wintersky <karel@wintersky.ru>  Tue, 17 Jun 2025 03:20:27 +0300
+
 confmap (1.1.0) stable; urgency=medium
 
   * [!] Используем karelwintersky/arris.database package (pre 2.0 version) - библиотеку, совместимую с PDO

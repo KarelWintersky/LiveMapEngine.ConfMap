@@ -37,7 +37,7 @@
     "karelwintersky/arris.delight-php-auth": "^0.99",
     "karelwintersky/arris.entity": "^1",
     "karelwintersky/arris.database": "^1.99",
-    "karelwintersky/arris.cache": "^0",
+    "karelwintersky/arris.cache": "^1",
     "karelwintersky/arris.presenter": "^1",
     "mobiledetect/mobiledetectlib": "^3.74",
     "kuria/error": "^4.2",

@@ -3,23 +3,25 @@
 namespace App;
 
 use Arris\AppLogger;
+use Arris\Cache\Cache;
 use Arris\Core\Dot;
 use Arris\Database\Config;
 use Arris\DelightAuth\Auth\Auth;
 use Arris\Path;
 use Arris\Presenter\FlashMessages;
 use Arris\Presenter\Template;
+use Arris\Toolkit\RedisClientException;
 use Kuria\Error\ErrorHandler;
 use LiveMapEngine\Auth\AccessControl;
 use PDO;
 
 class App extends \Arris\App
 {
-    public static $id_map = 'spring.confederation';
+    public static string $id_map = 'spring.confederation';
     /**
      * @var PDO
      */
-    public static $pdo;
+    public static PDO $pdo;
 
     /**
      * @var Dot
@@ -34,12 +36,12 @@ class App extends \Arris\App
     /**
      * @var Template;
      */
-    public static $template;
+    public static Template $template;
 
     /**
      * @var FlashMessages
      */
-    public static $flash;
+    public static FlashMessages $flash;
     /**
      * @var AccessControl
      */
@@ -132,17 +134,18 @@ class App extends \Arris\App
     }
 
     /**
-     * @throws \JsonException
+     * @throws RedisClientException
      */
     public static function initRedis()
     {
-        \Arris\Cache\Cache::init([
-            'enabled'   =>  getenv('REDIS.ENABLED'),
-            'host'      =>  getenv('REDIS.HOST'),
-            'port'      =>  getenv('REDIS.PORT'),
-            'password'  =>  getenv('REDIS.PASSWORD'),
-            'database'  =>  getenv('REDIS.DATABASE')
-        ], [ ], App::$pdo, AppLogger::scope('redis'));
+        Cache::init(
+            redis_host: getenv('REDIS.HOST'),
+            redis_port: getenv('REDIS.PORT'),
+            redis_database: getenv('REDIS.DATABASE'),
+            redis_enabled: getenv('REDIS.ENABLED'),
+            PDO: App::$pdo,
+            logger: AppLogger::scope('redis')
+        );
     }
 
     /**
