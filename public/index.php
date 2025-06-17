@@ -46,7 +46,7 @@ try {
     AppRouter::get('/auth/logout', [\App\Controllers\AuthController::class, 'callback_logout'], 'view.form.logout');
 
     AppRouter::group(
-        before: '\Confmap\Middlewares\AuthMiddleware@check_is_logged_in',
+        before: '\App\Middlewares\AuthMiddleware@check_is_logged_in',
         callback: static function() {
             // редактировать регион: форма и коллбэк
             AppRouter::get('/region/edit', [\App\Controllers\RegionsController::class, 'view_region_edit_form'], 'edit.region.info');
@@ -54,8 +54,6 @@ try {
         });
 
     AppRouter::dispatch();
-
-
 
     App::$template->assign("_auth", \config('auth'));
     App::$template->assign("_request", $_REQUEST);

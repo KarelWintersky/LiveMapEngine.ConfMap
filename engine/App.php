@@ -6,6 +6,7 @@ use Arris\AppLogger;
 use Arris\Cache\Cache;
 use Arris\Core\Dot;
 use Arris\Database\Config;
+use Arris\Database\Connector;
 use Arris\DelightAuth\Auth\Auth;
 use Arris\Path;
 use Arris\Presenter\FlashMessages;
@@ -13,15 +14,15 @@ use Arris\Presenter\Template;
 use Arris\Toolkit\RedisClientException;
 use Kuria\Error\ErrorHandler;
 use LiveMapEngine\Auth\AccessControl;
-use PDO;
 
 class App extends \Arris\App
 {
     public static string $id_map = 'spring.confederation';
+
     /**
-     * @var PDO
+     * @var Connector
      */
-    public static PDO $pdo;
+    public static Connector $pdo;
 
     /**
      * @var Dot

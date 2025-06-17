@@ -1,7 +1,6 @@
 <?php
 
 use App\App;
-use Arris\Database\DBWrapper;
 use Psr\Log\LoggerInterface;
 use Arris\Helpers\Server;
 
@@ -106,15 +105,12 @@ function logSiteUsage(LoggerInterface $logger, $is_print = false)
         'isMobile'          =>  config('features.is_mobile'),
     ];
 
-    /**
-     * @var DBWrapper $pdo
-     */
-    $pdo = (App::factory())->getService('pdo');
+    $pdo = App::$pdo;
 
     if (!\is_null($pdo)) {
-        $stats = $pdo->getStats();
-        $metrics['mysql.queries'] = $stats['total_queries'];
-        $metrics['mysql.time'] = $stats['total_time'];
+        $stats = $pdo->stats();
+        $metrics['mysql.queries'] = $stats->getTotalQueryCount();
+        $metrics['mysql.time'] = $stats->getTotalQueryTime();
     }
 
     $metrics['ipv4'] = Server::getIP();
