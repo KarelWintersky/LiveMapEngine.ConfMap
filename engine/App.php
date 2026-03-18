@@ -14,6 +14,7 @@ use Arris\Presenter\Template;
 use Arris\Toolkit\RedisClientException;
 use Kuria\Error\ErrorHandler;
 use LiveMapEngine\Auth\AccessControl;
+use PDO;
 
 class App extends \Arris\App
 {
@@ -25,14 +26,14 @@ class App extends \Arris\App
     public static Connector $pdo;
 
     /**
+     * @var Config
+     */
+    private static Config $pdo_config;
+
+    /**
      * @var Dot
      */
     public static Dot $config;
-
-    /**
-     * @var Auth
-     */
-    // public static $auth;
 
     /**
      * @var Template;
@@ -48,9 +49,11 @@ class App extends \Arris\App
      */
     public static AccessControl $acl;
 
-    public static function init()
+
+
+    public static function init($config = []): void
     {
-        $app = App::factory();
+        App::factory($config);
 
         $_path_install = Path::create( getenv('PATH.INSTALL') );
         $_path_monolog = Path::create( getenv('PATH.LOGS') );
@@ -72,11 +75,11 @@ class App extends \Arris\App
         ]);
 
         config('app', [
-            'copyright'     =>  'Confmap Pre-Release (based on LiveMap Engine v2+)',
+            'copyright'     =>  'Starmap of Confederation of Humanity (2nd season)',
         ]);
     }
 
-    public static function initErrorHandler()
+    public static function initErrorHandler(): void
     {
         $is_debug = !_env('IS.PRODUCTION', false, 'bool');
         $errorHandler = new ErrorHandler();
@@ -85,7 +88,7 @@ class App extends \Arris\App
         $errorHandler->register();
     }
 
-    public static function initLogger()
+    public static function initLogger(): void
     {
         AppLogger::init('Confmap', bin2hex(\random_bytes(8)), [
             'default_logfile_path'      => config('path.logs'),
@@ -94,7 +97,7 @@ class App extends \Arris\App
         AppLogger::scope('router');
     }
 
-    public static function initMobileDetect()
+    public static function initMobileDetect(): void
     {
         $MOBILE_DETECT_INSTANCE = new \Detection\MobileDetect();
         config('features', [
@@ -105,18 +108,22 @@ class App extends \Arris\App
         ]);
     }
 
-    public static function initDBConnection()
+    public static function initDBConnection(): Connector|PDO
     {
-        App::$pdo = (new Config())
+        App::$pdo_config = new Config();
+        App::$pdo_config
             ->setHost(getenv('DB.HOST'))
             ->setPort(getenv('DB.PORT'))
             ->setUsername(getenv('DB.USERNAME'))
             ->setPassword( getenv('DB.PASSWORD'))
-            ->setDatabase(getenv('DB.NAME'))
-            ->connect();
+            ->setDatabase(getenv('DB.NAME'));
+
+        App::$pdo = new Connector(App::$pdo_config);
+
+        return App::$pdo;
     }
 
-    public static function initAuth()
+    public static function initAuth(): void
     {
         App::$acl = new AccessControl();
 
@@ -137,7 +144,7 @@ class App extends \Arris\App
     /**
      * @throws RedisClientException
      */
-    public static function initRedis()
+    public static function initRedis(): void
     {
         Cache::init(
             redis_host: getenv('REDIS.HOST'),
@@ -152,7 +159,7 @@ class App extends \Arris\App
     /**
      * @throws \SmartyException
      */
-    public static function initPresenter()
+    public static function initPresenter(): void
     {
         App::$template = new Template([], [], AppLogger::scope('template'));
 
@@ -176,6 +183,7 @@ class App extends \Arris\App
             ->registerClass("Arris\AppRouter", "Arris\AppRouter");
 
         App::$template->setTemplate("_map.tpl");
+        App::$template->assign("is_mobile", /*config('features.is_mobile')*/ true);
     }
 
     /**

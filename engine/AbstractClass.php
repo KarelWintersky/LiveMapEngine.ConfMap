@@ -3,6 +3,7 @@
 namespace App;
 
 use Arris\AppLogger;
+use Arris\Database\Tables;
 use Arris\Presenter\Template;
 use PDO;
 use Psr\Log\LoggerInterface;
@@ -20,7 +21,7 @@ class AbstractClass
 
     public array $options = [];
 
-    public DBConfigTables $tables;
+    public Tables $tables;
 
     public string $map_alias = '';
 
@@ -31,7 +32,12 @@ class AbstractClass
     public function __construct($options = [], LoggerInterface $logger = null)
     {
         $this->options = $options;
-        $this->tables = new DBConfigTables();
+
+        $this->tables = new Tables(tables: [
+            'log_actions',
+            'users',
+            'map_data_regions'
+        ]);
 
         $this->app = \App\App::factory();
         $this->logger = AppLogger::scope('main');

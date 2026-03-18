@@ -54,6 +54,39 @@
     </script>
     <script src="/frontend/view.map.fullscreen.js"></script>
 
+    {if $is_mobile}
+        {* лайфхак - запрет выделения всего кроме на мобильной версии *}
+        <style>
+            /* Запрещаем выделение на всех элементах */
+            * {
+                -webkit-tap-highlight-color: transparent; /* Убирает серое выделение при тапе в Safari/Chrome */
+                -webkit-touch-callout: none; /* Запрещает меню сохранения картинки */
+                -webkit-user-select: none; /* Для WebKit */
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none; /* Запрещаем выделение текста */
+            }
+
+            #cboxLoadedContent *,
+            #cboxLoadedContent {
+                -webkit-user-select: text;
+                -moz-user-select: text;
+                -ms-user-select: text;
+                user-select: text;
+                -webkit-tap-highlight-color: rgba(0,0,0,0.1); /* можно вернуть легкое выделение если нужно */
+            }
+
+            /* Также разрешаем выделение в полях ввода (если они есть вне Colorbox) */
+            input, textarea, [contenteditable="true"] {
+                -webkit-user-select: text;
+                -moz-user-select: text;
+                -ms-user-select: text;
+                user-select: text;
+            }
+        </style>
+    {/if}
+
 </head>
 <body>
 <div tabindex="0" class="leaflet-container leaflet-fade-anim leaflet-grab leaflet-touch-drag" id="map"></div>
@@ -75,7 +108,7 @@
     </section>
 {/if}
 
-{if $sections_present.regions}
+{if $sections_present.regions && !$is_mobile }
     <section id="section-regions" class="section-regions-viewbox invisible" data-leaflet-control-position="{$section.regionbox_control_position}">
         <div style="text-align: {*section.regionbox_textalign*}">
             <button id="actor-regions-toggle" class="action-toggle-div-visibility" data-content="section-regions-content" data-content-is-visible="false">Показать</button>
