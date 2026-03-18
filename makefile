@@ -60,7 +60,7 @@ install: 	##@system Install package. Don't run it manually!!!
 	@sed -i 's/<meta name="version" content="VERSION_PLACEHOLDER">/<meta name="version" content="Version $(VERSION) from $(DATE), commit hash $(COMMIT_HASH)">/' $(PATH_PROJECT)/templates/_about.tpl
 	@sed -i 's/<meta name="version" content="VERSION_PLACEHOLDER">/<meta name="version" content="Version $(VERSION) from $(DATE), commit hash $(COMMIT_HASH)">/' $(PATH_PROJECT)/templates/_map.tpl
 
-	cd $(PATH_PROJECT)/ && composer install && rm composer.json
+	cd $(PATH_PROJECT)/ && composer install --no-dev --optimize-autoloader && rm composer.json
 
 #	mkdir -p $(DESTDIR)/etc/$(MANTICONF_DIR)/conf.d/$(MANTICONF_PROJECT)
 #	cp -r config.searchd/* $(DESTDIR)/etc/$(SEARCH_ENGINE_DIR)/conf.d/$(SEARCH_ENGINE_PROJECT)/

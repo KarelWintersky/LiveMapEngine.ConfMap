@@ -8,6 +8,10 @@
       "email": "karel.wintersky@gmail.com"
     }
   ],
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true
+  },
   "autoload": {
     "files": [
       "engine/_functions.php"
